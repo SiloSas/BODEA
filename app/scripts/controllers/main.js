@@ -8,10 +8,30 @@
  * Controller of the bodeaApp
  */
 angular.module('bodeaApp')
-  .controller('MainCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
-  });
+  .controller('MainCtrl', function ($scope, $timeout, $mdSidenav, $mdUtil, $log, $location) {
+        $scope.toggleLeft = buildToggler('left');
+        /**
+         * Build handler to open/close a SideNav; when animation finishes
+         * report completion in console
+         */
+        function buildToggler(navID) {
+            var debounceFn =  $mdUtil.debounce(function(){
+                $mdSidenav(navID)
+                    .toggle()
+                    .then(function () {
+                        $log.debug("toggle " + navID + " is done");
+                    });
+            },300);
+            return debounceFn;
+        }
+        $scope.close = function () {
+            $mdSidenav('left').close()
+                .then(function () {
+                    $log.debug("close LEFT is done");
+                });
+        };
+        $scope.active = $location.path();
+        $scope.$on('$locationChangeSuccess', function () {
+            $scope.active = $location.path();
+        })
+    })

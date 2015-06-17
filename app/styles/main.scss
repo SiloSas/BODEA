@@ -1,6 +1,7 @@
 // bower:scss
 // endbower
-
+@import "tools";
+@import "../scripts/modules/foundation/scss/foundation";
 .browsehappy {
   margin: 0.2em 0;
   background: #ccc;
@@ -20,6 +21,10 @@ body {
   padding-right: 15px;
 }
 
+.container { height: 100%;}
+.navAdmin > li.active {
+  border-bottom: 5px inset rgb(63, 81, 181);
+}
 /* Custom page header */
 .header {
   border-bottom: 1px solid #e5e5e5;
@@ -67,9 +72,6 @@ body {
 
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
-  .container {
-    max-width: 730px;
-  }
 
   /* Remove the padding we set earlier */
   .header,

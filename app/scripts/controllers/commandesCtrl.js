@@ -31,10 +31,11 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
     // other color intentions will be inherited
     // from default
 })
-    .controller('CommandesCtrl', function ($scope) {
+    .controller('CommandesCtrl', function ($scope, $timeout) {
     $scope.commandes = [
         {
             id: 1,
+            brand: 'enseigne1545',
             subOrders: [
                 {
                     store: 'magasin2',
@@ -61,6 +62,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         },
         {
             id: 3,
+            brand: 'enseigne2',
             subOrders: [{
                 store: 'magasin2',
                 numberItems: 10,
@@ -114,18 +116,22 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
     $scope.refactorCommande = function (index) {
         $scope.commandes[index] = $scope.commandes[index].newCommande;
     };
-    $scope.changeState = function (order) {
+    $scope.changeState = function (index) {
         var isDelivered = true;
-        for (var i = 0; i < order.subOrders.length; i++) {
-            if (order.subOrders[i].delivered == false) {
+        for (var i = 0; i < $scope.commandes[index].subOrders.length; i++) {
+            if ($scope.commandes[index].subOrders[i].delivered == false) {
                 isDelivered = false
             }
         }
-        if (isDelivered == true) {
-            order.state = 5;
-        } else {
-            order.state = 4;
-        }
+        $timeout(function () {
+            $scope.$apply(function  () {
+                if (isDelivered == true) {
+                    $scope.commandes[index].newCommande.state = 5;
+                } else {
+                    $scope.commandes[index].newCommande.state = 4;
+                }
+            })
+        }, 0);
     };
     $scope.predicate = 'date';
     $scope.reverse = false;

@@ -51,7 +51,7 @@
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
             <div class="column medium-2">{{commande.id}}</div>
-            <div class="column medium-2">{{commande.store}}</div>
+            <div class="column medium-2">{{commande.brand}}</div>
             <div class="column medium-2">{{commande.date}}</div>
             <div class="column medium-2">{{commande.state}}</div>
             <i class="column medium-2 pointer fa fa-pencil"
@@ -115,7 +115,7 @@
                         </div>
                     </md-list-item>
                 </md-list>
-                <md-subheader class="md-no-sticky">Details de la commande</md-subheader>
+                <md-subheader ng-init="index = $index" class="md-no-sticky">Details de la commande</md-subheader>
                 <md-list ng-repeat="subOrder in commande.subOrders">
                     <md-divider></md-divider>
                     <md-list-item>
@@ -138,10 +138,10 @@
                         <p class="column medium-4">Poids</p>
                         <p>{{subOrder.weight}} kg</p>
                     </md-list-item>
-                    <md-list-item ng-if="commande.state != 1 || commande.state != 2">
+                    <md-list-item ng-if="commande.newCommande.state != 1 && commande.newCommande.state != 2">
                         <p class="column medium-4">Livré</p>
                         <md-switch class="md-accent md-hue-3"
-                                   ng-change="changeState(commande)"
+                                   ng-change="changeState(index)"
                                    ng-model="subOrder.delivered"></md-switch>
                     </md-list-item>
                 </md-list>

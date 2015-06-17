@@ -26,6 +26,9 @@ angular.module('bodeaApp')
         $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
         $scope.predicate = predicate;
     };
+    $scope.remove = function (index) {
+        $scope.commandes.splice(index, 1)
+    }
 
 
     });

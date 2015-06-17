@@ -53,8 +53,8 @@
         <div class="column medium-2">{{commande.store}}</div>
         <div class="column medium-2">{{commande.date}}</div>
         <div class="column medium-2">{{commande.state}}</div>
-        <div class="column medium-2">modifier</div>
-        <div class="column medium-2">supprimer</div>
+        <i class="column medium-2 pointer fa fa-pencil" ng-click="refactor($index)">modifier</i>
+        <i class="column medium-2 pointer fa fa-times" ng-click="remove($index)">supprimer</i>
     </div>
 </div>
 

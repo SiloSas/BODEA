@@ -1,1 +1,60 @@
-<h1>Commandes</h1>
+<div class="column large-12 table-title-container">
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1">
+            Numero
+            <i class="fa"
+              ng-class="{'fa-chevron-down': predicate != 'id' || (predicate == 'id' && reverse == false),
+              'fa-chevron-up': predicate == 'id' && reverse == true}"
+              ng-click="order('id')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1">
+            Magasin
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'store' || (predicate == 'store' && reverse == false),
+              'fa-chevron-up': predicate == 'store' && reverse == true}"
+               ng-click="order('store')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1">
+            Date
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'date' || (predicate == 'date' && reverse == false),
+              'fa-chevron-up': predicate == 'date' && reverse == true}"
+               ng-click="order('date')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1">
+            Etat
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'state' || (predicate == 'state' && reverse == false),
+              'fa-chevron-up': predicate == 'state' && reverse == true}"
+               ng-click="order('state')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1">
+            Modifier
+        </div>
+    </div>
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1">
+            Supprimer
+        </div>
+    </div>
+</div>
+<div class="column large-12 center" ng-repeat="commande in commandes | filter: filter | orderBy:predicate:reverse">
+    <md-divider class="column large-12" ng-if="!$first"></md-divider>
+    <div class="padding10 float-left width100p">
+        <div class="column medium-2">{{commande.id}}</div>
+        <div class="column medium-2">{{commande.store}}</div>
+        <div class="column medium-2">{{commande.date}}</div>
+        <div class="column medium-2">{{commande.state}}</div>
+        <div class="column medium-2">modifier</div>
+        <div class="column medium-2">supprimer</div>
+    </div>
+</div>
+

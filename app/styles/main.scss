@@ -1,6 +1,7 @@
 // bower:scss
 // endbower
 @import "tools";
+@import "font-awesome";
 @import "../scripts/modules/foundation/scss/foundation";
 .browsehappy {
   margin: 0.2em 0;
@@ -39,6 +40,13 @@ body {
   }
 }
 
+// table //
+.table-title-container {
+  margin-top: 5px;
+  line-height: 50px;
+  text-align: center;
+}
+.table-title {padding: 5px!important}
 /* Custom page footer */
 .footer {
   padding-top: 19px;

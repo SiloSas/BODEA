@@ -8,6 +8,7 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http) {
             } else {
                 factory.stores = [
                     {
+                        id: 3,
                         name: 'magasin1',
                         brand: {name: 'enseigne1'},
                         contactName: 'Réferent1',
@@ -25,6 +26,7 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http) {
 
                     },
                     {
+                        id: 2,
                         name: 'magasin2',
                         brand: {name: 'enseigne2'},
                         contactName: 'Réferent2',
@@ -42,6 +44,7 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http) {
 
                     },
                     {
+                        id: 1,
                         name: 'magasin2',
                         brand: {name: 'enseigne1'},
                         contactName: 'Réferent2',

@@ -19,9 +19,14 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         else list.push(item);
     };
     $scope.exists = function (item, list) {
-        return list.indexOf(item) > -1;
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].id == item.id) {
+                return true;
+            }
+        }
     };
     $scope.copyUser = function (index) {
+        $scope.users[index].newUser = {stores: []};
         $timeout(function () {
             $scope.$apply(function () {
                 $scope.users[index].newUser = angular.copy($scope.users[index]);
@@ -33,11 +38,15 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         $scope.users[index] = $scope.users[index].newUser;
     };
 
+    $scope.changeActiveUser = function (index) {
+        //poste change user[index].isActive
+    };
+
     $scope.remove = function (index) {
         $scope.users.splice(index, 1)
     };
 
-    $scope.newUser = {};
+    $scope.newUser = {isActive: true};
     $scope.newUser.stores = [];
     $scope.addUser = function () {
         $scope.users.push($scope.newUser);

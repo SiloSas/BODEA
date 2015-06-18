@@ -56,6 +56,7 @@
         <md-subheader>Ajouter un magasin</md-subheader>
         <md-divider></md-divider>
         <md-autocomplete flex required
+                         md-autofocus="false"
                          md-no-cache="noCache"
                          md-selected-item="newStore.brand"
                          md-search-text-change="searchTextChange(searchBrand)"
@@ -88,6 +89,7 @@
             <input type="text" ng-model="newStore.billingAddress">
         </md-input-container>
         <md-autocomplete flex
+                         md-autofocus="false"
                          md-no-cache="noCache"
                          md-selected-item="newStore.area"
                          md-search-text-change="searchTextChange(searchText)"
@@ -171,6 +173,7 @@
                 <md-subheader>Modifer le magasin {{store.name}}</md-subheader>
                 <md-divider></md-divider>
                 <md-autocomplete flex required
+                        md-autofocus="false"
                         md-no-cache="noCache"
                         md-selected-item="store.newStore.brand"
                         md-search-text-change="searchTextChange(searchBrand)"
@@ -204,6 +207,7 @@
                     <input type="text" ng-model="store.newStore.billingAddress">
                 </md-input-container>
                 <md-autocomplete flex
+                        md-autofocus="false"
                         md-no-cache="noCache"
                         md-selected-item="store.newStore.area"
                         md-search-text-change="searchTextChange(searchText)"

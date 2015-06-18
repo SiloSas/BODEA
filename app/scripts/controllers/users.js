@@ -13,6 +13,14 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
         $scope.predicate = predicate;
     };
+    $scope.toggle = function (item, list) {
+        var idx = list.indexOf(item);
+        if (idx > -1) list.splice(idx, 1);
+        else list.push(item);
+    };
+    $scope.exists = function (item, list) {
+        return list.indexOf(item) > -1;
+    };
     $scope.copyUser = function (index) {
         $timeout(function () {
             $scope.$apply(function () {
@@ -30,6 +38,7 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     };
 
     $scope.newUser = {};
+    $scope.newUser.stores = [];
     $scope.addUser = function () {
         $scope.users.push($scope.newUser);
         $scope.newUser = {}
@@ -45,7 +54,7 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     });
 
     $scope.querySearchBrand   = querySearchBrand;
-    $scope.selectedItemChange = selectedItemChange;
+    $scope.selectedBrandChange = selectedBrandChange;
     $scope.searchTextChange   = searchTextChange;
     function querySearchBrand (query) {
         if ($scope.brands.filter( createFilterFor(query)).length == 0) {
@@ -56,8 +65,7 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     function searchTextChange(text) {
         $log.info('Text changed to ' + text);
     }
-    function selectedItemChange(item) {
-        $scope.stores = $filter('filter')($scope.stores, item.name, 'brand');
+    function selectedBrandChange(item) {
         $log.info('Item changed to ' + JSON.stringify(item));
         //$scope.stores[index].area = item;
     }

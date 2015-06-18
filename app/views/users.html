@@ -79,7 +79,7 @@
                          md-selected-item="newUser.brand"
                          md-search-text-change="searchTextChange(searchBrand)"
                          md-search-text="searchBrand"
-                         md-selected-item-change="selectedIBrandChange(brand)"
+                         md-selected-item-change="selectedBrandChange(brand)"
                          md-items="brand in querySearchBrand(searchBrand)"
                          md-item-text="brand.name"
                          md-floating-label="Enseigne">
@@ -90,7 +90,11 @@
                 No matches found for "{{searchBrand}}".
             </md-not-found>
         </md-autocomplete>
-        <div ng-repeat="store in stores">{{store.name}}</div>
+        <div flex="50" ng-repeat="store in stores | filter: newUser.brand.name">
+            <md-checkbox ng-checked="exists(store, newUser.stores)" ng-click="toggle(store, newUser.stores)">
+                {{ store.name }}
+            </md-checkbox>
+        </div>
         <md-button class="md-primary md-raised" type="submit">Valider</md-button>
         <md-button class="md-warn md-raised" ng-click="$parent.createUser = false">Annuler</md-button>
     </form>

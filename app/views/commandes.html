@@ -47,18 +47,18 @@
     </div>
 </div>
 <div class="column large-12" md-theme="commandeTheme"
-     ng-repeat="commande in filteredCommandes = (commandes | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
+     ng-repeat="order in filteredOrders = (orders | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
-            <h5 class="column medium-2">{{commande.id}}</h5>
-            <h5 class="column medium-2">{{commande.brand}}</h5>
-            <h5 class="column medium-2">{{commande.date}}</h5>
+            <h5 class="column medium-2">{{order.id}}</h5>
+            <h5 class="column medium-2">{{order.brand}}</h5>
+            <h5 class="column medium-2">{{order.date}}</h5>
             <div class="column medium-2">
                 <md-button class="md-fab md-mini"
-                        ng-class="{'md-accent': commande.state == 1, 'md-accent md-hue-1': commande.state == 2,
-                        'md-accent md-hue-2': commande.state == 3, 'md-primary': commande.state == 4,
-                        'md-accent md-hue-3': commande.state == 5}"></md-button></div>
+                        ng-class="{'md-accent': order.state == 1, 'md-accent md-hue-1': order.state == 2,
+                        'md-accent md-hue-2': order.state == 3, 'md-primary': order.state == 4,
+                        'md-accent md-hue-3': order.state == 5}"></md-button></div>
             <h5><i class="column medium-2 pointer fa fa-pencil"
                ng-click="copyCommande($index); refactor = true"></i></h5>
             <h5><i class="column medium-2 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove"></i></h5>
@@ -79,46 +79,46 @@
                 <i class="md-warn relative fa fa-times-circle"
                    style="  font-size: 30px;right: -15px;float: right;top: -22px;"
                    ng-click="$parent.refactor = false"></i>
-                <md-subheader>Modifer la commande {{commande.id}}</md-subheader>
+                <md-subheader>Modifer la commande {{order.id}}</md-subheader>
                 <md-divider></md-divider>
                 <md-input-container class="column large-4">
                     <label>Numéro de la commande</label>
-                    <input type="text" ng-model="commande.newCommande.id">
+                    <input type="text" ng-model="order.newOrder.id">
                 </md-input-container>
                 <md-input-container class="column large-4">
                     <label>Référence de la commande</label>
-                    <input type="text" ng-model="commande.newCommande.ref">
+                    <input type="text" ng-model="order.newOrder.ref">
                 </md-input-container>
                 <md-input-container>
                     <label>Date de livraison (JJ/MM/AAAA)</label>
-                    <input type="date" ng-model="commande.newCommande.deliveryDate">
+                    <input type="date" ng-model="order.newOrder.deliveryDate">
                 </md-input-container>
                 <md-list>
                     <md-subheader>Prix total</md-subheader>
                     <md-divider></md-divider>
                     <md-list-item>
-                        <b>{{commande.price}} €</b>
+                        <b>{{order.price}} €</b>
                     </md-list-item>
                 </md-list>
                 <md-list>
                     <md-subheader>Nombre total de baches</md-subheader>
                     <md-divider></md-divider>
                     <md-list-item>
-                        <b>{{commande.numberItems}}</b>
+                        <b>{{order.numberItems}}</b>
                     </md-list-item>
                 </md-list>
                 <md-list>
                     <md-subheader>Poid total</md-subheader>
                     <md-divider></md-divider>
                     <md-list-item>
-                        <b>{{commande.weight}}</b>
+                        <b>{{order.weight}}</b>
                     </md-list-item>
                 </md-list>
                 <md-list>
                     <md-subheader>Etat :</md-subheader>
                     <md-divider></md-divider>
                     <md-list-item>
-                        <md-radio-group ng-model="commande.newCommande.state">
+                        <md-radio-group ng-model="order.newOrder.state">
                             <md-radio-button value="1" class="md-accent marginLeft0">Commande en préparation</md-radio-button>
                             <md-radio-button value="2" class="md-accent md-hue-1 marginLeft0"> Commande validée </md-radio-button>
                             <md-radio-button value="3" class="md-accent md-hue-2 marginLeft0">En cours de traitement</md-radio-button>
@@ -132,17 +132,17 @@
                     <md-divider></md-divider>
                     <md-list-item>
                         <div class="column large-12 padding0">
-                            <a class="md-primary md-button margin10 md-default-theme" ng-click="showImage = !showImage">Voir {{commande.image.name}}</a>
-                            <a class="md-primary md-button margin10 md-default-theme" href="{{commande.image.url}}" download="{{commande.image.name}}">Telecharger {{commande.image.name}}</a>
+                            <a class="md-primary md-button margin10 md-default-theme" ng-click="showImage = !showImage">Voir {{order.image.name}}</a>
+                            <a class="md-primary md-button margin10 md-default-theme" href="{{order.image.url}}" download="{{order.image.name}}">Telecharger {{order.image.name}}</a>
                             <div class="column large-12 md-whiteframe-z1 padding10" ng-if="showImage">
                                 <i class="float-right fa fa-times pointer" ng-click="$parent.showImage = false"></i>
-                                <img ng-src="{{commande.image.url}}" class="width100p">
+                                <img ng-src="{{order.image.url}}" class="width100p">
                             </div>
                         </div>
                     </md-list-item>
                 </md-list>
                 <md-subheader ng-init="index = $index" class="md-no-sticky">Details de la commande</md-subheader>
-                <md-list ng-repeat="subOrder in commande.subOrders">
+                <md-list ng-repeat="subOrder in order.subOrders">
                     <md-divider></md-divider>
                     <md-list-item>
                         <p class="column medium-4">Magasin</p>
@@ -164,7 +164,7 @@
                         <p class="column medium-4">Poids</p>
                         <p>{{subOrder.weight}} kg</p>
                     </md-list-item>
-                    <md-list-item ng-if="commande.newCommande.state != 1 && commande.newCommande.state != 2">
+                    <md-list-item ng-if="order.newOrder.state != 1 && order.newOrder.state != 2">
                         <p class="column medium-4">Livré</p>
                         <md-switch class="md-accent md-hue-3"
                                    ng-change="changeState(index)"
@@ -177,7 +177,7 @@
         </md-list>
     </div>
 </div>
-<md-button ng-show="filteredCommandes.length > limit"
+<md-button ng-show="filteredOrders.length > limit"
            ng-click="limit = limit + 20"
         class="md-primary md-raised">Voir plus</md-button>
 

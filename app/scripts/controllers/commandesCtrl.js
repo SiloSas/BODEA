@@ -30,125 +30,38 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         }); // specify primary color, all
     // other color intentions will be inherited
     // from default
-})
-    .controller('CommandesCtrl', function ($scope, $timeout) {
-        $scope.commandes = [
-            {
-                id: 1,
-                brand: 'enseigne1545',
-                subOrders: [
-                    {
-                        store: 'magasin2',
-                        numberItems: 10,
-                        deliveryAddress: 'rue fuse',
-                        deliveryDate: new Date(),
-                        price: 10,
-                        weight: 4.3,
-                        delivered: true
-                    },
-                    {
-                        store: 'magasin2',
-                        numberItems: 10,
-                        deliveryAddress: 'rue fuse',
-                        deliveryDate: new Date(),
-                        price: 10,
-                        weight: 4.3,
-                        delivered: true
-                    }
-                ],
-                numberItems: 20,
-                weight: 8.6,
-                price: 20,
-                date: '10/11/11',
-                state: 5,
-                image : {name: 'image1', url: 'images/caroussel1.gif'}
-            },
-            {
-                id: 3,
-                brand: 'enseigne2',
-                subOrders: [{
-                    store: 'magasin2',
-                    numberItems: 10,
-                    deliveryAddress: 'rue fuse',
-                    deliveryDate: new Date(),
-                    price: 10,
-                    weight: 4.3,
-                    delivered: true
-                },
-                {
-                    store: 'magasin2',
-                    numberItems: 10,
-                    deliveryAddress: 'rue fuse',
-                    price: 10,
-                    weight: 4.3,
-                    delivered: false
-                }],
-                numberItems: 20,
-                weight: 8.6,
-                price: 20,
-                date: '10/11/11',
-                state: 4,
-                image : {name: 'image1', url: 'images/caroussel1.gif'}
-            },
-            {
-                id: 2,
-                brand: 'enseigne1',
-                subOrders: [
-                    {
-                        store: 'magasin2',
-                        numberItems: 10,
-                        deliveryAddress: 'rue fuse',
-                        deliveryDate: new Date(),
-                        price: 10,
-                        weight: 4.3,
-                        delivered: false
-                    },
-                    {
-                        store: 'magasin2',
-                        numberItems: 10,
-                        deliveryAddress: 'rue fuse',
-                        deliveryDate: new Date(),
-                        price: 10,
-                        weight: 4.3,
-                        delivered: false
-                    }
-                ],
-                numberItems: 20,
-                weight: 8.6,
-                price: 20,
-                date: '10/11/11',
-                state: 2,
-                image : {name: 'image1', url: 'images/caroussel1.gif'}
-            }
-        ];
-
+}).controller('CommandesCtrl', function ($scope, $timeout, OrdersFactory) {
+        $scope.orders = [];
+        OrdersFactory.getOrders().then(function (orders) {
+            $scope.orders = orders;
+        });
         $scope.limit = 20;
 
         $scope.copyCommande = function (index) {
             $timeout(function () {
                 $scope.$apply(function () {
-                    $scope.commandes[index].newCommande = angular.copy($scope.commandes[index]);
+                    $scope.orders[index].newOrder = angular.copy($scope.orders[index]);
                 })
             }, 0)
         };
 
         $scope.refactorCommande = function (index) {
-            $scope.commandes[index] = $scope.commandes[index].newCommande;
+            $scope.orders[index] = $scope.orders[index].newOrder;
         };
 
         $scope.changeState = function (index) {
             var isDelivered = true;
-            for (var i = 0; i < $scope.commandes[index].subOrders.length; i++) {
-                if ($scope.commandes[index].subOrders[i].delivered == false) {
+            for (var i = 0; i < $scope.orders[index].subOrders.length; i++) {
+                if ($scope.orders[index].subOrders[i].delivered == false) {
                     isDelivered = false
                 }
             }
             $timeout(function () {
                 $scope.$apply(function  () {
                     if (isDelivered == true) {
-                        $scope.commandes[index].newCommande.state = 5;
+                        $scope.orders[index].newOrder.state = 5;
                     } else {
-                        $scope.commandes[index].newCommande.state = 4;
+                        $scope.orders[index].newOrder.state = 4;
                     }
                 })
             }, 0);
@@ -162,7 +75,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         };
 
         $scope.remove = function (index) {
-            $scope.commandes.splice(index, 1)
+            $scope.orders.splice(index, 1)
         }
 
 

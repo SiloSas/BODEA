@@ -42,7 +42,7 @@
                             <md-button class="md-primary width100p margin0" ng-href="#/Magasins">Magasins</md-button>
                         </li>
                         <md-divider></md-divider>
-                        <li>
+                        <li ng-class="{'active': active == '/Comptes'}">
                             <md-button class="md-primary width100p margin0" ng-href="#/Comptes">Comptes</md-button>
                         </li>
                         <md-divider></md-divider>
@@ -106,11 +106,16 @@
         <script src="scripts/modules/foundation/mm-foundation.min.js"></script>
         <script src="scripts/modules/angular-material.min.js"></script>
         <script src="scripts/app.js"></script>
+        <script src="scripts/services/ordersFactory.js"></script>
+        <script src="scripts/services/storesFactory.js"></script>
+        <script src="scripts/services/brandsFactrory.js"></script>
+        <script src="scripts/services/areaFactory.js"></script>
+        <script src="scripts/services/usersFactory.js"></script>
         <script src="scripts/directives/contentView.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/commandesCtrl.js"></script>
         <script src="scripts/controllers/magasins.js"></script>
-        <script src="scripts/controllers/admin.js"></script>
+        <script src="scripts/controllers/users.js"></script>
         <!-- endbuild -->
 </body>
 </html>

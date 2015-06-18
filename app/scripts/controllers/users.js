@@ -1,6 +1,11 @@
-angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout, $filter, $log, StoresFactory,
-                                                                BrandFactory, AreaFactory) {
-
+angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactory, $timeout, BrandFactory, $log,
+                                                             StoresFactory) {
+    UsersFactory.getUsers().then(function (users) {
+        $scope.users = users;
+    });
+    StoresFactory.getStores().then(function (stores) {
+        $scope.stores = stores;
+    });
     $scope.limit = 20;
     $scope.predicate = 'brand';
     $scope.reverse = false;
@@ -8,29 +13,26 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
         $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
         $scope.predicate = predicate;
     };
-    StoresFactory.getStores().then(function (stores) {
-        $scope.stores = stores;
-    });
-    $scope.copyStore = function (index) {
+    $scope.copyUser = function (index) {
         $timeout(function () {
             $scope.$apply(function () {
-                $scope.stores[index].newStore = angular.copy($scope.stores[index]);
+                $scope.users[index].newUser = angular.copy($scope.users[index]);
             })
         }, 0)
     };
 
-    $scope.refactorStore = function (index) {
-        $scope.stores[index] = $scope.stores[index].newStore;
+    $scope.refactorUser = function (index) {
+        $scope.users[index] = $scope.users[index].newUser;
     };
 
     $scope.remove = function (index) {
-        $scope.stores.splice(index, 1)
+        $scope.users.splice(index, 1)
     };
 
-    $scope.newStore = {};
-    $scope.addStore = function () {
-        $scope.stores.push($scope.newStore);
-        $scope.newStore = {}
+    $scope.newUser = {};
+    $scope.addUser = function () {
+        $scope.users.push($scope.newUser);
+        $scope.newUser = {}
     };
 
     BrandFactory.getBrands().then(function (brands) {
@@ -42,34 +44,10 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
         })
     });
 
-    AreaFactory.getAreas().then(function (areas) {
-        $scope.areas = areas.split(/, +/g).map( function (area) {
-            return {
-                value: area.toLowerCase(),
-                name: area
-            };
-        })
-    });
-    $scope.querySearch   = querySearch;
     $scope.querySearchBrand   = querySearchBrand;
     $scope.selectedItemChange = selectedItemChange;
     $scope.searchTextChange   = searchTextChange;
-    // ******************************
-    // Internal methods
-    // ******************************
-    /**
-     * Search for states... use $timeout to simulate
-     * remote dataservice call.
-     */
-    function querySearch (query) {
-        console.log($scope.areas)
-        if ($scope.areas.filter( createFilterFor(query)).length == 0) {
-            $scope.areas.push({name: query, value: query});
-        }
-        return query ? $scope.areas.filter( createFilterFor(query) ) : $scope.areas;
-    }
     function querySearchBrand (query) {
-        console.log($scope.brands)
         if ($scope.brands.filter( createFilterFor(query)).length == 0) {
             $scope.brands.push({name: query, value: query});
         }
@@ -79,6 +57,7 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
         $log.info('Text changed to ' + text);
     }
     function selectedItemChange(item) {
+        $scope.stores = $filter('filter')($scope.stores, item.name, 'brand');
         $log.info('Item changed to ' + JSON.stringify(item));
         //$scope.stores[index].area = item;
     }

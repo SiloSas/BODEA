@@ -1,0 +1,139 @@
+<div class="column large-12 table-title-container">
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1 float-left">
+            Nom
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'name' || (predicate == 'name' && reverse == false),
+              'fa-chevron-up': predicate == 'name' && reverse == true}"
+               ng-click="order('name')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title float-left">
+        <div class="column md-whiteframe-z1">
+            Enseigne
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'brand' || (predicate == 'brand' && reverse == false),
+              'fa-chevron-up': predicate == 'brand' && reverse == true}"
+               ng-click="order('brand')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title float-left">
+        <div class="column md-whiteframe-z1">
+            Référent
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'contactName' || (predicate == 'contactName' && reverse == false),
+              'fa-chevron-up': predicate == 'contactName' && reverse == true}"
+               ng-click="order('contactName')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title float-left">
+        <div class="column md-whiteframe-z1">
+            Région
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'area' || (predicate == 'area' && reverse == false),
+              'fa-chevron-up': predicate == 'area' && reverse == true}"
+               ng-click="order('area')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title float-left">
+        <div class="column md-whiteframe-z1">
+            Téléphone
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'phone' || (predicate == 'phone' && reverse == false),
+              'fa-chevron-up': predicate == 'phone' && reverse == true}"
+               ng-click="order('phone')"></i>
+        </div>
+    </div>
+</div>
+<div class="column large-12" ng-repeat="store in filteredStores = (stores | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
+    <md-divider class="column large-12" ng-if="!$first"></md-divider>
+    <div class="padding10 float-left width100p">
+        <div class="width100p float-left center" ng-show="!refactor">
+            <h5 class="column medium-2">{{store.name}}</h5>
+            <h5 class="column medium-2">{{store.brand}}</h5>
+            <h5 class="column medium-2">{{store.contactName}}</h5>
+            <h5 class="column medium-2">{{store.area}}</h5>
+            <h5 class="column medium-2">{{store.phone}}</h5>
+            <h5><i class="column medium-1 pointer fa fa-pencil"
+                   ng-click="copyStore($index); refactor = true"></i></h5>
+            <h5><i class="column medium-1 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove"></i></h5>
+        </div>
+        <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
+            <div class="float-left padding10">
+                Etes-vous sur de vouloir suprimer ce magasin ?
+                <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false; remove($index)">
+                    Oui
+                </md-button>
+                <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false">
+                    Non
+                </md-button>
+            </div>
+        </div>
+        <md-list ng-if="refactor" class="md-whiteframe-z1">
+            <form ng-submit="refactorStore($index); $parent.refactor = false">
+                <i class="md-warn relative fa fa-times-circle"
+                   style="font-size: 30px;right: -15px;float: right;top: -22px;"
+                   ng-click="$parent.refactor = false"></i>
+                <md-subheader>Modifer le magasin {{store.name}}</md-subheader>
+                <md-divider></md-divider>
+                <md-input-container>
+                    <label>Nom</label>
+                    <input type="text" ng-model="store.newStore.name">
+                </md-input-container>
+                <md-input-container>
+                    <label>Référent</label>
+                    <input type="text" ng-model="store.newStore.contactName">
+                </md-input-container>
+                <md-input-container>
+                    <label>Adresse de livraison</label>
+                    <input type="text" ng-model="store.newStore.deliveryAddress">
+                </md-input-container>
+                <md-input-container>
+                    <label>Adresse de facturation</label>
+                    <input type="text" ng-model="store.newStore.billingAddress">
+                </md-input-container>
+                <md-input-container>
+                    <label>Région</label>
+                    <input type="text" ng-model="store.newStore.area">
+                </md-input-container>
+                <md-input-container>
+                    <label>Numero de téléphone</label>
+                    <input type="text" ng-model="store.newStore.phone">
+                </md-input-container>
+                <md-input-container>
+                    <label>Prix d'une bâche (prix m2)</label>
+                    <input type="number" step="any" ng-model="store.newStore.priceByM2">
+                </md-input-container>
+                <md-input-container>
+                    <label>Longueur du tube</label>
+                    <input type="number" step="any" ng-model="store.newStore.pipeSize">
+                </md-input-container>
+                <md-input-container>
+                    <label>Poid de la bache</label>
+                    <input type="number" step="any" ng-model="store.newStore.weight">
+                </md-input-container>
+                <md-input-container>
+                    <label>Format d'impression</label>
+                    <input type="text" ng-model="store.newStore.printFormat">
+                </md-input-container>
+                <md-input-container>
+                    <label>Laize utilisé</label>
+                    <input type="number" step="any" ng-model="store.newStore.width">
+                </md-input-container>
+                <md-input-container>
+                    <label>Longueur du jonc</label>
+                    <input type="number" step="any" ng-model="store.newStore.caneWidth">
+                </md-input-container>
+                <md-input-container>
+                    <label>Nombre de moteurs</label>
+                    <input type="number" ng-model="store.newStore.enginesNumber">
+                </md-input-container>
+                <md-button class="md-primary md-raised" type="submit">Valider</md-button>
+                <md-button class="md-warn md-raised" ng-click="$parent.refactor = false">Annuler</md-button>
+            </form>
+        </md-list>
+    </div>
+</div>
+<md-button ng-show="filteredStores.length > limit"
+           ng-click="limit = limit + 20"
+           class="md-primary md-raised">Voir plus</md-button>

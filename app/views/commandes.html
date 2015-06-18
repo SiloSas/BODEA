@@ -46,7 +46,8 @@
         </div>
     </div>
 </div>
-<div class="column large-12" md-theme="commandeTheme" ng-repeat="commande in commandes | filter: filter | orderBy:predicate:reverse">
+<div class="column large-12" md-theme="commandeTheme"
+     ng-repeat="commande in filteredCommandes = (commandes | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
@@ -171,9 +172,12 @@
                     </md-list-item>
                 </md-list>
                 <md-button class="md-primary md-raised" type="submit">Valider</md-button>
-                <md-button class="md-warn md-raised" ng-click="$parent.refactor = false" type="submit">Annuler</md-button>
+                <md-button class="md-warn md-raised" ng-click="$parent.refactor = false">Annuler</md-button>
             </form>
         </md-list>
     </div>
 </div>
+<md-button ng-show="filteredCommandes.length > limit"
+           ng-click="limit = limit + 20"
+        class="md-primary md-raised">Voir plus</md-button>
 

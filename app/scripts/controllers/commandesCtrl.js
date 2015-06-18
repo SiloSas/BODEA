@@ -56,6 +56,9 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                     delivered: true
                 }
             ],
+            numberItems: 20,
+            weight: 8.6,
+            price: 20,
             date: '10/11/11',
             state: 5,
             image : {name: 'image1', url: 'images/caroussel1.gif'}
@@ -80,6 +83,9 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                 weight: 4.3,
                 delivered: false
             }],
+            numberItems: 20,
+            weight: 8.6,
+            price: 20,
             date: '10/11/11',
             state: 4,
             image : {name: 'image1', url: 'images/caroussel1.gif'}
@@ -87,15 +93,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         {
             id: 2,
             brand: 'enseigne1',
-            subOrders: [{
-                store: 'magasin2',
-                numberItems: 10,
-                deliveryAddress: 'rue fuse',
-                deliveryDate: new Date(),
-                price: 10,
-                weight: 4.3,
-                delivered: false
-            },
+            subOrders: [
                 {
                     store: 'magasin2',
                     numberItems: 10,
@@ -104,14 +102,31 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                     price: 10,
                     weight: 4.3,
                     delivered: false
-                }],
+                },
+                {
+                    store: 'magasin2',
+                    numberItems: 10,
+                    deliveryAddress: 'rue fuse',
+                    deliveryDate: new Date(),
+                    price: 10,
+                    weight: 4.3,
+                    delivered: false
+                }
+            ],
+            numberItems: 20,
+            weight: 8.6,
+            price: 20,
             date: '10/11/11',
             state: 2,
             image : {name: 'image1', url: 'images/caroussel1.gif'}
         }
     ];
     $scope.copyCommande = function (index) {
-        $scope.commandes[index].newCommande = angular.copy($scope.commandes[index]);
+        $timeout(function () {
+            $scope.$apply(function () {
+                $scope.commandes[index].newCommande = angular.copy($scope.commandes[index]);
+            })
+        }, 0)
     };
     $scope.refactorCommande = function (index) {
         $scope.commandes[index] = $scope.commandes[index].newCommande;

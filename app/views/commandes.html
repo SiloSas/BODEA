@@ -10,11 +10,11 @@
     </div>
     <div class="column medium-2 table-title">
         <div class="column md-whiteframe-z1">
-            Magasin
+            Enseigne
             <i class="fa"
-               ng-class="{'fa-chevron-down': predicate != 'store' || (predicate == 'store' && reverse == false),
-              'fa-chevron-up': predicate == 'store' && reverse == true}"
-               ng-click="order('store')"></i>
+               ng-class="{'fa-chevron-down': predicate != 'brand' || (predicate == 'brand' && reverse == false),
+              'fa-chevron-up': predicate == 'brand' && reverse == true}"
+               ng-click="order('brand')"></i>
         </div>
     </div>
     <div class="column medium-2 table-title">
@@ -50,13 +50,17 @@
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
-            <div class="column medium-2">{{commande.id}}</div>
-            <div class="column medium-2">{{commande.brand}}</div>
-            <div class="column medium-2">{{commande.date}}</div>
-            <div class="column medium-2">{{commande.state}}</div>
-            <i class="column medium-2 pointer fa fa-pencil"
-               ng-click="copyCommande($index); refactor = true"></i>
-            <i class="column medium-2 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove"></i>
+            <h5 class="column medium-2">{{commande.id}}</h5>
+            <h5 class="column medium-2">{{commande.brand}}</h5>
+            <h5 class="column medium-2">{{commande.date}}</h5>
+            <div class="column medium-2">
+                <md-button class="md-fab md-mini"
+                        ng-class="{'md-accent': commande.state == 1, 'md-accent md-hue-1': commande.state == 2,
+                        'md-accent md-hue-2': commande.state == 3, 'md-primary': commande.state == 4,
+                        'md-accent md-hue-3': commande.state == 5}"></md-button></div>
+            <h5><i class="column medium-2 pointer fa fa-pencil"
+               ng-click="copyCommande($index); refactor = true"></i></h5>
+            <h5><i class="column medium-2 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove"></i></h5>
         </div>
         <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
            <div class="float-left padding10">
@@ -88,6 +92,27 @@
                     <label>Date de livraison (JJ/MM/AAAA)</label>
                     <input type="date" ng-model="commande.newCommande.deliveryDate">
                 </md-input-container>
+                <md-list>
+                    <md-subheader>Prix total</md-subheader>
+                    <md-divider></md-divider>
+                    <md-list-item>
+                        <b>{{commande.price}} €</b>
+                    </md-list-item>
+                </md-list>
+                <md-list>
+                    <md-subheader>Nombre total de baches</md-subheader>
+                    <md-divider></md-divider>
+                    <md-list-item>
+                        <b>{{commande.numberItems}}</b>
+                    </md-list-item>
+                </md-list>
+                <md-list>
+                    <md-subheader>Poid total</md-subheader>
+                    <md-divider></md-divider>
+                    <md-list-item>
+                        <b>{{commande.weight}}</b>
+                    </md-list-item>
+                </md-list>
                 <md-list>
                     <md-subheader>Etat :</md-subheader>
                     <md-divider></md-divider>

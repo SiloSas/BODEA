@@ -87,7 +87,11 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
         $scope.stores.splice(index, 1)
     };
 
-
+    $scope.newStore = {};
+    $scope.addStore = function () {
+        $scope.stores.push($scope.newStore);
+        $scope.newStore = {}
+    };
     $scope.areas        = loadAllAreas();
     $scope.brands        = loadAllBrands();
     $scope.querySearch   = querySearch;

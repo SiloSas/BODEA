@@ -12,9 +12,9 @@
         <div class="column md-whiteframe-z1">
             Enseigne
             <i class="fa"
-               ng-class="{'fa-chevron-down': predicate != 'brand' || (predicate == 'brand' && reverse == false),
-              'fa-chevron-up': predicate == 'brand' && reverse == true}"
-               ng-click="order('brand')"></i>
+               ng-class="{'fa-chevron-down': predicate != 'brand.name' || (predicate == 'brand.name' && reverse == false),
+              'fa-chevron-up': predicate == 'brand.name' && reverse == true}"
+               ng-click="order('brand.name')"></i>
         </div>
     </div>
     <div class="column medium-2 table-title float-left">
@@ -30,9 +30,9 @@
         <div class="column md-whiteframe-z1">
             Région
             <i class="fa"
-               ng-class="{'fa-chevron-down': predicate != 'area' || (predicate == 'area' && reverse == false),
-              'fa-chevron-up': predicate == 'area' && reverse == true}"
-               ng-click="order('area')"></i>
+               ng-class="{'fa-chevron-down': predicate != 'area.name' || (predicate == 'area.name' && reverse == false),
+              'fa-chevron-up': predicate == 'area.name' && reverse == true}"
+               ng-click="order('area.name')"></i>
         </div>
     </div>
     <div class="column medium-2 table-title float-left">
@@ -50,9 +50,9 @@
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
             <h5 class="column medium-2">{{store.name}}</h5>
-            <h5 class="column medium-2">{{store.brand}}</h5>
+            <h5 class="column medium-2">{{store.brand.name}}</h5>
             <h5 class="column medium-2">{{store.contactName}}</h5>
-            <h5 class="column medium-2">{{store.area}}</h5>
+            <h5 class="column medium-2">{{store.area.name}}</h5>
             <h5 class="column medium-2">{{store.phone}}</h5>
             <h5><i class="column medium-1 pointer fa fa-pencil"
                    ng-click="copyStore($index); refactor = true"></i></h5>
@@ -76,6 +76,23 @@
                    ng-click="$parent.refactor = false"></i>
                 <md-subheader>Modifer le magasin {{store.name}}</md-subheader>
                 <md-divider></md-divider>
+                <md-autocomplete
+                        md-no-cache="noCache"
+                        md-selected-item="store.newStore.brand"
+                        md-search-text-change="searchTextChange(searchBrand)"
+                        md-search-text="searchBrand"
+                        md-selected-item-change="selectedIBrandChange(brand)"
+                        md-items="brand in querySearchBrand(searchBrand)"
+                        md-item-text="brand.name"
+                        md-min-length="0"
+                        placeholder="Enseigne">
+                    <md-item-template>
+                        <span md-highlight-text="searchBrand" md-highlight-flags="^i">{{brand.name}}</span>
+                    </md-item-template>
+                    <md-not-found>
+                        No matches found for "{{searchBrand}}".
+                    </md-not-found>
+                </md-autocomplete>
                 <md-input-container>
                     <label>Nom</label>
                     <input type="text" ng-model="store.newStore.name">
@@ -92,10 +109,23 @@
                     <label>Adresse de facturation</label>
                     <input type="text" ng-model="store.newStore.billingAddress">
                 </md-input-container>
-                <md-input-container>
-                    <label>Région</label>
-                    <input type="text" ng-model="store.newStore.area">
-                </md-input-container>
+                <md-autocomplete
+                        md-no-cache="noCache"
+                        md-selected-item="store.newStore.area"
+                        md-search-text-change="searchTextChange(searchText)"
+                        md-search-text="searchText"
+                        md-selected-item-change="selectedItemChange(item)"
+                        md-items="item in querySearch(searchText)"
+                        md-item-text="item.name"
+                        md-min-length="0"
+                        md-floating-label="Favorite state">
+                    <md-item-template>
+                        <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.name}}</span>
+                    </md-item-template>
+                    <md-not-found>
+                        No matches found for "{{searchText}}".
+                    </md-not-found>
+                </md-autocomplete>
                 <md-input-container>
                     <label>Numero de téléphone</label>
                     <input type="text" ng-model="store.newStore.phone">

@@ -40,7 +40,7 @@
     </md-button>
 </div>
 <md-list ng-if="createOrder" class="md-whiteframe-z1">
-    <form ng-submit="refactorCommande($parent.order); $parent.createOrder = false">
+    <form ng-submit="addOrder(); $parent.createOrder = false">
         <i class="md-warn relative fa fa-times-circle"
            style="  font-size: 30px;right: -15px;float: right;top: -22px;"
            ng-click="$parent.createOrder = false"></i>
@@ -153,10 +153,11 @@
             <md-subheader class="md-no-sticky">Ajouter une sous commande</md-subheader>
             <md-divider></md-divider>
             <form>
-                <div ng-if="newOrder.brand">
+                <div ng-show="newOrder.brand">
                     <md-subheader class="md-no-sticky">Choisissez un magasin</md-subheader>
                     <md-divider></md-divider>
-                    <md-radio-group ng-change="$parent.newSubOrder.store = parseJson(selectedStore)"
+                    <md-radio-group ng-change="newSubOrder.store = parseJson(selectedStore);
+                    viewStoreDetail = false"
                             ng-model="selectedStore">
                         <md-radio-button ng-repeat="store in filtredStores =(stores | filter: newOrder.brand.name)"
                                          value="{{store}}"
@@ -164,17 +165,19 @@
                     </md-radio-group>
                     <a class="md-button md-primary md-raised md-default-theme"
                        ng-show="selectedStore.length > 0 && !viewStoreDetail"
-                       ng-click="copyStore($parent.newSubOrder.store); $parent.viewStoreDetail = true">
+                       ng-click="copyStore(newSubOrder.store); viewStoreDetail = true;
+                       createStore = false">
                         Voir / modifier les details du magasin
                     </a>
                     <a class="md-button md-primary md-raised md-default-theme"
                        ng-show="!viewStoreDetail"
-                       ng-click="copyStore($parent.newSubOrder.store); $parent.viewStoreDetail = true">
+                       ng-click="newSubOrder.store.newStore = {};
+                       viewStoreDetail = true; selectedStore = false; createStore = true">
                         Ajouter un magasin
                     </a>
                     <a class="md-button md-primary md-raised md-default-theme"
-                       ng-if="viewStoreDetail"
-                       ng-click="removeCopyStore(newSubOrder.store); $parent.viewStoreDetail = false">
+                       ng-show="viewStoreDetail"
+                       ng-click="removeCopyStore(newSubOrder.store); viewStoreDetail = false">
                         Cacher les details du magasin
                     </a>
                 </div>
@@ -204,7 +207,7 @@
                                      md-selected-item-change="selectedItemChange(area)"
                                      md-items="area in querySearch(searchArea)"
                                      md-item-text="area.name"
-                                     md-floating-label="Enseigne (cliquez pour valider votre choix)">
+                                     md-floating-label="Région (cliquez pour valider votre choix)">
                         <md-item-template>
                             <span md-highlight-text="searchArea" md-highlight-flags="^i">{{area.name}}</span>
                         </md-item-template>
@@ -244,15 +247,17 @@
                         <label>Nombre de moteurs</label>
                         <input type="number" ng-model="newSubOrder.store.newStore.enginesNumber">
                     </md-input-container>
-                    <a class="md-button md-primary md-raised ma-default-theme"
+                    <a class="md-button md-primary md-raised md-default-theme"
+                       ng-show="createStore == false"
                        ng-click="refactorStore(newSubOrder.store); viewStoreDetail = false">
                         Valider
                     </a>
-                    <a class="md-button md-primary md-raised ma-default-theme"
+                    <a class="md-button md-primary md-raised md-default-theme"
+                       ng-show="createStore == true"
                        ng-click="addNewStore(newSubOrder.store); viewStoreDetail = false">
                         Créer
                     </a>
-                    <a class="md-button md-warn md-raised ma-default-theme"
+                    <a class="md-button md-warn md-raised md-default-theme"
                        ng-click="removeCopyStore(newSubOrder.store); viewStoreDetail = false">
                         Annuler
                     </a>

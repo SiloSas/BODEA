@@ -30,7 +30,8 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         }); // specify primary color, all
     // other color intentions will be inherited
     // from default
-}).controller('CommandesCtrl', function ($scope, $timeout, OrdersFactory, BrandFactory, StoresFactory, $log, $filter) {
+}).controller('CommandesCtrl', function ($scope, $timeout, OrdersFactory, BrandFactory, StoresFactory, $log,
+                                         $filter, AreaFactory) {
         $scope.orders = [];
         OrdersFactory.getOrders().then(function (orders) {
             $scope.orders = orders;
@@ -38,6 +39,14 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         StoresFactory.getStores().then(function (stores) {
             $scope.stores = stores;
         });
+    AreaFactory.getAreas().then(function (areas) {
+        $scope.areas = areas.split(/, +/g).map( function (area) {
+            return {
+                value: area.toLowerCase(),
+                name: area
+            };
+        })
+    });
         $scope.limit = 20;
         $scope.parseJson = function (string) {
             return JSON.parse(string);
@@ -56,13 +65,6 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                 })
             }, 0)
         };
-        $scope.addNewStore = function (store) {
-            $timeout(function () {
-                $scope.$apply(function () {
-                    store.newStore = {};
-                })
-            }, 0)
-        };
         $scope.removeCopyStore = function (store) {
             $timeout(function () {
                 $scope.$apply(function () {
@@ -73,8 +75,12 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         $scope.refactorStore = function (store) {
             $timeout(function () {
                 $scope.$apply(function () {
-                    $filter('filter')($scope.stores, store.id, 'id')[0] = angular.copy(store.newStore);
-                    store = angular.copy(store.newStore);
+                    for (var i = 0; i < $scope.stores.length; i++) {
+                        if ($scope.stores[i].id == store.id) {
+                            $scope.stores[i] = angular.copy(store.newStore);
+                            store = angular.copy(store.newStore);
+                        }
+                    }
                 })
             }, 0);
         };
@@ -87,13 +93,21 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
                 s4() + '-' + s4() + s4() + s4();
         }
+        $scope.createNewStore = function (store) {
+            $timeout(function () {
+                $scope.$apply(function () {
+                    store.newStore = {brand: $scope.newOrder.brand};
+                })
+            }, 0);
+        };
         $scope.addNewStore = function (store) {
             $timeout(function () {
                 $scope.$apply(function () {
-                    store.id = guid();
-                    store.brand = $scope.newOrder.brand;
-                    $scope.store.push(store);
                     store = angular.copy(store.newStore);
+                    store.brand = $scope.newOrder.brand;
+                    store.id = guid();
+                    $scope.stores.push(store);
+                    $scope.selectedStore = store;
                 })
             });
         };
@@ -164,12 +178,24 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
     $scope.querySearchBrand   = querySearchBrand;
     $scope.selectedBrandChange = selectedBrandChange;
     $scope.searchTextChange   = searchTextChange;
+    $scope.querySearch  = querySearch;
+    $scope.selectedItemChange = selectedItemChange;
 
     function querySearchBrand (query) {
         if ($scope.brands.filter( createFilterFor(query)).length == 0) {
             $scope.brands.push({name: query, value: query.toLowerCase()});
         }
         return query ? $scope.brands.filter( createFilterFor(query) ) : $scope.brands;
+    }
+    function querySearch (query) {
+        if ($scope.areas.filter( createFilterFor(query)).length == 0) {
+            $scope.areas.push({name: query, value: query.toLowerCase()});
+        }
+        return query ? $scope.areas.filter( createFilterFor(query) ) : $scope.areas;
+    }
+    function selectedItemChange(item) {
+        $log.info('Item changed to ' + JSON.stringify(item));
+        //$scope.stores[index].area = item;
     }
     function searchTextChange(text) {
         $log.info('Text changed to ' + text);

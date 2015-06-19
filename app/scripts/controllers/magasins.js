@@ -66,7 +66,7 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
         if ($scope.areas.filter( createFilterFor(query)).length == 0) {
             $scope.areas.push({name: query, value: query.toLowerCase()});
         }
-        return query ? $scope.brands.filter( createFilterFor(query) ) : $scope.brands;
+        return query ? $scope.areas.filter( createFilterFor(query) ) : $scope.areas;
     }
     function searchTextChange(text) {
         $log.info('Text changed to ' + text);

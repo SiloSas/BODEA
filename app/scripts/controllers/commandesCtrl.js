@@ -30,13 +30,18 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         }); // specify primary color, all
     // other color intentions will be inherited
     // from default
-}).controller('CommandesCtrl', function ($scope, $timeout, OrdersFactory) {
+}).controller('CommandesCtrl', function ($scope, $timeout, OrdersFactory, BrandFactory, StoresFactory, $log, $filter) {
         $scope.orders = [];
         OrdersFactory.getOrders().then(function (orders) {
             $scope.orders = orders;
         });
+        StoresFactory.getStores().then(function (stores) {
+            $scope.stores = stores;
+        });
         $scope.limit = 20;
-
+        $scope.parseJson = function (string) {
+            return JSON.parse(string);
+        };
         $scope.copyCommande = function (order) {
             $timeout(function () {
                 $scope.$apply(function () {
@@ -46,7 +51,28 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         };
 
         $scope.refactorCommande = function (order) {
-            order = order.newOrder;
+            $timeout(function () {
+                $scope.$apply(function () {
+                    order = angular.copy(order.newUser);
+                })
+            }, 0);
+        };
+
+        $scope.newOrder = {subOrders: [], state: 1};
+        $scope.newSubOrder = {};
+        $scope.addNewSubOrder = function () {
+            if ($scope.newSubOrder != {}) {
+                $scope.newOrder.subOrders.push($scope.newSubOrder);
+                $scope.newSubOrder = {};
+            }
+        };
+        $scope.addOrder = function () {
+            $scope.orders.push($scope.newOrder);
+            $scope.newOrder = {subOrders: [], state: 1};
+        };
+
+        $scope.addImg = function () {
+            //uploadImg
         };
 
         $scope.changeState = function (order) {
@@ -76,7 +102,42 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
 
         $scope.remove = function (index) {
             $scope.orders.splice(index, 1)
-        }
+        };
 
+    BrandFactory.getBrands().then(function (brands) {
+        $scope.brands = brands.map( function (brand) {
+            return {
+                value: brand.name.toLowerCase(),
+                name: brand.name
+            };
+        })
+    });
+
+    $scope.querySearchBrand   = querySearchBrand;
+    $scope.selectedBrandChange = selectedBrandChange;
+    $scope.searchTextChange   = searchTextChange;
+
+    function querySearchBrand (query) {
+        if ($scope.brands.filter( createFilterFor(query)).length == 0) {
+            $scope.brands.push({name: query, value: query.toLowerCase()});
+        }
+        return query ? $scope.brands.filter( createFilterFor(query) ) : $scope.brands;
+    }
+    function searchTextChange(text) {
+        $log.info('Text changed to ' + text);
+    }
+    function selectedBrandChange(item) {
+        var brandOrders = $filter('filter')($scope.orders, item.name, 'brand');
+        var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
+        $scope.newOrder.id = item.name.substring(0, 1) + (parseInt(lastId.replace(/[^0-9.]/g, ''))+1);
+        $log.info('Item changed to ' + JSON.stringify(item));
+        //$scope.stores[index].area = item;
+    }
+    function createFilterFor(query) {
+        var lowercaseQuery = angular.lowercase(query);
+        return function filterFn(area) {
+            return (area.value.indexOf(lowercaseQuery) === 0);
+        };
+    }
 
     });

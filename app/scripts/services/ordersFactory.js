@@ -9,9 +9,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http) {
                 $http.get('scripts/object.json').success(function (object) {
                     factory.orders = [];
                     function pushStore (element) {
-                        console.log(element.orders)
                         var numberOrders = element.orders.length;
-                        console.log(numberOrders, element.brand)
                         for (var j = 0; j < numberOrders; j++) {
                             element.orders[j].brand = element.brand;
                             element.orders[j].state = Math.floor((Math.random() * 5) + 1);

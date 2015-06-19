@@ -2,6 +2,7 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
                                                              StoresFactory) {
     UsersFactory.getUsers().then(function (users) {
         $scope.users = users;
+        console.log(users)
     });
     StoresFactory.getStores().then(function (stores) {
         $scope.stores = stores;
@@ -42,7 +43,6 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     };
 
     $scope.refactorUser = function (user) {
-        console.log(user);
         $timeout(function () {
             $scope.$apply(function () {
                 user = angular.copy(user.newUser);
@@ -62,11 +62,10 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     $scope.newUser = {isActive: true, stores: []};
     $scope.addUser = function () {
         $scope.users.push($scope.newUser);
-        $scope.newUser = {}
+        $scope.newUser = {isActive: true, stores: []};
     };
 
     BrandFactory.getBrands().then(function (brands) {
-        console.log(brands)
         $scope.brands = brands.map( function (brand) {
             return {
                 value: brand.name.toLowerCase(),

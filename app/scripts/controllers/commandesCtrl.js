@@ -134,6 +134,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             }
         };
         $scope.addOrder = function () {
+            $scope.newOrder.date = new Date();
             $scope.orders.push($scope.newOrder);
             $scope.newOrder = {subOrders: [], state: 1};
         };
@@ -167,8 +168,21 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             $scope.predicate = predicate;
         };
 
-        $scope.remove = function (index) {
-            $scope.orders.splice(index, 1)
+        $scope.calculPriceAndWeight = function (subOrder) {
+             subOrder.price =
+                    subOrder.store.priceByM2 * (parseInt(subOrder.store.printFormat.split('*')[0]) *
+                    parseInt(subOrder.store.printFormat.split('*')[1]))*subOrder.numberItems;
+            subOrder.weight =
+                    subOrder.store.weight*subOrder.numberItems;
+            return subOrder
+        };
+
+        $scope.remove = function (order) {
+            for (var i = 0; i < $scope.orders.length; i++) {
+                if (order.id == $scope.orders[i].id) {
+                    $scope.orders.splice(i, 1)
+                }
+            }
         };
 
     BrandFactory.getBrands().then(function (brands) {
@@ -187,9 +201,6 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
     $scope.selectedItemChange = selectedItemChange;
 
     function querySearchBrand (query) {
-        if ($scope.brands.filter( createFilterFor(query)).length == 0) {
-            $scope.brands.push({name: query, value: query.toLowerCase()});
-        }
         return query ? $scope.brands.filter( createFilterFor(query) ) : $scope.brands;
     }
     function querySearch (query) {
@@ -208,7 +219,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
     function selectedBrandChange(item) {
         var brandOrders = $filter('filter')($scope.orders, item.name, 'brand');
         var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
-        $scope.newOrder.id = item.name.substring(0, 1) + (parseInt(lastId.replace(/[^0-9.]/g, ''))+1);
+        $scope.newOrder.id = item.name.substring(0, 2) + (parseInt(lastId.replace(/[^0-9.]/g, ''))+1);
         $log.info('Item changed to ' + JSON.stringify(item));
         //$scope.stores[index].area = item;
     }

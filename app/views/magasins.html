@@ -64,7 +64,7 @@
                          md-selected-item-change="selectedIBrandChange(brand)"
                          md-items="brand in querySearchBrand(searchBrand)"
                          md-item-text="brand.name"
-                         md-floating-label="Enseigne">
+                         md-floating-label="Enseigne (cliquez pour valider votre choix)">
             <md-item-template>
                 <span md-highlight-text="searchBrand" md-highlight-flags="^i">{{brand.name}}</span>
             </md-item-template>
@@ -97,7 +97,7 @@
                          md-selected-item-change="selectedItemChange(item)"
                          md-items="item in querySearch(searchText)"
                          md-item-text="item.name"
-                         md-floating-label="Région">
+                         md-floating-label="Région (cliquez pour valider votre choix)">
             <md-item-template>
                 <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.name}}</span>
             </md-item-template>
@@ -182,7 +182,7 @@
                         md-items="brand in querySearchBrand(searchBrand)"
                         md-item-text="brand.name"
                         md-min-length="0"
-                        md-floating-label="Enseigne">
+                        md-floating-label="Enseigne (cliquez pour valider votre choix)">
                     <md-item-template>
                         <span md-highlight-text="searchBrand" md-highlight-flags="^i">{{brand.name}}</span>
                     </md-item-template>
@@ -216,7 +216,7 @@
                         md-items="item in querySearch(searchText)"
                         md-item-text="item.name"
                         md-min-length="0"
-                        md-floating-label="Région">
+                        md-floating-label="Région (cliquez pour valider votre choix)">
                     <md-item-template>
                         <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.name}}</span>
                     </md-item-template>

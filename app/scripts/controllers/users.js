@@ -25,11 +25,11 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
             }
         }
     };
-    $scope.copyUser = function (index) {
-        $scope.users[index].newUser = {stores: []};
+    $scope.copyUser = function (user) {
+        user.newUser = {stores: []};
         $timeout(function () {
             $scope.$apply(function () {
-                $scope.users[index].newUser = angular.copy($scope.users[index]);
+                user.newUser = angular.copy(user);
             })
         }, 0)
     };
@@ -46,18 +46,18 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         $scope.users.splice(index, 1)
     };
 
-    $scope.newUser = {isActive: true};
-    $scope.newUser.stores = [];
+    $scope.newUser = {isActive: true, stores: []};
     $scope.addUser = function () {
         $scope.users.push($scope.newUser);
         $scope.newUser = {}
     };
 
     BrandFactory.getBrands().then(function (brands) {
-        $scope.brands = brands.split(/, +/g).map( function (brand) {
+        console.log(brands)
+        $scope.brands = brands.map( function (brand) {
             return {
-                value: brand.toLowerCase(),
-                name: brand
+                value: brand.name.toLowerCase(),
+                name: brand.name
             };
         })
     });
@@ -65,6 +65,7 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     $scope.querySearchBrand   = querySearchBrand;
     $scope.selectedBrandChange = selectedBrandChange;
     $scope.searchTextChange   = searchTextChange;
+
     function querySearchBrand (query) {
         if ($scope.brands.filter( createFilterFor(query)).length == 0) {
             $scope.brands.push({name: query, value: query});

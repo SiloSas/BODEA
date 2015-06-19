@@ -33,6 +33,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
 }).controller('CommandesCtrl', function ($scope, $timeout, OrdersFactory, BrandFactory, StoresFactory, $log,
                                          $filter, AreaFactory) {
         $scope.orders = [];
+        $scope.selectedStore = '';
         OrdersFactory.getOrders().then(function (orders) {
             $scope.orders = orders;
         });
@@ -48,8 +49,12 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         })
     });
         $scope.limit = 20;
-        $scope.parseJson = function (string) {
-            return JSON.parse(string);
+        $scope.getStoreById = function (id) {
+            for (var i = 0; i < $scope.stores.length; i++) {
+                if ($scope.stores[i].id == id) {
+                    return $scope.stores[i];
+                }
+            }
         };
         $scope.copyCommande = function (order) {
             $timeout(function () {
@@ -107,7 +112,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                     store.brand = $scope.newOrder.brand;
                     store.id = guid();
                     $scope.stores.push(store);
-                    $scope.selectedStore = store;
+                    $scope.selectedStore = store.id;
                 })
             });
         };

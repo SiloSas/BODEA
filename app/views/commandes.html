@@ -156,11 +156,11 @@
                 <div ng-show="newOrder.brand">
                     <md-subheader class="md-no-sticky">Choisissez un magasin</md-subheader>
                     <md-divider></md-divider>
-                    <md-radio-group ng-change="newSubOrder.store = parseJson(selectedStore);
+                    <md-radio-group ng-change="newSubOrder.store = getStoreById(selectedStore);
                     viewStoreDetail = false"
-                            ng-model="selectedStore">
+                            ng-model="$parent.selectedStore">
                         <md-radio-button ng-repeat="store in filtredStores =(stores | filter: newOrder.brand.name)"
-                                         value="{{store}}"
+                                         value="{{store.id}}"
                                          class="md-primary">{{store.name}}</md-radio-button>
                     </md-radio-group>
                     <a class="md-button md-primary md-raised md-default-theme"
@@ -172,7 +172,7 @@
                     <a class="md-button md-primary md-raised md-default-theme"
                        ng-show="!viewStoreDetail"
                        ng-click="newSubOrder.store.newStore = {};
-                       viewStoreDetail = true; selectedStore = false; createStore = true">
+                       viewStoreDetail = true; $parent.selectedStore = false; createStore = true">
                         Ajouter un magasin
                     </a>
                     <a class="md-button md-primary md-raised md-default-theme"

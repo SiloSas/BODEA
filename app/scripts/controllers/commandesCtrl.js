@@ -49,6 +49,54 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                 })
             }, 0)
         };
+        $scope.copyStore = function (store) {
+            $timeout(function () {
+                $scope.$apply(function () {
+                    store.newStore = angular.copy(store);
+                })
+            }, 0)
+        };
+        $scope.addNewStore = function (store) {
+            $timeout(function () {
+                $scope.$apply(function () {
+                    store.newStore = {};
+                })
+            }, 0)
+        };
+        $scope.removeCopyStore = function (store) {
+            $timeout(function () {
+                $scope.$apply(function () {
+                    store.newOrder = {};
+                })
+            }, 0)
+        };
+        $scope.refactorStore = function (store) {
+            $timeout(function () {
+                $scope.$apply(function () {
+                    $filter('filter')($scope.stores, store.id, 'id')[0] = angular.copy(store.newStore);
+                    store = angular.copy(store.newStore);
+                })
+            }, 0);
+        };
+        function guid() {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            }
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                s4() + '-' + s4() + s4() + s4();
+        }
+        $scope.addNewStore = function (store) {
+            $timeout(function () {
+                $scope.$apply(function () {
+                    store.id = guid();
+                    store.brand = $scope.newOrder.brand;
+                    $scope.store.push(store);
+                    store = angular.copy(store.newStore);
+                })
+            });
+        };
 
         $scope.refactorCommande = function (order) {
             $timeout(function () {
@@ -59,11 +107,11 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         };
 
         $scope.newOrder = {subOrders: [], state: 1};
-        $scope.newSubOrder = {};
+        $scope.newSubOrder = {store: {}};
         $scope.addNewSubOrder = function () {
-            if ($scope.newSubOrder != {}) {
+            if ($scope.newSubOrder != {store: {}}) {
                 $scope.newOrder.subOrders.push($scope.newSubOrder);
-                $scope.newSubOrder = {};
+                $scope.newSubOrder = {store: {}};
             }
         };
         $scope.addOrder = function () {

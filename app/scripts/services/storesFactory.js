@@ -8,8 +8,8 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http) {
             } else {
                 $http.get('scripts/object.json').success(function (object) {
                     factory.stores = [];
-                    function pushStore (object) {
-                        factory.stores = factory.stores.concat(object.stores)
+                    function pushStore (element) {
+                        factory.stores = factory.stores.concat(element.stores)
                     }
                     object.forEach(pushStore);
                     deferred.resolve(factory.stores);

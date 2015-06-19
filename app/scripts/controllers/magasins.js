@@ -11,16 +11,16 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
     StoresFactory.getStores().then(function (stores) {
         $scope.stores = stores;
     });
-    $scope.copyStore = function (index) {
+    $scope.copyStore = function (store) {
         $timeout(function () {
             $scope.$apply(function () {
-                $scope.stores[index].newStore = angular.copy($scope.stores[index]);
+                store.newStore = angular.copy(store);
             })
         }, 0)
     };
 
-    $scope.refactorStore = function (index) {
-        $scope.stores[index] = $scope.stores[index].newStore;
+    $scope.refactorStore = function (store) {
+        store = store.newStore;
     };
 
     $scope.remove = function (index) {
@@ -34,12 +34,12 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
     };
 
     BrandFactory.getBrands().then(function (brands) {
-        $scope.brands = brands.split(/, +/g).map( function (brand) {
+        $scope.brands = brands.map( function (brand) {
             return {
-                value: brand.toLowerCase(),
-                name: brand
+                value: brand.name.toLowerCase(),
+                name: brand.name
             };
-        })
+        });
     });
 
     AreaFactory.getAreas().then(function (areas) {
@@ -50,33 +50,30 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
             };
         })
     });
-    $scope.querySearch   = querySearch;
     $scope.querySearchBrand   = querySearchBrand;
+    $scope.querySearch  = querySearch;
+    $scope.selectedBrandChange = selectedBrandChange;
     $scope.selectedItemChange = selectedItemChange;
     $scope.searchTextChange   = searchTextChange;
-    // ******************************
-    // Internal methods
-    // ******************************
-    /**
-     * Search for states... use $timeout to simulate
-     * remote dataservice call.
-     */
-    function querySearch (query) {
-        console.log($scope.areas)
-        if ($scope.areas.filter( createFilterFor(query)).length == 0) {
-            $scope.areas.push({name: query, value: query});
-        }
-        return query ? $scope.areas.filter( createFilterFor(query) ) : $scope.areas;
-    }
+
     function querySearchBrand (query) {
-        console.log($scope.brands)
         if ($scope.brands.filter( createFilterFor(query)).length == 0) {
-            $scope.brands.push({name: query, value: query});
+            $scope.brands.push({name: query, value: query.toLowerCase()});
+        }
+        return query ? $scope.brands.filter( createFilterFor(query) ) : $scope.brands;
+    }
+    function querySearch (query) {
+        if ($scope.areas.filter( createFilterFor(query)).length == 0) {
+            $scope.areas.push({name: query, value: query.toLowerCase()});
         }
         return query ? $scope.brands.filter( createFilterFor(query) ) : $scope.brands;
     }
     function searchTextChange(text) {
         $log.info('Text changed to ' + text);
+    }
+    function selectedBrandChange(item) {
+        $log.info('Item changed to ' + JSON.stringify(item));
+        //$scope.stores[index].area = item;
     }
     function selectedItemChange(item) {
         $log.info('Item changed to ' + JSON.stringify(item));

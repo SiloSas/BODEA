@@ -144,7 +144,7 @@
             </div>
         </div>
         <md-list ng-if="refactor" class="md-whiteframe-z1">
-            <form ng-submit="refactorUser($index); $parent.refactor = false">
+            <form ng-submit="refactorUser(user); $parent.user = user.newUser; $parent.refactor = false">
                 <i class="md-warn relative fa fa-times-circle"
                    style="font-size: 30px;right: -15px;float: right;top: -22px;"
                    ng-click="$parent.refactor = false"></i>

@@ -26,16 +26,16 @@
       <file leaf-file-name="users.html" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/views/users.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.45233265" vertical-offset="3575" max-vertical-offset="4158">
-              <caret line="211" column="26" selection-start-line="211" selection-start-column="26" selection-end-line="211" selection-end-column="26" />
+            <state vertical-scroll-proportion="7.26572" vertical-offset="54" max-vertical-offset="4158">
+              <caret line="202" column="34" selection-start-line="186" selection-start-column="16" selection-end-line="202" selection-end-column="34" />
               <folding>
                 <element signature="n#style#0;n#i#0;n#form#0;n#div#1;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#md-checkbox#0;n#h3#0;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#i#0;n#form#0;n#md-list#0;n#div#0;n#div#2;n#!!top" expanded="true" />
-                <marker date="1434677148978" expanded="true" signature="222:378" placeholder="{...}" />
-                <marker date="1434677148978" expanded="true" signature="624:792" placeholder="{...}" />
-                <marker date="1434677148978" expanded="true" signature="1044:1218" placeholder="{...}" />
-                <marker date="1434677148978" expanded="true" signature="1469:1637" placeholder="{...}" />
+                <marker date="1434682150114" expanded="true" signature="222:378" placeholder="{...}" />
+                <marker date="1434682150114" expanded="true" signature="624:792" placeholder="{...}" />
+                <marker date="1434682150114" expanded="true" signature="1044:1218" placeholder="{...}" />
+                <marker date="1434682150114" expanded="true" signature="1469:1637" placeholder="{...}" />
               </folding>
             </state>
           </provider>
@@ -44,8 +44,8 @@
       <file leaf-file-name="users.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/scripts/controllers/users.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="162" max-vertical-offset="1674">
-              <caret line="21" column="8" selection-start-line="21" selection-start-column="8" selection-end-line="21" selection-end-column="8" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1207" max-vertical-offset="1908">
+              <caret line="83" column="71" selection-start-line="83" selection-start-column="71" selection-end-line="83" selection-end-column="71" />
               <folding />
             </state>
           </provider>
@@ -54,34 +54,26 @@
       <file leaf-file-name="magasins.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/views/magasins.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="779" max-vertical-offset="4896">
-              <caret line="66" column="87" selection-start-line="66" selection-start-column="87" selection-end-line="66" selection-end-column="87" />
+            <state vertical-scroll-proportion="-2.2988505" vertical-offset="3724" max-vertical-offset="4860">
+              <caret line="218" column="92" selection-start-line="207" selection-start-column="16" selection-end-line="223" selection-end-column="34" />
               <folding>
-                <marker date="1434669907889" expanded="true" signature="222:378" placeholder="{...}" />
-                <marker date="1434669907889" expanded="true" signature="626:800" placeholder="{...}" />
-                <marker date="1434669907889" expanded="true" signature="1054:1231" placeholder="{...}" />
-                <marker date="1434669907889" expanded="true" signature="1484:1655" placeholder="{...}" />
-                <marker date="1434669907889" expanded="true" signature="1909:2068" placeholder="{...}" />
+                <element signature="n#style#0;n#i#0;n#form#0;n#div#1;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#i#0;n#form#0;n#md-list#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+                <marker date="1434683385030" expanded="true" signature="222:378" placeholder="{...}" />
+                <marker date="1434683385030" expanded="true" signature="626:800" placeholder="{...}" />
+                <marker date="1434683385030" expanded="true" signature="1054:1231" placeholder="{...}" />
+                <marker date="1434683385030" expanded="true" signature="1484:1655" placeholder="{...}" />
+                <marker date="1434683385030" expanded="true" signature="1909:2068" placeholder="{...}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="usersFactory.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/scripts/services/usersFactory.js">
+      <file leaf-file-name="magasins.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/controllers/magasins.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="198" max-vertical-offset="414">
-              <caret line="11" column="18" selection-start-line="8" selection-start-column="16" selection-end-line="11" selection-end-column="18" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1643" max-vertical-offset="2286">
-              <caret line="117" column="49" selection-start-line="117" selection-start-column="49" selection-end-line="117" selection-end-column="49" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="937" max-vertical-offset="1674">
+              <caret line="60" column="57" selection-start-line="60" selection-start-column="57" selection-end-line="60" selection-end-column="71" />
               <folding />
             </state>
           </provider>
@@ -90,8 +82,34 @@
       <file leaf-file-name="object.json" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/scripts/object.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="46810" max-vertical-offset="47448">
-              <caret line="2630" column="1" selection-start-line="2630" selection-start-column="1" selection-end-line="2630" selection-end-column="1" />
+            <state vertical-scroll-proportion="-19.62963" vertical-offset="144388" max-vertical-offset="145026">
+              <caret line="8051" column="1" selection-start-line="8051" selection-start-column="1" selection-end-line="8051" selection-end-column="1" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="commandes.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/commandes.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.148148" vertical-offset="905" max-vertical-offset="3420">
+              <caret line="58" column="51" selection-start-line="58" selection-start-column="51" selection-end-line="58" selection-end-column="51" />
+              <folding>
+                <marker date="1434684497070" expanded="true" signature="213:363" placeholder="{...}" />
+                <marker date="1434684497070" expanded="true" signature="597:771" placeholder="{...}" />
+                <marker date="1434684497070" expanded="true" signature="1010:1166" placeholder="{...}" />
+                <marker date="1434684497070" expanded="true" signature="1399:1558" placeholder="{...}" />
+                <marker date="1434684497070" expanded="true" signature="2639:2870" placeholder="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="commandesCtrl.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/controllers/commandesCtrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="811" max-vertical-offset="1566">
+              <caret line="56" column="17" selection-start-line="56" selection-start-column="17" selection-end-line="56" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -100,28 +118,8 @@
       <file leaf-file-name="storesFactory.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/scripts/services/storesFactory.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="234" max-vertical-offset="486">
-              <caret line="13" column="46" selection-start-line="13" selection-start-column="46" selection-end-line="13" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="brandsFactrory.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/scripts/services/brandsFactrory.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="234" max-vertical-offset="486">
-              <caret line="13" column="46" selection-start-line="13" selection-start-column="46" selection-end-line="13" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ordersFactory.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/scripts/services/ordersFactory.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="108" max-vertical-offset="1962">
-              <caret line="7" column="20" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="486">
+              <caret line="11" column="70" selection-start-line="11" selection-start-column="70" selection-end-line="11" selection-end-column="70" />
               <folding />
             </state>
           </provider>
@@ -130,8 +128,18 @@
       <file leaf-file-name="areaFactory.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/scripts/services/areaFactory.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="342" max-vertical-offset="576">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="576">
               <caret line="19" column="45" selection-start-line="8" selection-start-column="31" selection-end-line="19" selection-end-column="45" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ordersFactory.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/services/ordersFactory.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.9" vertical-offset="0" max-vertical-offset="720">
+              <caret line="13" column="58" selection-start-line="13" selection-start-column="58" selection-end-line="13" selection-end-column="58" />
               <folding />
             </state>
           </provider>
@@ -157,20 +165,20 @@
         <option value="$PROJECT_DIR$/app/views/main.html" />
         <option value="$PROJECT_DIR$/app/scripts/services/commandeFactory.js" />
         <option value="$PROJECT_DIR$/app/scripts/services/orderseFactory.js" />
-        <option value="$PROJECT_DIR$/app/scripts/controllers/commandesCtrl.js" />
-        <option value="$PROJECT_DIR$/app/scripts/services/ordersFactory.js" />
-        <option value="$PROJECT_DIR$/app/views/commandes.html" />
         <option value="$PROJECT_DIR$/app/scripts/services/areaFactory.js" />
-        <option value="$PROJECT_DIR$/app/scripts/controllers/magasins.js" />
         <option value="$PROJECT_DIR$/app/index.html" />
         <option value="$PROJECT_DIR$/app/scripts/app.js" />
-        <option value="$PROJECT_DIR$/app/views/magasins.html" />
-        <option value="$PROJECT_DIR$/app/scripts/object.json" />
         <option value="$PROJECT_DIR$/app/scripts/services/usersFactory.js" />
-        <option value="$PROJECT_DIR$/app/scripts/services/storesFactory.js" />
         <option value="$PROJECT_DIR$/app/scripts/services/brandsFactrory.js" />
-        <option value="$PROJECT_DIR$/app/scripts/controllers/users.js" />
+        <option value="$PROJECT_DIR$/app/scripts/services/storesFactory.js" />
+        <option value="$PROJECT_DIR$/app/scripts/services/ordersFactory.js" />
+        <option value="$PROJECT_DIR$/app/scripts/object.json" />
         <option value="$PROJECT_DIR$/app/views/users.html" />
+        <option value="$PROJECT_DIR$/app/views/magasins.html" />
+        <option value="$PROJECT_DIR$/app/scripts/controllers/magasins.js" />
+        <option value="$PROJECT_DIR$/app/scripts/controllers/users.js" />
+        <option value="$PROJECT_DIR$/app/scripts/controllers/commandesCtrl.js" />
+        <option value="$PROJECT_DIR$/app/views/commandes.html" />
       </list>
     </option>
   </component>
@@ -796,13 +804,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/controllers/commandesCtrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="973" max-vertical-offset="1566">
-          <caret line="48" column="56" selection-start-line="48" selection-start-column="56" selection-end-line="48" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/controllers/main.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="109" max-vertical-offset="756">
@@ -817,71 +818,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/commandes.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0" vertical-offset="900" max-vertical-offset="3402">
-          <caret line="50" column="69" selection-start-line="50" selection-start-column="69" selection-end-line="50" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/controllers/magasins.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1" max-vertical-offset="1728">
-          <caret line="12" column="7" selection-start-line="10" selection-start-column="4" selection-end-line="12" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/magasins.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="779" max-vertical-offset="4896">
-          <caret line="66" column="87" selection-start-line="66" selection-start-column="87" selection-end-line="66" selection-end-column="87" />
-          <folding>
-            <marker date="1434669907889" expanded="true" signature="222:378" placeholder="{...}" />
-            <marker date="1434669907889" expanded="true" signature="626:800" placeholder="{...}" />
-            <marker date="1434669907889" expanded="true" signature="1054:1231" placeholder="{...}" />
-            <marker date="1434669907889" expanded="true" signature="1484:1655" placeholder="{...}" />
-            <marker date="1434669907889" expanded="true" signature="1909:2068" placeholder="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/object.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="46810" max-vertical-offset="47448">
-          <caret line="2630" column="1" selection-start-line="2630" selection-start-column="1" selection-end-line="2630" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1643" max-vertical-offset="2286">
           <caret line="117" column="49" selection-start-line="117" selection-start-column="49" selection-end-line="117" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/services/areaFactory.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="576">
-          <caret line="19" column="45" selection-start-line="8" selection-start-column="31" selection-end-line="19" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/services/ordersFactory.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="108" max-vertical-offset="1962">
-          <caret line="7" column="20" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/services/storesFactory.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="486">
-          <caret line="13" column="46" selection-start-line="13" selection-start-column="46" selection-end-line="13" selection-end-column="46" />
           <folding />
         </state>
       </provider>
@@ -902,26 +842,104 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/services/storesFactory.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="486">
+          <caret line="11" column="70" selection-start-line="11" selection-start-column="70" selection-end-line="11" selection-end-column="70" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/services/ordersFactory.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.9" vertical-offset="0" max-vertical-offset="720">
+          <caret line="13" column="58" selection-start-line="13" selection-start-column="58" selection-end-line="13" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/object.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.62963" vertical-offset="144388" max-vertical-offset="145026">
+          <caret line="8051" column="1" selection-start-line="8051" selection-start-column="1" selection-end-line="8051" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/services/areaFactory.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="576">
+          <caret line="19" column="45" selection-start-line="8" selection-start-column="31" selection-end-line="19" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/magasins.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.2988505" vertical-offset="3724" max-vertical-offset="4860">
+          <caret line="218" column="92" selection-start-line="207" selection-start-column="16" selection-end-line="223" selection-end-column="34" />
+          <folding>
+            <element signature="n#style#0;n#i#0;n#form#0;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#i#0;n#form#0;n#md-list#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+            <marker date="1434683385030" expanded="true" signature="222:378" placeholder="{...}" />
+            <marker date="1434683385030" expanded="true" signature="626:800" placeholder="{...}" />
+            <marker date="1434683385030" expanded="true" signature="1054:1231" placeholder="{...}" />
+            <marker date="1434683385030" expanded="true" signature="1484:1655" placeholder="{...}" />
+            <marker date="1434683385030" expanded="true" signature="1909:2068" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/controllers/magasins.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="937" max-vertical-offset="1674">
+          <caret line="60" column="57" selection-start-line="60" selection-start-column="57" selection-end-line="60" selection-end-column="71" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/controllers/users.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="162" max-vertical-offset="1674">
-          <caret line="21" column="8" selection-start-line="21" selection-start-column="8" selection-end-line="21" selection-end-column="8" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1207" max-vertical-offset="1908">
+          <caret line="83" column="71" selection-start-line="83" selection-start-column="71" selection-end-line="83" selection-end-column="71" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/controllers/commandesCtrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="811" max-vertical-offset="1566">
+          <caret line="56" column="17" selection-start-line="56" selection-start-column="17" selection-end-line="56" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/commandes.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.148148" vertical-offset="905" max-vertical-offset="3420">
+          <caret line="58" column="51" selection-start-line="58" selection-start-column="51" selection-end-line="58" selection-end-column="51" />
+          <folding>
+            <marker date="1434684497070" expanded="true" signature="213:363" placeholder="{...}" />
+            <marker date="1434684497070" expanded="true" signature="597:771" placeholder="{...}" />
+            <marker date="1434684497070" expanded="true" signature="1010:1166" placeholder="{...}" />
+            <marker date="1434684497070" expanded="true" signature="1399:1558" placeholder="{...}" />
+            <marker date="1434684497070" expanded="true" signature="2639:2870" placeholder="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/views/users.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.45233265" vertical-offset="3575" max-vertical-offset="4158">
-          <caret line="211" column="26" selection-start-line="211" selection-start-column="26" selection-end-line="211" selection-end-column="26" />
+        <state vertical-scroll-proportion="7.26572" vertical-offset="54" max-vertical-offset="4158">
+          <caret line="202" column="34" selection-start-line="186" selection-start-column="16" selection-end-line="202" selection-end-column="34" />
           <folding>
             <element signature="n#style#0;n#i#0;n#form#0;n#div#1;n#!!top" expanded="true" />
             <element signature="n#style#0;n#md-checkbox#0;n#h3#0;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#i#0;n#form#0;n#md-list#0;n#div#0;n#div#2;n#!!top" expanded="true" />
-            <marker date="1434677148978" expanded="true" signature="222:378" placeholder="{...}" />
-            <marker date="1434677148978" expanded="true" signature="624:792" placeholder="{...}" />
-            <marker date="1434677148978" expanded="true" signature="1044:1218" placeholder="{...}" />
-            <marker date="1434677148978" expanded="true" signature="1469:1637" placeholder="{...}" />
+            <marker date="1434682150114" expanded="true" signature="222:378" placeholder="{...}" />
+            <marker date="1434682150114" expanded="true" signature="624:792" placeholder="{...}" />
+            <marker date="1434682150114" expanded="true" signature="1044:1218" placeholder="{...}" />
+            <marker date="1434682150114" expanded="true" signature="1469:1637" placeholder="{...}" />
           </folding>
         </state>
       </provider>

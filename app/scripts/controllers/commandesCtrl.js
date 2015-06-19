@@ -37,31 +37,31 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         });
         $scope.limit = 20;
 
-        $scope.copyCommande = function (index) {
+        $scope.copyCommande = function (order) {
             $timeout(function () {
                 $scope.$apply(function () {
-                    $scope.orders[index].newOrder = angular.copy($scope.orders[index]);
+                    order.newOrder = angular.copy(order);
                 })
             }, 0)
         };
 
-        $scope.refactorCommande = function (index) {
-            $scope.orders[index] = $scope.orders[index].newOrder;
+        $scope.refactorCommande = function (order) {
+            order = order.newOrder;
         };
 
-        $scope.changeState = function (index) {
+        $scope.changeState = function (order) {
             var isDelivered = true;
-            for (var i = 0; i < $scope.orders[index].subOrders.length; i++) {
-                if ($scope.orders[index].subOrders[i].delivered == false) {
+            for (var i = 0; i < order.subOrders.length; i++) {
+                if (order.subOrders[i].delivered == false) {
                     isDelivered = false
                 }
             }
             $timeout(function () {
                 $scope.$apply(function  () {
                     if (isDelivered == true) {
-                        $scope.orders[index].newOrder.state = 5;
+                        order.newOrder.state = 5;
                     } else {
-                        $scope.orders[index].newOrder.state = 4;
+                        order.newOrder.state = 4;
                     }
                 })
             }, 0);

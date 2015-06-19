@@ -6,96 +6,27 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http) {
             if (factory.orders != false) {
                 deferred.resolve(factory.orders)
             } else {
-                factory.orders = [
-                    {
-                        id: 1,
-                        brand: 'enseigne1545',
-                        subOrders: [
-                            {
-                                store: 'magasin2',
-                                numberItems: 10,
-                                deliveryAddress: 'rue fuse',
-                                deliveryDate: new Date(),
-                                price: 10,
-                                weight: 4.3,
-                                delivered: true
-                            },
-                            {
-                                store: 'magasin2',
-                                numberItems: 10,
-                                deliveryAddress: 'rue fuse',
-                                deliveryDate: new Date(),
-                                price: 10,
-                                weight: 4.3,
-                                delivered: true
+                $http.get('scripts/object.json').success(function (object) {
+                    factory.orders = [];
+                    function pushStore (element) {
+                        console.log(element.orders)
+                        var numberOrders = element.orders.length;
+                        console.log(numberOrders, element.brand)
+                        for (var j = 0; j < numberOrders; j++) {
+                            element.orders[j].brand = element.brand;
+                            element.orders[j].state = Math.floor((Math.random() * 5) + 1);
+                            var numberStores = element.stores.length;
+                            var numberSubOrders = element.orders[j].subOrders.length;
+                            for (var i = 0; i < numberSubOrders; i++) {
+                                element.orders[j].subOrders[i].store =
+                                    element.stores[Math.floor((Math.random() * numberStores) + 1)]
                             }
-                        ],
-                        numberItems: 20,
-                        weight: 8.6,
-                        price: 20,
-                        date: '10/11/11',
-                        state: 5,
-                        image : {name: 'image1', url: 'images/caroussel1.gif'}
-                    },
-                    {
-                        id: 3,
-                        brand: 'enseigne2',
-                        subOrders: [{
-                            store: 'magasin2',
-                            numberItems: 10,
-                            deliveryAddress: 'rue fuse',
-                            deliveryDate: new Date(),
-                            price: 10,
-                            weight: 4.3,
-                            delivered: true
-                        },
-                            {
-                                store: 'magasin2',
-                                numberItems: 10,
-                                deliveryAddress: 'rue fuse',
-                                price: 10,
-                                weight: 4.3,
-                                delivered: false
-                            }],
-                        numberItems: 20,
-                        weight: 8.6,
-                        price: 20,
-                        date: '10/11/11',
-                        state: 4,
-                        image : {name: 'image1', url: 'images/caroussel1.gif'}
-                    },
-                    {
-                        id: 2,
-                        brand: 'enseigne1',
-                        subOrders: [
-                            {
-                                store: 'magasin2',
-                                numberItems: 10,
-                                deliveryAddress: 'rue fuse',
-                                deliveryDate: new Date(),
-                                price: 10,
-                                weight: 4.3,
-                                delivered: false
-                            },
-                            {
-                                store: 'magasin2',
-                                numberItems: 10,
-                                deliveryAddress: 'rue fuse',
-                                deliveryDate: new Date(),
-                                price: 10,
-                                weight: 4.3,
-                                delivered: false
-                            }
-                        ],
-                        numberItems: 20,
-                        weight: 8.6,
-                        price: 20,
-                        date: '10/11/11',
-                        state: 2,
-                        image : {name: 'image1', url: 'images/caroussel1.gif'}
+                        }
+                        factory.orders = factory.orders.concat(element.orders)
                     }
-                ];
-                deferred.resolve(factory.orders)
+                    object.forEach(pushStore);
+                    deferred.resolve(factory.orders);
+                });
             }
             return deferred.promise
         }

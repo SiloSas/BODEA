@@ -12,9 +12,9 @@
         <div class="column md-whiteframe-z1">
             Enseigne
             <i class="fa"
-               ng-class="{'fa-chevron-down': predicate != 'brand' || (predicate == 'brand' && reverse == false),
-              'fa-chevron-up': predicate == 'brand' && reverse == true}"
-               ng-click="order('brand')"></i>
+               ng-class="{'fa-chevron-down': predicate != 'brand.name' || (predicate == 'brand.name' && reverse == false),
+              'fa-chevron-up': predicate == 'brand.name' && reverse == true}"
+               ng-click="order('brand.name')"></i>
         </div>
     </div>
     <div class="column medium-2 table-title">
@@ -52,15 +52,16 @@
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
             <h5 class="column medium-2">{{order.id}}</h5>
-            <h5 class="column medium-2">{{order.brand}}</h5>
+            <h5 class="column medium-2">{{order.brand.name}}</h5>
             <h5 class="column medium-2">{{order.date}}</h5>
             <div class="column medium-2">
                 <md-button class="md-fab md-mini"
+                           aria-label=" order.state"
                         ng-class="{'md-accent': order.state == 1, 'md-accent md-hue-1': order.state == 2,
                         'md-accent md-hue-2': order.state == 3, 'md-primary': order.state == 4,
                         'md-accent md-hue-3': order.state == 5}"></md-button></div>
             <h5><i class="column medium-2 pointer fa fa-pencil"
-               ng-click="copyCommande($index); refactor = true"></i></h5>
+               ng-click="copyCommande(order); refactor = true"></i></h5>
             <h5><i class="column medium-2 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove"></i></h5>
         </div>
         <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
@@ -75,7 +76,7 @@
            </div>
         </div>
         <md-list ng-if="refactor" class="md-whiteframe-z1">
-            <form ng-submit="refactorCommande($index); $parent.refactor = false">
+            <form ng-submit="refactorCommande(order); $parent.order = order.newOrder; $parent.refactor = false">
                 <i class="md-warn relative fa fa-times-circle"
                    style="  font-size: 30px;right: -15px;float: right;top: -22px;"
                    ng-click="$parent.refactor = false"></i>
@@ -141,16 +142,16 @@
                         </div>
                     </md-list-item>
                 </md-list>
-                <md-subheader ng-init="index = $index" class="md-no-sticky">Details de la commande</md-subheader>
+                <md-subheader class="md-no-sticky">Details de la commande</md-subheader>
                 <md-list ng-repeat="subOrder in order.subOrders">
                     <md-divider></md-divider>
                     <md-list-item>
                         <p class="column medium-4">Magasin</p>
-                        <p>{{subOrder.store}}</p>
+                        <p>{{subOrder.store.name}}</p>
                     </md-list-item>
                     <md-list-item>
                         <p class="column medium-4">Adresse de livraison</p>
-                        <p>{{subOrder.deliveryAddress}}</p>
+                        <p>{{subOrder.store.deliveryAddress}}</p>
                     </md-list-item>
                     <md-list-item>
                         <p class="column medium-4">Nombre de bâches</p>
@@ -167,7 +168,7 @@
                     <md-list-item ng-if="order.newOrder.state != 1 && order.newOrder.state != 2">
                         <p class="column medium-4">Livré</p>
                         <md-switch class="md-accent md-hue-3"
-                                   ng-change="changeState(index)"
+                                   ng-change="changeState($parent.order)"
                                    ng-model="subOrder.delivered"></md-switch>
                     </md-list-item>
                 </md-list>

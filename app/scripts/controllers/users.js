@@ -14,9 +14,16 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         $scope.predicate = predicate;
     };
     $scope.toggle = function (item, list) {
-        var idx = list.indexOf(item);
-        if (idx > -1) list.splice(idx, 1);
-        else list.push(item);
+        var idx = false;
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].id == item.id) {
+                list.splice(i, 1);
+                idx = true
+            }
+        }
+        if (idx == false) {
+            list.push(item);
+        }
     };
     $scope.exists = function (item, list) {
         for (var i = 0; i < list.length; i++) {
@@ -34,8 +41,14 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         }, 0)
     };
 
-    $scope.refactorUser = function (index) {
-        $scope.users[index] = $scope.users[index].newUser;
+    $scope.refactorUser = function (user) {
+        console.log(user);
+        $timeout(function () {
+            $scope.$apply(function () {
+                user = angular.copy(user.newUser);
+                console.log(user);
+            })
+        }, 0);
     };
 
     $scope.changeActiveUser = function (index) {
@@ -68,7 +81,7 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
 
     function querySearchBrand (query) {
         if ($scope.brands.filter( createFilterFor(query)).length == 0) {
-            $scope.brands.push({name: query, value: query});
+            $scope.brands.push({name: query, value: query.toLowerCase()});
         }
         return query ? $scope.brands.filter( createFilterFor(query) ) : $scope.brands;
     }

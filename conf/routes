@@ -1,0 +1,4 @@
+#GET         /                   controllers.Application.index
+GET         /authenticate/:login/:password       controllers.Application.authenticate(login: String, password: String)
+
+#GET         /assets/*file       controllers.Assets.at(path="/public", file)

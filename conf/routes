@@ -1,5 +1,10 @@
 #GET         /                   controllers.Application.index
-GET         /user/authenticate/:login/:password     controllers.Application.authenticate(login: String, password: String)
-POST        /user/save                              controllers.Application.saveUser(login: String, password: String)
 
-#GET         /assets/*file       controllers.Assets.at(path="/public", file)
+#USERS
+GET         /users/authenticate/:login/:password     controllers.Application.authenticate(login: String, password: String)
+POST        /users/save                              controllers.Application.saveUser(login: String, password: String)
+
+#STORES
+POST        /stores/save                                controllers.Application.saveStore(uuid: String, store: String)
+
+GET         /assets/*file       controllers.Assets.at(path="/public", file)

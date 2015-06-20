@@ -73,7 +73,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         $scope.removeCopyStore = function (store) {
             $timeout(function () {
                 $scope.$apply(function () {
-                    store.newOrder = {};
+                    store.newStore = {};
                 })
             }, 0)
         };
@@ -84,6 +84,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                         if ($scope.stores[i].id == store.id) {
                             $scope.stores[i] = angular.copy(store.newStore);
                             store = angular.copy(store.newStore);
+                            store.newStore = {};
                         }
                     }
                 })
@@ -120,7 +121,12 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         $scope.refactorCommande = function (order) {
             $timeout(function () {
                 $scope.$apply(function () {
-                    order = angular.copy(order.newUser);
+                    for (var i = 0; i < $scope.orders.length; i++) {
+                        if ($scope.orders[i].id == order.id) {
+                            $scope.orders[i] = angular.copy(order.newOrder);
+                            order = angular.copy(order.newOrder);
+                        }
+                    }
                 })
             }, 0);
         };
@@ -151,9 +157,9 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         ordersTotalCalculs()
     };
 
-    $scope.addNewSubOrder = function (subOrder) {
-        if (subOrder != {store: {}}) {
-            $timeout(function () {
+        $scope.addNewSubOrder = function (subOrder) {
+            if (subOrder != {store: {}}) {
+                $timeout(function () {
                     $scope.$apply(function () {
                         $scope.newOrder.subOrders.push(angular.copy(subOrder));
                         ordersTotalCalculs();
@@ -249,7 +255,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
     function selectedBrandChange(item) {
         var brandOrders = $filter('filter')($scope.orders, item.name, 'brand');
         var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
-        $scope.newOrder.id = item.name.substring(0, 2) + (parseInt(lastId.replace(/[^0-9.]/g, ''))+1);
+        $scope.newOrder.id = item.name.substring(0, 2).toUpperCase() + (parseInt(lastId.replace(/[^0-9.]/g, ''))+1);
         $log.info('Item changed to ' + JSON.stringify(item));
         //$scope.stores[index].area = item;
     }

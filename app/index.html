@@ -50,6 +50,19 @@
                             <md-button class="md-primary width100p margin0" ng-href="#/Historique">Historique</md-button>
                         </li>
                     </ul>
+                    <ul class="padding0 navAdmin">
+                        <li ng-class="{'active': active == '/mesCommandes'}">
+                            <md-button class="md-primary width100p margin0" ng-href="#/mesCommandes">mes Commandes</md-button>
+                        </li>
+                        <md-divider></md-divider>
+                        <li ng-class="{'active': active == '/Visuels'}">
+                            <md-button class="md-primary width100p margin0" ng-href="#/Visuels">Visuels</md-button>
+                        </li>
+                        <md-divider></md-divider>
+                        <li>
+                            <md-button class="md-primary width100p margin0" ng-href="#/Historique">Historique</md-button>
+                        </li>
+                    </ul>
                 </md-content>
             </md-sidenav>
             <md-content flex class="height100p">
@@ -111,12 +124,14 @@
         <script src="scripts/services/brandsFactrory.js"></script>
         <script src="scripts/services/areaFactory.js"></script>
         <script src="scripts/services/usersFactory.js"></script>
+        <script src="scripts/services/userFactory.js"></script>
         <script src="scripts/directives/contentView.js"></script>
         <script src="scripts/directives/fileReader.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/commandesCtrl.js"></script>
         <script src="scripts/controllers/magasins.js"></script>
         <script src="scripts/controllers/users.js"></script>
+        <script src="scripts/controllers/myOrders.js"></script>
         <!-- endbuild -->
 </body>
 </html>

@@ -18,5 +18,11 @@ dist
 /.project
 /RUNNING_PID
 /.settings
+.idea/bodea.iml.idea/libraries/bodea_node_modules.xml
+.idea/libraries/bodea_node_modules.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
 
     

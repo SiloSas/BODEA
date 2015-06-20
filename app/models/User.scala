@@ -24,21 +24,22 @@ object User {
 
   def verifyIdentity(user: User): Try[Boolean] = Try {
     DB.withConnection { implicit connection =>
-      SQL("SELECT exists(SELECT 1 FROM users WHERE login = {login} AND password = {password} LIMIT 1)")
-        .on(
-          'login -> user.login,
-          'password -> BCrypt.hashpw(user.password, BCrypt.gensalt()))
-        .as(scalar[Boolean].single)
+      SQL("SELECT * FROM users WHERE login = {login}")
+        .on('login -> user.login)
+        .as(userParser.singleOpt) match {
+        case Some(userFound: User) => BCrypt.checkpw(user.password, userFound.password)
+        case None => false
+      }
     }
   }
 
-  def save(user: User): Try[Long] = Try {
+  def save(user: User): Try[Option[Long]] = Try {
     DB.withConnection { implicit connection =>
-      SQL("""INSERT INTO users(login, password) VALUES {login}, {password}""")
+      SQL("""INSERT INTO users(login, password) VALUES ({login}, {password})""")
         .on(
           'login -> user.login,
-          'password -> user.password)
-        .as(scalar[Long].single)
+          'password -> BCrypt.hashpw(user.password, BCrypt.gensalt()))
+        .executeInsert()
     }
   }
 }

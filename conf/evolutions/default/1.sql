@@ -1,6 +1,7 @@
 # --- !Ups
 CREATE TABLE users (
   userId          SERIAL PRIMARY KEY,
+  userUUID        UUID NOT NULL,
   login           VARCHAR(255) NOT NULL,
   password        VARCHAR(255) NOT NULL,
   UNIQUE(login)
@@ -8,30 +9,34 @@ CREATE TABLE users (
 
 CREATE TABLE areas (
   areaId          SERIAL PRIMARY KEY,
-  area            TEXT NOT NULL
+  uuid            UUID NOT NULL,
+  object          TEXT NOT NULL
 );
 
 CREATE TABLE brands (
   brandId         SERIAL PRIMARY KEY,
-  brand           TEXT NOT NULL
+  uuid            UUID NOT NULL,
+  object          TEXT NOT NULL
 );
 
 CREATE TABLE stores (
   storeId          SERIAL PRIMARY KEY,
-  store            TEXT NOT NULL
+  uuid             UUID NOT NULL,
+  object           TEXT NOT NULL
+);
+
+CREATE TABLE images (
+  imageId          SERIAL PRIMARY KEY,
+  uuid             UUID NOT NULL,
+  object           TEXT NOT NULL
 );
 
 CREATE TABLE orders (
   orderId          SERIAL PRIMARY KEY,
-  order            TEXT NOT NULL
-);
-
-
-CREATE TABLE images (
-  imageId          SERIAL PRIMARY KEY,
-  image            TEXT NOT NULL
+  uuid             UUID NOT NULL,
+  object           TEXT NOT NULL
 );
 
 
 # --- !Downs
-DROP TABLE IF EXISTS users, areas, brands, stores, orders, images;
+DROP TABLE IF EXISTS users, areas, brands, stores, images, orders;

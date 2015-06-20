@@ -14,13 +14,17 @@ import scala.collection.mutable.ListBuffer
 import scala.util.Try
 
 object ModelsUtilities {
- def save(table: String, UUID: UUID, text: String): Try[Option[Long]] = Try {
+ def save(objectRequest: ObjectRequest): Try[Option[Long]] = Try {
+   val table = objectRequest.table
+
    DB.withConnection { implicit connection =>
-     SQL(s"""INSERT INTO $table VALUES ({UUID}, {text})""")
+     SQL(s"""INSERT INTO $table(uuid, object) VALUES ({UUID}, {objectString})""")
        .on(
-         'UUID -> UUID,
-         'text -> text)
+         'UUID -> UUID.fromString(objectRequest.uuid),
+         'objectString -> objectRequest.objectString)
        .executeInsert()
    }
  }
 }
+
+case class ObjectRequest(table: String, uuid: String, objectString: String)

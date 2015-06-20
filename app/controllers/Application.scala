@@ -3,7 +3,6 @@ package controllers
 import java.util.UUID
 
 import actors.AuthenticatorActor.AuthenticateRequest
-import actors.StoreActor.SaveStoreRequest
 import actors.UserActor.SaveUserRequest
 import akka.util.Timeout
 import play.api.http.Status
@@ -19,20 +18,21 @@ import play.api.Play.current
 import play.api.mvc._
 import akka.actor._
 import play.api.libs.functional.syntax._
+import services.ObjectRequest
 import scala.concurrent.Future
 import scala.language.postfixOps
 import play.api.mvc._
 import scala.concurrent.duration._
 import akka.pattern.ask
 
-import actors.{StoreActor, UserActor, AuthenticatorActor}
+import actors.{ModelActor, UserActor, AuthenticatorActor}
 
 object Application extends Controller {
   implicit val timeout = Timeout(5 seconds)
 
   val authenticatorActor = Akka.system.actorOf(AuthenticatorActor.props, "AuthenticatorActor")
   val userActor = Akka.system.actorOf(UserActor.props, "UserActor")
-  val storeActor = Akka.system.actorOf(StoreActor.props, "StoreActor")
+  val modelActor = Akka.system.actorOf(ModelActor.props, "ModelActor")
 
   def authenticate(login: String, password: String) = Action.async {
     (authenticatorActor ? AuthenticateRequest(login, password)).mapTo[String].map { message =>
@@ -47,9 +47,9 @@ object Application extends Controller {
     }
   }
 
-  def saveStore(uuid: String, store: String) = Action.async {
-    (storeActor ? SaveStoreRequest(uuid, store)).mapTo[String].map {
-      case failure if failure.contains("failure") => InternalServerError("saveStore: " + failure)
+  def saveModel(table: String, uuid: String, store: String) = Action.async {
+    (modelActor ? ObjectRequest(table, uuid, store)).mapTo[String].map {
+      case failure if failure.contains("failure") => InternalServerError("saveModel: " + failure)
       case successfulMessage => Ok(successfulMessage)
     }
   }

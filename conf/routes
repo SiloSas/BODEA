@@ -5,6 +5,6 @@ GET         /users/authenticate/:login/:password     controllers.Application.aut
 POST        /users/save                              controllers.Application.saveUser(login: String, password: String)
 
 #STORES
-POST        /stores/save                                controllers.Application.saveStore(uuid: String, store: String)
+POST        /models/save    controllers.Application.saveModel(table: String, uuid: String, objectString: String)
 
 GET         /assets/*file       controllers.Assets.at(path="/public", file)

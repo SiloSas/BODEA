@@ -127,10 +127,40 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
 
         $scope.newOrder = {subOrders: [], state: 1};
         $scope.newSubOrder = {store: {}};
-        $scope.addNewSubOrder = function () {
-            if ($scope.newSubOrder != {store: {}}) {
-                $scope.newOrder.subOrders.push($scope.newSubOrder);
-                $scope.newSubOrder = {store: {}};
+    $scope.cancelNewOrder = function () {
+        $scope.newOrder = {subOrders: [], state: 1};
+        $scope.newSubOrder = {store: {}};
+        $scope.selectedStore = false;
+    };
+    function ordersTotalCalculs() {
+        console.log($scope.newOrder.subOrders)
+        var subOrdersLength = $scope.newOrder.subOrders.length;
+        var newPrice = 0;
+        var newWeight = 0;
+        var newNumberItems = 0;
+        for (var i = 0; i < subOrdersLength; i++) {
+            newPrice = newPrice + $scope.newOrder.subOrders[i].price;
+            newWeight = newWeight + $scope.newOrder.subOrders[i].weight;
+            newNumberItems = newNumberItems + $scope.newOrder.subOrders[i].numberItems
+        }
+        $scope.newOrder.price = newPrice;
+        $scope.newOrder.weight = newWeight;
+        $scope.newOrder.numberItems = newNumberItems;
+    }
+    $scope.ordersTotalCalculs = function () {
+        ordersTotalCalculs()
+    };
+
+    $scope.addNewSubOrder = function (subOrder) {
+        if (subOrder != {store: {}}) {
+            $timeout(function () {
+                    $scope.$apply(function () {
+                        $scope.newOrder.subOrders.push(angular.copy(subOrder));
+                        ordersTotalCalculs();
+                        subOrder = {store: {}};
+                        return subOrder;
+                    })
+                }, 0)
             }
         };
         $scope.addOrder = function () {

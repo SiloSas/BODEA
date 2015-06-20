@@ -124,7 +124,7 @@
             <h5 class="column medium-2">{{user.brand.name}}</h5>
             <h3 class="column medium-2">
                 <md-checkbox style="margin: 0 0 0 50%"
-                             ng-change="changeActiveUser($index)"
+                             ng-change="changeActiveUser(user)"
                              ng-model="user.isActive" class="md-primary" aria-label="Actif">
                 </md-checkbox>
             </h3>
@@ -135,7 +135,7 @@
         <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
             <div class="float-left padding10">
                 Etes-vous sur de vouloir suprimer ce utilisateur ?
-                <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false; remove($index)">
+                <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false; remove(user)">
                     Oui
                 </md-button>
                 <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false">

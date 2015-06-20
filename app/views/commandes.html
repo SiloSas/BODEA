@@ -43,7 +43,7 @@
     <form ng-submit="addOrder(); $parent.createOrder = false">
         <i class="md-warn relative fa fa-times-circle"
            style="  font-size: 30px;right: -15px;float: right;top: -22px;"
-           ng-click="$parent.newSubOrder = {}; $parent.createOrder = false"></i>
+           ng-click="cancelNewOrder(); $parent.createOrder = false"></i>
         <md-subheader>Ajouter une commande</md-subheader>
         <md-divider></md-divider>
         <md-autocomplete flex required
@@ -79,21 +79,21 @@
             <md-subheader>Prix total</md-subheader>
             <md-divider></md-divider>
             <md-list-item>
-                <b>{{order.price}} €</b>
+                <b>{{newOrder.price}} €</b>
             </md-list-item>
         </md-list>
         <md-list>
             <md-subheader>Nombre total de baches</md-subheader>
             <md-divider></md-divider>
             <md-list-item>
-                <b>{{order.numberItems}}</b>
+                <b>{{newOrder.numberItems}}</b>
             </md-list-item>
         </md-list>
         <md-list>
             <md-subheader>Poid total</md-subheader>
             <md-divider></md-divider>
             <md-list-item>
-                <b>{{order.weight}}</b>
+                <b>{{newOrder.weight}}</b>
             </md-list-item>
         </md-list>
         <md-list>
@@ -130,23 +130,28 @@
             <md-divider></md-divider>
             <md-input-container>
                 <label>Magasin</label>
-                <input type="text" ng-model="subOrder.store.name">
+                <input type="text" ng-model="subOrder.store.name" disabled>
             </md-input-container>
             <md-input-container>
                 <label>Adresse de livraison</label>
-                <input type="text" ng-model="subOrder.store.deliveryAddress">
+                <input type="text" ng-model="subOrder.store.deliveryAddress" disabled>
             </md-input-container>
             <md-input-container>
                 <label>Nombre de bâches</label>
-                <input type="text" ng-model="subOrder.numberItems">
+                <input type="number"
+                       step="any"
+                       ng-change="subOrder = calculPriceAndWeight(subOrder); ordersTotalCalculs()"
+                       ng-model="subOrder.numberItems">
             </md-input-container>
             <md-input-container>
                 <label>Prix</label>
-                <input type="text" ng-model="subOrder.price">
+                <input type="number"
+                       step="any" ng-model="subOrder.price" ng-change="ordersTotalCalculs()">
             </md-input-container>
             <md-input-container>
                 <label>Poids</label>
-                <input type="text" ng-model="subOrder.weight">
+                <input type="number"
+                       step="any" ng-model="subOrder.weight" ng-change="ordersTotalCalculs()">
             </md-input-container>
         </md-list>
         <md-list>
@@ -286,14 +291,14 @@
                         <input type="number" step="any" ng-model="newSubOrder.weight">
                     </md-input-container>
                     <a class="md-button md-raised md-default-theme md-primary"
-                       ng-click="addNewSubOrder()">
+                       ng-click="newSubOrder = addNewSubOrder(newSubOrder);">
                         Ajouter la sous commande
                     </a>
                 </div>
             </form>
         </md-list>
         <md-button class="md-primary md-raised" ng-click="addOrder(); $parent.createOrder = false">Valider</md-button>
-        <md-button class="md-warn md-raised" ng-click="newSubOrder = {}; $parent.createOrder = false">Annuler</md-button>
+        <md-button class="md-warn md-raised" ng-click="cancelNewOrder(); $parent.createOrder = false">Annuler</md-button>
     </form>
 </md-list>
 <div class="column large-12" md-theme="commandeTheme"

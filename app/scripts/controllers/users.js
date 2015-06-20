@@ -43,20 +43,23 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     };
 
     $scope.refactorUser = function (user) {
-        $timeout(function () {
-            $scope.$apply(function () {
-                user = angular.copy(user.newUser);
-                console.log(user);
-            })
-        }, 0);
+        for (var i = 0; i < $scope.users.length; i++) {
+            if (user.id == $scope.users[i].id) {
+                $scope.users[i] = user.newUser
+            }
+        }
     };
 
-    $scope.changeActiveUser = function (index) {
-        //poste change user[index].isActive
+    $scope.changeActiveUser = function (user) {
+        //poste change user.isActive
     };
 
-    $scope.remove = function (index) {
-        $scope.users.splice(index, 1)
+    $scope.remove = function (user) {
+        for (var i = 0; i < $scope.users.length; i++) {
+            if (user.id == $scope.users[i].id) {
+                $scope.users.splice(i, 1)
+            }
+        }
     };
 
     $scope.newUser = {isActive: true, stores: []};

@@ -20,11 +20,19 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
     };
 
     $scope.refactorStore = function (store) {
-        store = store.newStore;
+        for (var i = 0; i < $scope.stores.length; i++) {
+            if (store.id == $scope.stores[i].id) {
+                $scope.stores[i] = store.newStore
+            }
+        }
     };
 
-    $scope.remove = function (index) {
-        $scope.stores.splice(index, 1)
+    $scope.remove = function (store) {
+        for (var i = 0; i < $scope.stores.length; i++) {
+            if (store.id == $scope.stores[i].id) {
+                $scope.stores.splice(i, 1)
+            }
+        }
     };
 
     $scope.newStore = {};

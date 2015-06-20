@@ -141,14 +141,14 @@
         <md-button class="md-warn md-raised" ng-click="$parent.createStore = false">Annuler</md-button>
     </form>
 </div>
-<div class="column large-12" ng-repeat="store in filteredStores = (stores | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
+<div class="column large-12 fade" ng-repeat="store in filteredStores = (stores | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
-            <h5 class="column medium-2">{{store.name}}</h5>
-            <h5 class="column medium-2">{{store.brand.name}}</h5>
-            <h5 class="column medium-2">{{store.contactName}}</h5>
-            <h5 class="column medium-2">{{store.area.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.name">{{store.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.brand.name">{{store.brand.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.contactName">{{store.contactName}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.area.name">{{store.area.name}}</h5>
             <h5 class="column medium-2">{{store.phone}}</h5>
             <h5><i class="column medium-1 pointer fa fa-pencil"
                    ng-click="copyStore(store); refactor = true"></i></h5>

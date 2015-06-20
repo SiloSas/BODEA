@@ -168,7 +168,7 @@
                             ng-model="$parent.selectedStore">
                         <md-radio-button ng-repeat="store in filtredStores =(stores | filter: newOrder.brand.name)"
                                          value="{{store.id}}"
-                                         class="md-primary">{{store.name}}</md-radio-button>
+                                         class="md-primary fade">{{store.name}}</md-radio-button>
                     </md-radio-group>
                     <a class="md-button md-primary md-raised md-default-theme"
                        ng-show="selectedStore.length > 0 && !viewStoreDetail"
@@ -301,13 +301,14 @@
         <md-button class="md-warn md-raised" ng-click="cancelNewOrder(); $parent.createOrder = false">Annuler</md-button>
     </form>
 </md-list>
-<div class="column large-12" md-theme="commandeTheme"
+<div class="column large-12 fade" md-theme="commandeTheme"
      ng-repeat="order in filteredOrders = (orders | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
             <h5 class="column medium-2">{{order.id}}</h5>
-            <h5 class="column medium-2">{{order.brand.name}}</h5>
+            <h5 class="column medium-2 pointer"
+                ng-click="$parent.$parent.filter = order.brand.name">{{order.brand.name}}</h5>
             <h5 class="column medium-2">{{order.date}}</h5>
             <div class="column medium-2">
                 <md-button class="md-fab md-mini"
@@ -398,7 +399,7 @@
                     </md-list-item>
                 </md-list>
                 <md-subheader class="md-no-sticky">Details de la commande</md-subheader>
-                <md-list ng-repeat="subOrder in order.subOrders">
+                <md-list ng-repeat="subOrder in order.subOrders" class="fade">
                     <md-divider></md-divider>
                     <md-list-item>
                         <p class="column medium-4">Magasin</p>

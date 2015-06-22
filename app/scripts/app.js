@@ -19,7 +19,8 @@ angular
     'ngSanitize',
     'ngTouch',
     'mm.foundation',
-    'ngMaterial'
+    'ngMaterial',
+    'chart.js'
   ])
   .config(function ($routeProvider) {
     $routeProvider
@@ -46,6 +47,10 @@ angular
       .when('/Visuels', {
         templateUrl: 'views/images.html',
         controller: 'ImagesCtrl'
+      })
+      .when('/Historique', {
+        templateUrl: 'views/historique.html',
+        controller: 'HistoriqueCtrl'
       })
       .otherwise({
         redirectTo: '/'

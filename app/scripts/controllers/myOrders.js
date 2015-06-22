@@ -1,10 +1,15 @@
 angular.module('bodeaApp').controller('MyOrdersCtrl', function ($scope, $rootScope, $timeout, UserFactory,
-                                                                AreaFactory, $log, $filter, $mdToast) {
+                                                                AreaFactory, $log, $filter, $mdToast, ImagesFactory,
+                                                                GuidFactory) {
 
     UserFactory.getUser().then(function (user) {
         $rootScope.user = user;
         $scope.newOrder = {subOrders: [], state: 0, brand: user.brand};
         $scope.newSubOrder = {store: {}};
+    });
+
+    ImagesFactory.getImages().then(function (images) {
+        $scope.images = images;
     });
 
     AreaFactory.getAreas().then(function (areas) {
@@ -32,6 +37,18 @@ angular.module('bodeaApp').controller('MyOrdersCtrl', function ($scope, $rootSco
         }, 0)
     };
 
+    /*$scope.addImg = function (image) {
+        image.id = GuidFactory();
+        ImagesFactory.postImage(image);
+    };*/
+    $scope.loadImg = function (id) {
+        var imagesLength = $scope.images.length;
+        for (var i = 0; i < imagesLength; i++) {
+            if ($scope.images[i].id == id) {
+                return $scope.images[i];
+            }
+        }
+    };
     $scope.copyOrder = function (order) {
         $timeout(function () {
             $scope.$apply(function () {

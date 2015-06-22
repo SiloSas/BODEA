@@ -20,7 +20,7 @@ import scala.util.{Success, Failure}
 object AuthenticatorActor {
   def props = Props[AuthenticatorActor]
   case class AuthenticationRequest[A](login: String, password: String)
-  case class AuthenticationResponse(authorized: Boolean, login: String, role: Option[String])
+  case class AuthenticationResponse(authorized: Boolean, login: String, role: Option[Int])
 }
 
 class AuthenticatorActor extends Actor {
@@ -28,7 +28,7 @@ class AuthenticatorActor extends Actor {
     case AuthenticationRequest(login: String, password: String) =>
       User.verifyIdentity(login, password) match {
         case Success(true) =>
-          sender ! AuthenticationResponse(authorized = true, login, Some("admin"))
+          sender ! AuthenticationResponse(authorized = true, login, Some(1))
         case Success(false) =>
           sender ! AuthenticationResponse(authorized = false, login, None)
         case failure =>
@@ -37,14 +37,16 @@ class AuthenticatorActor extends Actor {
   }
 }
 
-class AuthenticatedRequest[A](val username: Option[String], request: Request[A]) extends WrappedRequest[A](request)
+class AuthenticatedRequest[A](val username: Option[String], role: Option[Int], request: Request[A])
+  extends WrappedRequest[A](request)
 
 object Authenticated extends ActionBuilder[AuthenticatedRequest] {
   def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[SimpleResult]) = {
-    request.session.get("connected").map { username =>
-      block(new AuthenticatedRequest(Some(username), request))
-    } getOrElse {
-      block(new AuthenticatedRequest(None, request))
+    request.session.get("connected") match {
+      case Some(username) =>
+        block(new AuthenticatedRequest(Some(username), Some(request.session.get("role").get.toInt), request))
+      case None =>
+        block(new AuthenticatedRequest(None, None, request))
     }
   }
 }

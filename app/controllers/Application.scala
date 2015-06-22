@@ -45,15 +45,25 @@ object Application extends Controller {
 
   def authenticate(login: String, password: String) = Action.async {
     (authenticatorActor ? AuthenticationRequest(login, password)).mapTo[AuthenticationResponse].map {
-      case authorized if authorized.authorized => Ok("connected").withSession("connected" -> login)
-      case _ => Unauthorized("dommage")
+      case authenticationResponse if authenticationResponse.authorized =>
+        Ok("connected")
+          .withSession(
+            "connected" -> authenticationResponse.login,
+            "role" -> authenticationResponse.role.toString)
+      case _ =>
+        Unauthorized("Dommage")
     }
   }
 
-  def saveUser(uuid: String, login: String, password: String, role: Int) = Action.async {
-    (userActor ? SaveUserRequest(uuid: String, login, password, role)).mapTo[String].map {
-      case failure if failure.contains("failure") => InternalServerError("saveUser: " + failure)
-      case successfulMessage => Ok(successfulMessage)
+  def saveUser(uuid: String, login: String, password: String, role: Int) = Authenticated.async { request =>
+    request.username match {
+      case None =>
+        Future { Unauthorized("Unauthorized") }
+      case username =>
+        (userActor ? SaveUserRequest(uuid: String, login, password, role)).mapTo[String].map {
+          case failure if failure.contains("failure") => InternalServerError("saveUser: " + failure)
+          case successfulMessage => Ok(successfulMessage)
+        }
     }
   }
 

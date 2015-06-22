@@ -34,6 +34,7 @@ class UserActor extends Actor {
       } catch {
         case e: Exception => sender ! "wrong uuid"
       }
-    case _ => sender ! "unknown request"
+    case _ =>
+      Logger error "UserActor.receive: unknown request"
   }
 }

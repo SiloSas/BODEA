@@ -165,6 +165,10 @@ angular.module('bodeaApp').controller('MyOrdersCtrl', function ($scope, $rootSco
         }
     };
 
+    $scope.changeOrderState = function (order) {
+        //post refactor order
+    };
+
     $scope.addOrder = function (order) {
         if (order.subOrders.length > 0) {
             $timeout(function () {

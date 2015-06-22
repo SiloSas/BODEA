@@ -4,6 +4,7 @@ CREATE TABLE users (
   uuid            UUID NOT NULL,
   login           VARCHAR(255) NOT NULL,
   password        VARCHAR(255) NOT NULL,
+  role            INT NOT NULL,
   UNIQUE(login)
 );
 

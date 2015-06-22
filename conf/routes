@@ -1,8 +1,8 @@
-GET         /                   controllers.Application.index
+GET         /       controllers.Application.index
 
 #USERS
 GET         /users/authenticate/:login/:password     controllers.Application.authenticate(login: String, password: String)
-POST        /users/save                              controllers.Application.saveUser(uuid: String, login: String, password: String)
+POST        /users/save     controllers.Application.saveUser(uuid: String, login: String, password: String, role: Int)
 
 #MODELS
 GET         /models     controllers.Application.getModel(table: String, uuid: String)

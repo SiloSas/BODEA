@@ -18,15 +18,15 @@ import scala.util.{Success, Failure}
 
 object UserActor {
   def props = Props[UserActor]
-  case class SaveUserRequest(uuid: String, login: String, password: String)
+  case class SaveUserRequest(uuid: String, login: String, password: String, role: Int)
 }
 
 class UserActor extends Actor {
   def receive = {
-    case SaveUserRequest(uuid, login, password) =>
+    case SaveUserRequest(uuid, login, password, role) =>
       try {
         val uuidTyped = UUID.fromString(uuid)
-        User.save(User(uuidTyped, login, password)) match {
+        User.save(User(uuidTyped, login, password, role)) match {
           case Success(Some(index)) => sender ! "success"
           case Success(None) => sender ! "failure: user has not been created"
           case Failure(failure) => sender ! "failure: " + failure

@@ -50,8 +50,8 @@ object Application extends Controller {
     }
   }
 
-  def saveUser(uuid: String, login: String, password: String) = Action.async {
-    (userActor ? SaveUserRequest(uuid: String, login, password)).mapTo[String].map {
+  def saveUser(uuid: String, login: String, password: String, role: Int) = Action.async {
+    (userActor ? SaveUserRequest(uuid: String, login, password, role)).mapTo[String].map {
       case failure if failure.contains("failure") => InternalServerError("saveUser: " + failure)
       case successfulMessage => Ok(successfulMessage)
     }

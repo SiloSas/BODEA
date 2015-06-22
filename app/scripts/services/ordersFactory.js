@@ -13,8 +13,10 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http) {
                         for (var j = 0; j < numberOrders; j++) {
                             element.orders[j].brand = element.brand;
                             element.orders[j].state = Math.floor((Math.random() * 5) + 1);
-                            var newDate = new Date();
-                            element.orders[j].date = Math.floor((Math.random() * newDate) + (newDate - 6048000000));
+                            function randomDate(start, end) {
+                                return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+                            }
+                            element.orders[j].date = randomDate(new Date(2015, 4, 4), new Date());
                             var numberStores = element.stores.length;
                             var numberSubOrders = element.orders[j].subOrders.length;
                             for (var i = 0; i < numberSubOrders; i++) {

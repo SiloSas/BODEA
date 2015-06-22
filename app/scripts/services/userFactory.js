@@ -88,7 +88,7 @@ angular.module('bodeaApp').factory('UserFactory', function ($q, $http) {
                                "url": "images/caroussel1.gif",
                                "name": "image1"
                            },
-                           "state": 3,
+                           "state": 0,
                            "date": "Mon May 15 2006 06:44:39 GMT+0000 (UTC)",
                            "price": 276.3894,
                            "weight": 2.386,

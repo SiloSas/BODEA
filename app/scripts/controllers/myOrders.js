@@ -1,9 +1,9 @@
 angular.module('bodeaApp').controller('MyOrdersCtrl', function ($scope, $rootScope, $timeout, UserFactory,
-                                                                AreaFactory, $log, $filter) {
+                                                                AreaFactory, $log, $filter, $mdToast) {
 
     UserFactory.getUser().then(function (user) {
         $rootScope.user = user;
-        $scope.newOrder = {subOrders: [], state: 1, brand: user.brand};
+        $scope.newOrder = {subOrders: [], state: 0, brand: user.brand};
         $scope.newSubOrder = {store: {}};
     });
 
@@ -104,7 +104,6 @@ angular.module('bodeaApp').controller('MyOrdersCtrl', function ($scope, $rootSco
     };
 
     function ordersTotalCalculs() {
-        console.log($scope.newOrder.subOrders)
         var subOrdersLength = $scope.newOrder.subOrders.length;
         var newPrice = 0;
         var newWeight = 0;
@@ -159,6 +158,7 @@ angular.module('bodeaApp').controller('MyOrdersCtrl', function ($scope, $rootSco
                     order.newOrder.subOrders.push(angular.copy(subOrder));
                     subOrder = {store: {}};
                     $scope.addSubOrder = false;
+                    order.newOrder = $scope.orderTotalCalculs(order.newOrder);
                     return subOrder;
                 })
             }, 0)
@@ -166,22 +166,43 @@ angular.module('bodeaApp').controller('MyOrdersCtrl', function ($scope, $rootSco
     };
 
     $scope.addOrder = function (order) {
-        $timeout(function () {
-            $rootScope.$apply(function () {
-                var lastId = $filter('orderBy')($rootScope.user.orders, 'id', true)[0].id;
-                order.id = $rootScope.user.brand.name.substring(0, 2).toUpperCase() + (parseInt(lastId.replace(/[^0-9.]/g, ''))+1);
-                order.date = new Date();
-                $rootScope.user.orders.push(order);
-                $scope.newOrder = {subOrders: [], state: 1};
-                $scope.newSubOrder = {store: {}};
-            })
-        }, 0)
+        if (order.subOrders.length > 0) {
+            $timeout(function () {
+                $rootScope.$apply(function () {
+                    $scope.createOrder = false;
+                    var lastId = $filter('orderBy')($rootScope.user.orders, 'id', true)[0].id;
+                    order.id = $rootScope.user.brand.name.substring(0, 2).toUpperCase() + (parseInt(lastId.replace(/[^0-9.]/g, '')) + 1);
+                    order.date = new Date();
+                    $rootScope.user.orders.push(order);
+                    $scope.newOrder = {subOrders: [], state: 0};
+                    $scope.newSubOrder = {store: {}};
+                })
+            }, 0)
+        } else  {
+            $scope.toastPosition = {
+                bottom: false,
+                top: true,
+                left: false,
+                right: true
+            };
+            $scope.getToastPosition = function() {
+                return Object.keys($scope.toastPosition)
+                    .filter(function(pos) { return $scope.toastPosition[pos]; })
+                    .join(' ');
+            };
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('Veuillez entrer au moins une sous commande')
+                    .position($scope.getToastPosition())
+                    .hideDelay(3000)
+            );
+        }
     };
 
     $scope.cancelNewOrder = function () {
         $timeout(function () {
             $rootScope.$apply(function () {
-                $scope.newOrder = {subOrders: [], state: 1};
+                $scope.newOrder = {subOrders: [], state: 0};
                 $scope.newSubOrder = {store: {}};
             })
         }, 0)

@@ -48,6 +48,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             };
         })
     });
+
         $scope.limit = 20;
         $scope.getStoreById = function (id) {
             for (var i = 0; i < $scope.stores.length; i++) {

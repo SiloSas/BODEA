@@ -127,6 +127,7 @@
         </md-list>
         <md-subheader class="md-no-sticky">Details de la commande</md-subheader>
         <md-list ng-repeat="subOrder in newOrder.subOrders">
+            <i class="pointer fa fa-times" ng-click="newOrder.subOrders.splic($index, 1); ordersTotalCalculs()"></i>
             <md-divider></md-divider>
             <md-input-container>
                 <label>Magasin</label>
@@ -309,7 +310,7 @@
             <h5 class="column medium-2">{{order.id}}</h5>
             <h5 class="column medium-2 pointer"
                 ng-click="$parent.$parent.filter = order.brand.name">{{order.brand.name}}</h5>
-            <h5 class="column medium-2">{{order.date}}</h5>
+            <h5 class="column medium-2">{{order.date | date:'MM/dd/yyyy'}}</h5>
             <div class="column medium-2">
                 <md-button class="md-fab md-mini"
                            aria-label=" order.state"

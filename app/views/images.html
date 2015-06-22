@@ -1,0 +1,88 @@
+<div class="column large-12 table-title-container">
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1">
+            Theme
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'theme' || (predicate == 'theme' && reverse == false),
+              'fa-chevron-up': predicate == 'theme' && reverse == true}"
+               ng-click="order('theme')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1">
+            Nom
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'name' || (predicate == 'name' && reverse == false),
+              'fa-chevron-up': predicate == 'name' && reverse == true}"
+               ng-click="order('name')"></i>
+        </div>
+    </div>
+    <div class="column medium-4 table-title">
+        <div class="column md-whiteframe-z1">
+            Image
+        </div>
+    </div>
+    <md-button class="md-primary md-raised column medium-4 marginLeft0 marginRight0" ng-click="addImage = true">ajouter une image</md-button>
+</div>
+<div ng-show="addImage" class="ng-whiteframe-z1">
+    <form ng-submit="addNewImage(); addImage = false">
+        <md-input-container class="column medium-4">
+            <label>Theme</label>
+            <input ng-model="newImage.theme" required="">
+        </md-input-container>
+        <md-input-container class="column medium-4">
+            <label>Nom</label>
+            <input ng-model="newImage.name" required="">
+        </md-input-container>
+        <md-input-container>
+            <label></label>
+            <input type="file"
+                   value="Charger une image"
+                   ng-model="newImage.url" app-filereader required="">
+        </md-input-container>
+        <md-button class="md-primary" type="submit">Valider</md-button>
+        <md-button  class="md-primary" ng-click="newImage={}; addImage = false">Annuler</md-button >
+    </form>
+</div>
+<md-list class="column" ng-repeat="image in images">
+    <md-divider class="marginBottom10"></md-divider>
+    <md-list-item ng-show="!refactor" class="center">
+        <h3 class="column medium-2">{{image.theme}}</h3>
+        <h3 class="column medium-2">{{image.name}}</h3>
+        <img ng-src="{{image.url}}" class="column medium-4">
+        <h5 class="column medium-2"><i class="pointer fa fa-pencil"
+               ng-click="copyImage(image); refactor = true"></i></h5>
+        <h5 class="column medium-2"><i class="pointer fa fa-trash"  ng-click="confirmRemove = !confirmRemove"></i></h5>
+        <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
+            <div class="float-left padding10">
+                Etes-vous sur de vouloir suprimer cette commande ?
+                <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false; remove(image)">
+                    Oui
+                </md-button>
+                <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false">
+                    Non
+                </md-button>
+            </div>
+        </div>
+    </md-list-item>
+    <md-list-item ng-show="refactor" class="ng-whiteframe-z1">
+        <form ng-submit="refactorImage(image); refactor = false">
+            <md-input-container class="column medium-4">
+                <label>Theme</label>
+                <input ng-model="image.newImage.theme" required="">
+            </md-input-container>
+            <md-input-container class="column medium-4">
+                <label>Nom</label>
+                <input ng-model="image.newImage.name" required="">
+            </md-input-container>
+            <md-input-container>
+                <label></label>
+                <input type="file"
+                       value="Charger une image"
+                       ng-model="image.newImage.url" app-filereader>
+            </md-input-container>
+            <md-button class="md-primary" type="submit">Valider</md-button>
+            <md-button class="md-primary" ng-click="image.newImage={}; refactor = false">Annuler</md-button>
+        </form>
+    </md-list-item>
+</md-list>

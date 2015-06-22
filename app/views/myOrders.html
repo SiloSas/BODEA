@@ -276,7 +276,7 @@
                 <p class="margin0" ng-repeat="subOrder in order.subOrders"
                       ng-click="$parent.$parent.$parent.filter = subOrder.store.name">{{subOrder.store.name}}</p>
             </h5>
-            <h5 class="column medium-2">{{order.date}}</h5>
+            <h5 class="column medium-2">{{order.date | date:'MM/dd/yyyy'}}</h5>
             <div class="column medium-2">
                 <md-button ng-show="order.state != 0" class="md-fab md-mini"
                            aria-label="order.state"

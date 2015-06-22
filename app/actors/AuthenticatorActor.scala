@@ -33,19 +33,18 @@ class AuthenticatorActor extends Actor {
           sender ! AuthenticationResponse(authorized = false, login, None)
         case failure =>
           Logger error "authenticator actor failure while verifying identity: " + failure
-//          sender ! failure//AuthenticationResponse(success = false, authorized = false, login, None)
       }
   }
 }
 
-class AuthenticatedRequest[A](val username: String, request: Request[A]) extends WrappedRequest[A](request)
+class AuthenticatedRequest[A](val username: Option[String], request: Request[A]) extends WrappedRequest[A](request)
 
 object Authenticated extends ActionBuilder[AuthenticatedRequest] {
   def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[SimpleResult]) = {
     request.session.get("connected").map { username =>
-      block(new AuthenticatedRequest(username, request))
+      block(new AuthenticatedRequest(Some(username), request))
     } getOrElse {
-      Future { Unauthorized }
+      block(new AuthenticatedRequest(None, request))
     }
   }
 }

@@ -18,7 +18,7 @@ import play.api.Play.current
 import play.api.mvc._
 import akka.actor._
 import play.api.libs.functional.syntax._
-import services.{GeneralObject, ObjectToGetRequest, ObjectToSaveRequest}
+import services.{ObjectToAmendRequest, GeneralObject, ObjectToGetRequest, ObjectToSaveRequest}
 import scala.concurrent.Future
 import scala.language.postfixOps
 import play.api.mvc._
@@ -37,7 +37,10 @@ object Application extends Controller {
   val modelActor = Akka.system.actorOf(ModelActor.props, "ModelActor")
 
   def index = Authenticated { request =>
-    Ok("The current user is " + request.username)
+    request.username match {
+      case Some(username) => Ok("Bienvenue " + request.username)
+      case None => Unauthorized("Vous devez vous connecter")
+    }
   }
 
   def authenticate(login: String, password: String) = Action.async {
@@ -65,6 +68,22 @@ object Application extends Controller {
     (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Seq[GeneralObject]]].map {
       case Success(objects) => Ok(Json.toJson(objects))
       case Failure(failure) => InternalServerError("getModel: " + failure)
+    }
+  }
+
+  def deleteModel(table: String, uuid: String) = Action.async {
+    (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Int]].map {
+      case Success(1) => Ok
+      case Success(_) => NotModified
+      case Failure(failure) => InternalServerError("deleteModel: " + failure)
+    }
+  }
+
+  def amendModel(table: String, uuid: String, objectString: String) = Action.async {
+    (modelActor ? ObjectToAmendRequest(table, uuid, objectString)).mapTo[Try[Int]].map {
+      case Success(1) => Ok
+      case Success(_) => NotModified
+      case Failure(failure) => InternalServerError("amendModel: " + failure)
     }
   }
 }

@@ -1,7 +1,7 @@
 # --- !Ups
 CREATE TABLE users (
   userId          SERIAL PRIMARY KEY,
-  userUUID        UUID NOT NULL,
+  uuid            UUID NOT NULL,
   login           VARCHAR(255) NOT NULL,
   password        VARCHAR(255) NOT NULL,
   UNIQUE(login)

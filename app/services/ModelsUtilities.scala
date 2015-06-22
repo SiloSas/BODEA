@@ -1,30 +1,45 @@
 package services
 
-import java.sql.Connection
-import java.text.Normalizer
-import java.util.{Date, UUID}
+import java.util.UUID
 
-import anorm.SqlParser._
 import anorm._
-import controllers.DAOException
 import play.api.Play.current
 import play.api.db.DB
-
-import scala.collection.mutable.ListBuffer
+import anorm.SqlParser._
 import scala.util.Try
+import services.Utilities._
+
+
+case class ObjectToSaveRequest(table: String, uuid: String, objectString: String)
+case class ObjectToGetRequest(table: String, uuid: String)
+case class GeneralObject(uuid: UUID, objectString: String)
 
 object ModelsUtilities {
- def save(objectRequest: ObjectRequest): Try[Option[Long]] = Try {
-   val table = objectRequest.table
+  private val objectParser: RowParser[GeneralObject] = {
+    get[UUID]("uuid") ~
+    get[String]("object") map {
+      case uuid ~ objectString => GeneralObject(uuid, objectString)
+    }
+  }
 
-   DB.withConnection { implicit connection =>
-     SQL(s"""INSERT INTO $table(uuid, object) VALUES ({UUID}, {objectString})""")
-       .on(
-         'UUID -> UUID.fromString(objectRequest.uuid),
-         'objectString -> objectRequest.objectString)
-       .executeInsert()
-   }
- }
+  def save(objectToSave: ObjectToSaveRequest): Try[Option[Long]] = Try {
+    val table = objectToSave.table
+
+    DB.withConnection { implicit connection =>
+      SQL(s"""INSERT INTO $table(uuid, object) VALUES ({UUID}, {objectString})""")
+      .on(
+      'UUID -> UUID.fromString(objectToSave.uuid),
+      'objectString -> objectToSave.objectString)
+      .executeInsert()
+    }
+  }
+
+  def getObject(objectToGet: ObjectToGetRequest): Try[Seq[GeneralObject]] = Try {
+    val table = objectToGet.table
+    DB.withConnection { implicit connection =>
+      SQL(s"""SELECT * FROM $table WHERE UUID = {UUID}""")
+      .on('UUID -> UUID.fromString(objectToGet.uuid))
+      .as(objectParser *)
+    }
+  }
 }
-
-case class ObjectRequest(table: String, uuid: String, objectString: String)

@@ -5,6 +5,7 @@ import models._
 import play.api.libs.json.JsNumber
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import services.GeneralObject
 
 object JsonHelper {
   implicit object JavaBigDecimalWrites extends AnyRef with Writes[java.math.BigDecimal] {
@@ -22,4 +23,6 @@ object JsonHelper {
   implicit object UUIDWrites extends AnyRef with Writes[UUID] {
     def writes(UUID: UUID): JsString = JsString(UUID.toString)
   }
+
+  implicit val objectWrites = Json.writes[GeneralObject]
 }

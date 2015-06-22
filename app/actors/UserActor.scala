@@ -1,6 +1,8 @@
 package actors
 
-import actors.AuthenticatorActor.AuthenticateRequest
+import java.util.UUID
+
+import actors.AuthenticatorActor.AuthenticationRequest
 import actors.UserActor.SaveUserRequest
 import akka.actor._
 import models.User
@@ -16,16 +18,21 @@ import scala.util.{Success, Failure}
 
 object UserActor {
   def props = Props[UserActor]
-  case class SaveUserRequest(login: String, password: String)
+  case class SaveUserRequest(uuid: String, login: String, password: String)
 }
 
 class UserActor extends Actor {
   def receive = {
-    case SaveUserRequest(login, password) =>
-      User.save(User(login, password)) match {
-        case Success(Some(index)) => sender ! "success"
-        case Success(None) => sender ! "failure: user has not been created"
-        case Failure(failure) => sender ! "failure: " + failure
+    case SaveUserRequest(uuid, login, password) =>
+      try {
+        val uuidTyped = UUID.fromString(uuid)
+        User.save(User(uuidTyped, login, password)) match {
+          case Success(Some(index)) => sender ! "success"
+          case Success(None) => sender ! "failure: user has not been created"
+          case Failure(failure) => sender ! "failure: " + failure
+        }
+      } catch {
+        case e: Exception => sender ! "wrong uuid"
       }
     case _ => sender ! "unknown request"
   }

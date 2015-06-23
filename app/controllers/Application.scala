@@ -2,54 +2,44 @@ package controllers
 
 import java.util.UUID
 
-import actors.AuthenticatorActor.{AuthenticationResponse, AuthenticationRequest}
-import actors.UserActor.SaveUserRequest
-import akka.util.Timeout
-import play.api.http.Status
-import play.api.libs.concurrent.Akka
-import play.api.libs.ws.WS
-import play.api.mvc._
-import play.api.libs.json.{JsObject, Json}
-import json.JsonHelper._
-import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import akka.actor._
-import play.api.Play.current
-import play.api.mvc._
-import akka.actor._
-import play.api.libs.functional.syntax._
-import services.{ObjectToAmendRequest, GeneralObject, ObjectToGetRequest, ObjectToSaveRequest}
-import scala.concurrent.Future
-import scala.language.postfixOps
-import play.api.mvc._
-import scala.concurrent.duration._
+import actors.ModelActor._
+import actors.UserActor.{AuthenticationRequest, AuthenticationResponse, SaveUserRequest}
+import actors._
 import akka.pattern.ask
+import akka.util.Timeout
+import json.JsonHelper._
+import play.api.Logger
+import play.api.Play.current
+import play.api.libs.concurrent.Akka
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json
+import play.api.mvc._
 
-import actors.{Authenticated, ModelActor, UserActor, AuthenticatorActor}
-
-import scala.util.{Try, Failure, Success}
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.language.postfixOps
+import scala.util.{Failure, Success, Try}
 
 object Application extends Controller {
-  implicit val timeout = Timeout(5 seconds)
+  implicit val timeout = Timeout(1 seconds)
 
-  val authenticatorActor = Akka.system.actorOf(AuthenticatorActor.props, "AuthenticatorActor")
   val userActor = Akka.system.actorOf(UserActor.props, "UserActor")
   val modelActor = Akka.system.actorOf(ModelActor.props, "ModelActor")
 
   def index = Authenticated { request =>
     request.username match {
-      case Some(username) => Ok("Bienvenue " + request.username)
+      case Some(username) => Ok("Bienvenue " + username)
       case None => Unauthorized("Vous devez vous connecter")
     }
   }
 
   def authenticate(login: String, password: String) = Action.async {
-    (authenticatorActor ? AuthenticationRequest(login, password)).mapTo[AuthenticationResponse].map {
+    (userActor ? AuthenticationRequest(login, password)).mapTo[AuthenticationResponse].map {
       case authenticationResponse if authenticationResponse.authorized =>
         Ok("connected")
           .withSession(
             "connected" -> authenticationResponse.login,
-            "role" -> authenticationResponse.role.toString)
+            "role" -> authenticationResponse.role.getOrElse(0).toString)
       case _ =>
         Unauthorized("Dommage")
     }
@@ -60,42 +50,148 @@ object Application extends Controller {
       case None =>
         Future { Unauthorized("Unauthorized") }
       case username =>
-        (userActor ? SaveUserRequest(uuid: String, login, password, role)).mapTo[String].map {
+        (userActor ? SaveUserRequest(uuid: String, login, password, role)).mapTo[String] map {
           case failure if failure.contains("failure") => InternalServerError("saveUser: " + failure)
           case successfulMessage => Ok(successfulMessage)
         }
     }
   }
 
-  def saveModel(table: String, uuid: String, objectString: String) = Action.async {
-    (modelActor ? ObjectToSaveRequest(table, uuid, objectString)).mapTo[String].map {
+  def saveModel(tableName: String, stringUUID: String, objectString: String) = Authenticated.async { request =>
+    val table = Table(tableName)
+    try {
+      val uuid = UUID.fromString(stringUUID)
+      tableName match {
+        case "orders" => askActorToSaveModel(tableName, objectString, uuid)
+        case otherTable =>
+          if (isRequestedByClient(request))
+            Future { Unauthorized("Vous devez être administrateur pour accèder à cette ressource.") }
+          else
+            otherTable match {
+              case "areas" => askActorAllModelsInTable(table)
+              case "brands" => askActorAllModelsInTable(table)
+              case "stores" => askActorAllModelsInTable(table)
+              case "users" => askActorAllModelsInTable(table)
+              case "roughs" => askActorAllModelsInTable(table)
+              case "images" => askActorAllModelsInTable(table)
+              case _ => Future { NotFound }
+            }
+      }
+
+    } catch {
+      case e: Exception =>
+        Logger error e.getMessage
+        Future { BadRequest("Wrong string UUID") }
+    }
+  }
+
+  def askActorToSaveModel(tableName: String, objectString: String, uuid: UUID): Future[SimpleResult] = {
+    (modelActor ? ObjectToSaveRequest(Table(tableName), uuid, objectString)).mapTo[String] map {
       case failure if failure.contains("failure") => InternalServerError("saveModel: " + failure)
       case successfulMessage => Ok(successfulMessage)
     }
   }
 
-  def getModel(table: String, uuid: String) = Action.async {
-    (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Seq[GeneralObject]]].map {
+  def getAllModelsFromTable(tableName: String) = Authenticated.async { request =>
+    val table = Table(tableName)
+    tableName match {
+      case "areas" => askActorAllModelsInTable(table)
+      case "brands" => askActorAllModelsInTable(table)
+      case "stores" => askActorAllModelsInTable(table)
+      case otherTable =>
+        if (isRequestedByClient(request))
+          Future { Unauthorized("Vous devez être administrateur pour accèder à cette ressource.") }
+        else 
+          otherTable match {
+            case "users" => askActorAllModelsInTable(table)
+            case "images" => askActorAllModelsInTable(table)
+            case "orders" => askActorAllModelsInTable(table)
+            case _ => Future { NotFound }
+          }
+    }
+  }
+
+  def askActorAllModelsInTable(table: Table): Future[SimpleResult] = {
+    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[GeneralObject]]].map {
       case Success(objects) => Ok(Json.toJson(objects))
-      case Failure(failure) => InternalServerError("getModel: " + failure)
+      case Failure(failure) => InternalServerError("callGetModelsActor: " + failure)
     }
   }
 
-  def deleteModel(table: String, uuid: String) = Action.async {
-    (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Int]].map {
-      case Success(1) => Ok
-      case Success(_) => NotModified
-      case Failure(failure) => InternalServerError("deleteModel: " + failure)
+  def getModel(tableName: String, uuidString: String) = Authenticated.async { request =>
+    val table = Table(tableName)
+    try {
+      val uuid = UUID.fromString(uuidString)
+      tableName match {
+        case "areas" => askActorModelInTable(table, uuid)
+        case "brands" => askActorModelInTable(table, uuid)
+        case "stores" => askActorModelInTable(table, uuid)
+        case otherTable =>
+          if (isRequestedByClient(request))
+            Future {
+              Unauthorized("Vous devez être administrateur pour accèder à cette ressource.")
+            }
+          else
+            otherTable match {
+              case "users" => askActorModelInTable(table, uuid)
+              case "images" => askActorModelInTable(table, uuid)
+              case "orders" => askActorModelInTable(table, uuid)
+              case _ => Future { NotFound("No table with this name") }
+            }
+      }
+    } catch {
+      case e: Exception =>
+        Logger error e.getMessage
+        Future { BadRequest("Wrong string UUID") }
     }
   }
 
-  def amendModel(table: String, uuid: String, objectString: String) = Action.async {
-    (modelActor ? ObjectToAmendRequest(table, uuid, objectString)).mapTo[Try[Int]].map {
-      case Success(1) => Ok
-      case Success(_) => NotModified
-      case Failure(failure) => InternalServerError("amendModel: " + failure)
+  def askActorModelInTable(table: Table, uuid: UUID): Future[SimpleResult] =
+    (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Option[GeneralObject]]] map {
+      case Success(Some(objectFound)) => Ok(Json.toJson(objectFound))
+      case Success(None) => NoContent
+      case Failure(failure) => InternalServerError("askActorModelInTable: " + failure)
     }
+
+  def deleteModel(tableName: String, uuidString: String) = Action.async {
+    val table = Table(tableName)
+    try {
+      val uuid = UUID.fromString(uuidString)
+      (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Int]] map {
+        case Success(1) => Ok
+        case Success(_) => NotModified
+        case Failure(failure) => InternalServerError("deleteModel: " + failure)
+      }
+    } catch {
+      case e: Exception =>
+        Logger error e.getMessage
+        Future { BadRequest("Wrong string UUID") }
+    }
+  }
+
+  def amendModel(tableName: String, uuidString: String, objectString: String) = Action.async {
+    val table = Table(tableName)
+    try {
+      val uuid = UUID.fromString(uuidString)
+      (modelActor ? ObjectToAmendRequest(table, uuid, objectString)).mapTo[Try[Int]].map {
+        case Success(1) => Ok
+        case Success(_) => NotModified
+        case Failure(failure) => InternalServerError("amendModel: " + failure)
+      }
+    } catch {
+      case e: Exception =>
+        Logger error e.getMessage
+        Future {
+          BadRequest("Wrong string UUID")
+        }
+    }
+  }
+
+  def isRequestedByAdmin(request: AuthenticatedRequest[AnyContent]): Boolean = {
+    request.role.getOrElse(0) == 1
+  }
+
+  def isRequestedByClient(request: AuthenticatedRequest[AnyContent]): Boolean = {
+    request.role.getOrElse(0) == 2
   }
 }
-
-

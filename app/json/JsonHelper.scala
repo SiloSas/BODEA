@@ -1,11 +1,10 @@
 package json
 
 import java.util.UUID
-import models._
-import play.api.libs.json.JsNumber
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
-import services.GeneralObject
+
+import actors.ModelActor.GeneralObject
+import actors.UserActor.User
+import play.api.libs.json.{JsNumber, _}
 
 object JsonHelper {
   implicit object JavaBigDecimalWrites extends AnyRef with Writes[java.math.BigDecimal] {
@@ -25,4 +24,5 @@ object JsonHelper {
   }
 
   implicit val objectWrites = Json.writes[GeneralObject]
+  implicit val userWrites = Json.writes[User]
 }

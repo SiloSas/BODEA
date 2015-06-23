@@ -35,6 +35,9 @@ class ModelActor extends Actor {
     case ObjectToGetRequest(table, uuid) =>
       sender ! getObject(ObjectToGetRequest(table, uuid))
 
+    case ObjectToDeleteRequest(table, uuid) =>
+      sender ! deleteObject(ObjectToDeleteRequest(table, uuid))
+
     case _ => sender ! "unknown request"
   }
 
@@ -77,7 +80,7 @@ class ModelActor extends Actor {
   def deleteObject(objectToDelete: ObjectToDeleteRequest): Try[Int] = Try {
     val table = objectToDelete.table.name
     DB.withConnection { implicit connection =>
-      SQL(s"""DELETE * FROM $table WHERE UUID = {UUID}""")
+      SQL(s"""DELETE FROM $table WHERE UUID = {UUID}""")
         .on('UUID -> objectToDelete.uuid)
         .executeUpdate()
     }

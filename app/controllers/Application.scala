@@ -153,19 +153,39 @@ object Application extends Controller {
       case Failure(failure) => InternalServerError("askActorModelInTable: " + failure)
     }
 
-  def deleteModel(tableName: String, uuidString: String) = Action.async {
+  def deleteModel(tableName: String, uuidString: String) = Authenticated.async { request =>
     val table = Table(tableName)
     try {
       val uuid = UUID.fromString(uuidString)
-      (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Int]] map {
-        case Success(1) => Ok
-        case Success(_) => NotModified
-        case Failure(failure) => InternalServerError("deleteModel: " + failure)
+      tableName match {
+        case "roughs" => askActorToDeleteModelInTable(table, uuid)
+        case "images" => askActorToDeleteModelInTable(table, uuid)
+        case otherTable =>
+          if (isRequestedByClient(request))
+            Future {
+              Unauthorized("Vous devez être administrateur pour accèder à cette ressource.")
+            }
+          else
+            otherTable match {
+              case "users" => askActorToDeleteModelInTable(table, uuid)
+              case "stores" => askActorToDeleteModelInTable(table, uuid)
+              case "orders" => askActorToDeleteModelInTable(table, uuid)
+              case _ => Future { NotFound("No table with this name deletable") }
+            }
       }
+
     } catch {
       case e: Exception =>
         Logger error e.getMessage
         Future { BadRequest("Wrong string UUID") }
+    }
+  }
+
+  def askActorToDeleteModelInTable(table: Table, uuid: UUID): Future[SimpleResult] = {
+    (modelActor ? ObjectToDeleteRequest(table, uuid)).mapTo[Try[Int]] map {
+      case Success(1) => Ok
+      case Success(_) => NotModified
+      case Failure(failure) => InternalServerError("deleteModel: " + failure)
     }
   }
 

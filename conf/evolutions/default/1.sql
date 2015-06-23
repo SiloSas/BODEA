@@ -5,6 +5,7 @@ CREATE TABLE users (
   login           VARCHAR(255) NOT NULL,
   password        VARCHAR(255) NOT NULL,
   role            INT NOT NULL,
+  object          TEXT,
   UNIQUE(login)
 );
 INSERT INTO users(uuid, login, password, role)

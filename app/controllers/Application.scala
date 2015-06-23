@@ -34,23 +34,27 @@ object Application extends Controller {
   }
 
   def authenticate(login: String, password: String) = Action.async {
-    (userActor ? AuthenticationRequest(login, password)).mapTo[AuthenticationResponse].map {
-      case authenticationResponse if authenticationResponse.authorized =>
-        Ok("connected")
+    (userActor ? AuthenticationRequest(login, password)).mapTo[Try[AuthenticationResponse]] map {
+      case Success(authenticationResponse) if authenticationResponse.authorized =>
+        Ok(Json.toJson(authenticationResponse.maybeUser.get))
           .withSession(
-            "connected" -> authenticationResponse.login,
-            "role" -> authenticationResponse.role.getOrElse(0).toString)
+            "connected" -> authenticationResponse.maybeUser.get.login,
+            "role" -> authenticationResponse.maybeUser.get.role.toString)
+
+      case Failure(failure) =>
+        Logger error "Application.authenticate: " + failure.getMessage
+        InternalServerError
       case _ =>
         Unauthorized("Dommage")
     }
   }
 
-  def saveUser(uuid: String, login: String, password: String, role: Int) = Authenticated.async { request =>
+  def saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String]) = Authenticated.async { request =>
     request.username match {
       case None =>
         Future { Unauthorized("Unauthorized") }
       case username =>
-        (userActor ? SaveUserRequest(uuid: String, login, password, role)).mapTo[String] map {
+        (userActor ? SaveUserRequest(uuid: String, login, password, role, objectString)).mapTo[String] map {
           case failure if failure.contains("failure") => InternalServerError("saveUser: " + failure)
           case successfulMessage => Ok(successfulMessage)
         }

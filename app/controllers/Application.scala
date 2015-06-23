@@ -28,8 +28,8 @@ object Application extends Controller {
 
   def index = Authenticated { request =>
     request.username match {
-      case Some(username) => Ok("Bienvenue " + username)
-      case None => Unauthorized("Vous devez vous connecter")
+      case Some(username) => Ok(views.html.index(true))//Ok("Bienvenue " + username)
+      case None => Unauthorized(views.html.index(false))
     }
   }
 
@@ -44,6 +44,7 @@ object Application extends Controller {
       case Failure(failure) =>
         Logger error "Application.authenticate: " + failure.getMessage
         InternalServerError
+
       case _ =>
         Unauthorized("Dommage")
     }

@@ -1,0 +1,24 @@
+
+<md-whiteframe class="md-whiteframe-z1 column large-6 medium-8 large-offset-3 medium-offset-2"
+               layout layout-align="center center" ng-if="$root.connected == false">
+    <form name="connection" ng-submit="connect(user)">
+        <md-input-container>
+            <label>Email or username</label>
+            <input required name="username" type="text" ng-model="user.username">
+            <div ng-messages="connection.username.$error">
+                <div ng-message="required">This is required.</div>
+            </div>
+        </md-input-container>
+        <md-input-container>
+            <label>Password</label>
+            <input required name="password" type="password" ng-model="user.password">
+            <div ng-messages="connection.password.$error">
+                <div ng-message="required">This is required.</div>
+            </div>
+        </md-input-container>
+        <md-button class="md-raised md-primary" type="submit">Connect</md-button>
+    </form>
+</md-whiteframe>
+
+<h1 class="text-center" ng-if="$root.connected == 'admin'">Bienvenue dans votre espace d'administration</h1>
+<h1 class="text-center" ng-if="$root.connected == 'client'">Bienvenue dans votre espace de commande</h1>

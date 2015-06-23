@@ -1,0 +1,265 @@
+<div class="column large-12 table-title-container">
+    <div class="column medium-2 table-title">
+        <div class="column md-whiteframe-z1 float-left">
+            Nom
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'name' || (predicate == 'name' && reverse == false),
+              'fa-chevron-up': predicate == 'name' && reverse == true}"
+               ng-click="order('name')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title float-left">
+        <div class="column md-whiteframe-z1">
+            Enseigne
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'brand.name' || (predicate == 'brand.name' && reverse == false),
+              'fa-chevron-up': predicate == 'brand.name' && reverse == true}"
+               ng-click="order('brand.name')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title float-left">
+        <div class="column md-whiteframe-z1">
+            Référent
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'contactName' || (predicate == 'contactName' && reverse == false),
+              'fa-chevron-up': predicate == 'contactName' && reverse == true}"
+               ng-click="order('contactName')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title float-left">
+        <div class="column md-whiteframe-z1">
+            Région
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'area.name' || (predicate == 'area.name' && reverse == false),
+              'fa-chevron-up': predicate == 'area.name' && reverse == true}"
+               ng-click="order('area.name')"></i>
+        </div>
+    </div>
+    <div class="column medium-2 table-title float-left">
+        <div class="column md-whiteframe-z1">
+            Téléphone
+            <i class="fa"
+               ng-class="{'fa-chevron-down': predicate != 'phone' || (predicate == 'phone' && reverse == false),
+              'fa-chevron-up': predicate == 'phone' && reverse == true}"
+               ng-click="order('phone')"></i>
+        </div>
+    </div>
+    <md-button class="md-primary md-raised column medium-2 marginLeft0 marginRight0"
+               ng-click="createStore = true">Ajouter un magasin
+    </md-button>
+</div>
+<div class="md-whiteframe-z1 width100p" ng-if="createStore">
+    <form ng-submit="addStore(); $parent.createStore = false">
+        <i class="md-warn relative fa fa-times-circle"
+           style="font-size: 30px;right: -15px;float: right;top: -22px;"
+           ng-click="$parent.createStore = false"></i>
+        <md-subheader>Ajouter un magasin</md-subheader>
+        <md-divider></md-divider>
+        <md-autocomplete flex required
+                         md-autofocus="false"
+                         md-no-cache="noCache"
+                         md-selected-item="newStore.brand"
+                         md-search-text-change="searchTextChange(searchBrand)"
+                         md-search-text="searchBrand"
+                         md-selected-item-change="selectedBrandChange(brand)"
+                         md-items="brand in querySearchBrand(searchBrand)"
+                         md-item-text="brand.name"
+                         md-floating-label="Enseigne (cliquez pour valider votre choix)">
+            <md-item-template>
+                <span md-highlight-text="searchBrand" md-highlight-flags="^i">{{brand.name}}</span>
+            </md-item-template>
+            <md-not-found>
+                No matches found for "{{searchBrand}}".
+            </md-not-found>
+        </md-autocomplete>
+        <md-input-container>
+            <label>Nom</label>
+            <input type="text" ng-model="newStore.name">
+        </md-input-container>
+        <md-input-container>
+            <label>Référent</label>
+            <input type="text" ng-model="newStore.contactName">
+        </md-input-container>
+        <md-input-container>
+            <label>Adresse de livraison</label>
+            <input type="text" ng-model="newStore.deliveryAddress">
+        </md-input-container>
+        <md-input-container>
+            <label>Adresse de facturation</label>
+            <input type="text" ng-model="newStore.billingAddress">
+        </md-input-container>
+        <md-autocomplete flex required
+                         md-autofocus="false"
+                         md-no-cache="noCache"
+                         md-selected-item="newStore.area"
+                         md-search-text-change="searchTextChange(searchArea)"
+                         md-search-text="searchArea"
+                         md-selected-item-change="selectedItemChange(area)"
+                         md-items="area in querySearch(searchArea)"
+                         md-item-text="area.name"
+                         md-floating-label="Région (cliquez pour valider votre choix)">
+            <md-item-template>
+                <span md-highlight-text="searchArea" md-highlight-flags="^i">{{area.name}}</span>
+            </md-item-template>
+            <md-not-found>
+                No matches found for "{{searchArea}}".
+            </md-not-found>
+        </md-autocomplete>
+        <md-input-container>
+            <label>Numero de téléphone</label>
+            <input type="text" ng-model="newStore.phone">
+        </md-input-container>
+        <md-input-container>
+            <label>Prix d'une bâche (prix m2)</label>
+            <input type="number" step="any" ng-model="newStore.priceByM2">
+        </md-input-container>
+        <md-input-container>
+            <label>Longueur du tube</label>
+            <input type="number" step="any" ng-model="newStore.pipeSize">
+        </md-input-container>
+        <md-input-container>
+            <label>Poid de la bache</label>
+            <input type="number" step="any" ng-model="newStore.weight">
+        </md-input-container>
+        <md-input-container>
+            <label>Format d'impression</label>
+            <input type="text" ng-model="newStore.printFormat">
+        </md-input-container>
+        <md-input-container>
+            <label>Laize utilisé</label>
+            <input type="number" step="any" ng-model="newStore.width">
+        </md-input-container>
+        <md-input-container>
+            <label>Longueur du jonc</label>
+            <input type="number" step="any" ng-model="newStore.caneWidth">
+        </md-input-container>
+        <md-input-container>
+            <label>Nombre de moteurs</label>
+            <input type="number" ng-model="newStore.enginesNumber">
+        </md-input-container>
+        <md-button class="md-primary md-raised" type="submit">Valider</md-button>
+        <md-button class="md-warn md-raised" ng-click="$parent.createStore = false">Annuler</md-button>
+    </form>
+</div>
+<div class="column large-12 fade" ng-repeat="store in filteredStores = (stores | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
+    <md-divider class="column large-12" ng-if="!$first"></md-divider>
+    <div class="padding10 float-left width100p">
+        <div class="width100p float-left center" ng-show="!refactor">
+            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.name">{{store.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.brand.name">{{store.brand.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.contactName">{{store.contactName}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.area.name">{{store.area.name}}</h5>
+            <h5 class="column medium-2">{{store.phone}}</h5>
+            <h5><i class="column medium-1 pointer fa fa-pencil"
+                   ng-click="copyStore(store); refactor = true"></i></h5>
+            <h5><i class="column medium-1 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove"></i></h5>
+        </div>
+        <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
+            <div class="float-left padding10">
+                Etes-vous sur de vouloir suprimer ce magasin ?
+                <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false; remove(store)">
+                    Oui
+                </md-button>
+                <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false">
+                    Non
+                </md-button>
+            </div>
+        </div>
+        <md-list ng-if="refactor" class="md-whiteframe-z1">
+            <form ng-submit="refactorStore(store); $parent.store = store.newStore; $parent.refactor = false">
+                <i class="md-warn relative fa fa-times-circle"
+                   style="font-size: 30px;right: -15px;float: right;top: -22px;"
+                   ng-click="$parent.refactor = false"></i>
+                <md-subheader>Modifer le magasin {{store.name}}</md-subheader>
+                <md-divider></md-divider>
+                <md-autocomplete flex required
+                                 md-autofocus="false"
+                                 md-no-cache="noCache"
+                                 md-selected-item="store.newStore.brand"
+                                 md-search-text-change="searchTextChange(searchBrand)"
+                                 md-search-text="searchBrand"
+                                 md-selected-item-change="selectedBrandChange(brand)"
+                                 md-items="brand in querySearchBrand(searchBrand)"
+                                 md-item-text="brand.name"
+                                 md-floating-label="Enseigne (cliquez pour valider votre choix)">
+                    <md-item-template>
+                        <span md-highlight-text="searchBrand" md-highlight-flags="^i">{{brand.name}}</span>
+                    </md-item-template>
+                    <md-not-found>
+                        No matches found for "{{searchBrand}}".
+                    </md-not-found>
+                </md-autocomplete>
+                <md-input-container>
+                    <label>Nom</label>
+                    <input type="text" ng-model="store.newStore.name">
+                </md-input-container>
+                <md-input-container>
+                    <label>Référent</label>
+                    <input type="text" ng-model="store.newStore.contactName">
+                </md-input-container>
+                <md-input-container>
+                    <label>Adresse de livraison</label>
+                    <input type="text" ng-model="store.newStore.deliveryAddress">
+                </md-input-container>
+                <md-input-container>
+                    <label>Adresse de facturation</label>
+                    <input type="text" ng-model="store.newStore.billingAddress">
+                </md-input-container>
+                <md-autocomplete flex required
+                                 md-autofocus="false"
+                                 md-no-cache="noCache"
+                                 md-selected-item="store.newStore.area"
+                                 md-search-text-change="searchTextChange(searchArea)"
+                                 md-search-text="searchArea"
+                                 md-selected-item-change="selectedItemChange(area)"
+                                 md-items="area in querySearch(searchArea)"
+                                 md-item-text="area.name"
+                                 md-floating-label="Région (cliquez pour valider votre choix)">
+                    <md-item-template>
+                        <span md-highlight-text="searchArea" md-highlight-flags="^i">{{area.name}}</span>
+                    </md-item-template>
+                    <md-not-found>
+                        No matches found for "{{searchArea}}".
+                    </md-not-found>
+                </md-autocomplete>
+                <md-input-container>
+                    <label>Numero de téléphone</label>
+                    <input type="text" ng-model="store.newStore.phone">
+                </md-input-container>
+                <md-input-container>
+                    <label>Prix d'une bâche (prix m2)</label>
+                    <input type="number" step="any" ng-model="store.newStore.priceByM2">
+                </md-input-container>
+                <md-input-container>
+                    <label>Longueur du tube</label>
+                    <input type="number" step="any" ng-model="store.newStore.pipeSize">
+                </md-input-container>
+                <md-input-container>
+                    <label>Poid de la bache</label>
+                    <input type="number" step="any" ng-model="store.newStore.weight">
+                </md-input-container>
+                <md-input-container>
+                    <label>Format d'impression</label>
+                    <input type="text" ng-model="store.newStore.printFormat">
+                </md-input-container>
+                <md-input-container>
+                    <label>Laize utilisé</label>
+                    <input type="number" step="any" ng-model="store.newStore.width">
+                </md-input-container>
+                <md-input-container>
+                    <label>Longueur du jonc</label>
+                    <input type="number" step="any" ng-model="store.newStore.caneWidth">
+                </md-input-container>
+                <md-input-container>
+                    <label>Nombre de moteurs</label>
+                    <input type="number" ng-model="store.newStore.enginesNumber">
+                </md-input-container>
+                <md-button class="md-primary md-raised" type="submit">Valider</md-button>
+                <md-button class="md-warn md-raised" ng-click="$parent.refactor = false">Annuler</md-button>
+            </form>
+        </md-list>
+    </div>
+</div>
+<md-button ng-show="filteredStores.length > limit"
+           ng-click="limit = limit + 20"
+           class="md-primary md-raised">Voir plus</md-button>

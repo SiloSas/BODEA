@@ -27,9 +27,10 @@ object Application extends Controller {
   val modelActor = Akka.system.actorOf(ModelActor.props, "ModelActor")
 
   def index = Authenticated { request =>
+    val a = true
     request.username match {
-      case Some(username) => Ok(views.html.index(true))//Ok("Bienvenue " + username)
-      case None => Unauthorized(views.html.index(false))
+      case Some(username) => Ok(public.html.index(a))
+      case None => Unauthorized(public.html.index(a))
     }
   }
 

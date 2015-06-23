@@ -25,15 +25,19 @@
 
     <div class="container">
         <section layout="row" flex ng-controller="MainCtrl" class="height100p">
-            <md-sidenav class="md-sidenav-left md-whiteframe-z2" class="height100p" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+            <md-sidenav class="md-sidenav-left md-whiteframe-z2"
+                        ng-if="$root.connected != false"
+                        class="height100p" md-component-id="left"
+                        md-is-locked-open="$mdMedia('gt-md')">
                 <md-toolbar class="md-theme-indigo">
-                    <h1 class="md-toolbar-tools"><a href="#/">Administration</a></h1>
+                    <h1 class="md-toolbar-tools" ng-if="$root.connected == 'admin'"><a href="#/">Administration</a></h1>
+                    <h1 class="md-toolbar-tools" ng-if="$root.connected == 'client'"><a href="#/">Gestion des commandes</a></h1>
                 </md-toolbar>
                 <md-content layout-padding>
                     <md-button ng-click="close()" class="md-primary" hide-gt-md>
-                        Close Sidenav Left
+                        Fermer le menu
                     </md-button>
-                    <ul class="padding0 navAdmin">
+                    <ul class="padding0 navAdmin" ng-if="$root.connected == 'admin'">
                         <li ng-class="{'active': active == '/Commandes'}">
                             <md-button class="md-primary width100p margin0" ng-href="#/Commandes">Commandes</md-button>
                         </li>
@@ -50,7 +54,7 @@
                             <md-button class="md-primary width100p margin0" ng-href="#/Historique">Historique</md-button>
                         </li>
                     </ul>
-                    <ul class="padding0 navAdmin">
+                    <ul class="padding0 navAdmin" ng-if="$root.connected == 'client'">
                         <li ng-class="{'active': active == '/mesCommandes'}">
                             <md-button class="md-primary width100p margin0" ng-href="#/mesCommandes">mes Commandes</md-button>
                         </li>
@@ -67,7 +71,7 @@
             </md-sidenav>
             <md-content flex class="height100p">
                 <md-toolbar id="topBar" md-scroll-shrink>
-                    <div class="md-toolbar-tools">
+                    <div class="md-toolbar-tools" ng-if="$root.connected != false">
                         <md-input-container class="md-icon-float column small-8" >
                             <label>Recherche</label>
                             <input ng-model="filter">
@@ -76,12 +80,15 @@
                             Deconnection
                         </md-button>
                     </div>
+                    <div class="md-toolbar-tools" ng-if="$root.connected == false">
+                       BODEA v.0.0
+                    </div>
                 </md-toolbar>
                 <div class="column large-12">
 
                 <md-button ng-click="toggleLeft()"
                            class="md-primary" hide-gt-md>
-                    Toggle left
+                    Menu
                 </md-button>
                 </div>
                 <div class="column large-12 content-view" style="overflow-x: auto" ng-view=""></div>
@@ -127,6 +134,7 @@
         <script src="scripts/services/areaFactory.js"></script>
         <script src="scripts/services/usersFactory.js"></script>
         <script src="scripts/services/userFactory.js"></script>
+        <script src="scripts/services/connectionFactory.js"></script>
         <script src="scripts/services/imagesFactory.js"></script>
         <script src="scripts/services/guidFactory.js"></script>
         <script src="scripts/directives/contentView.js"></script>

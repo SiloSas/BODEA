@@ -8,7 +8,7 @@
  * Controller of the bodeaApp
  */
 angular.module('bodeaApp')
-  .controller('MainCtrl', function ($scope, $timeout, $mdSidenav, $mdUtil, $log, $location) {
+  .controller('MainCtrl', function ($scope, $timeout, $mdSidenav, $mdUtil, $log, $location, ConnectionFactory) {
         $scope.toggleLeft = buildToggler('left');
         /**
          * Build handler to open/close a SideNav; when animation finishes
@@ -33,5 +33,8 @@ angular.module('bodeaApp')
         $scope.active = $location.path();
         $scope.$on('$locationChangeSuccess', function () {
             $scope.active = $location.path();
-        })
-    })
+        });
+        $scope.connect = function (user) {
+            ConnectionFactory.connect(user)
+        }
+    });

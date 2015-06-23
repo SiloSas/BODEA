@@ -118,6 +118,7 @@
     <orderEntry type="library" name="SBT: xerces:xercesImpl:2.11.0:jar" level="project" />
     <orderEntry type="library" name="SBT: xml-apis:xml-apis:1.4.01:jar" level="project" />
     <orderEntry type="library" name="bodea node_modules" level="project" />
+    <orderEntry type="library" name="sass-stdlib" level="application" />
   </component>
 </module>
 

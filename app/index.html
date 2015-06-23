@@ -46,7 +46,7 @@
                             <md-button class="md-primary width100p margin0" ng-href="#/Comptes">Comptes</md-button>
                         </li>
                         <md-divider></md-divider>
-                        <li>
+                        <li ng-class="{'active': active == '/Historique'}">
                             <md-button class="md-primary width100p margin0" ng-href="#/Historique">Historique</md-button>
                         </li>
                     </ul>
@@ -59,7 +59,7 @@
                             <md-button class="md-primary width100p margin0" ng-href="#/Visuels">Visuels</md-button>
                         </li>
                         <md-divider></md-divider>
-                        <li>
+                        <li ng-class="{'active': active == '/Historique'}">
                             <md-button class="md-primary width100p margin0" ng-href="#/Historique">Historique</md-button>
                         </li>
                     </ul>
@@ -118,6 +118,8 @@
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/modules/foundation/mm-foundation.min.js"></script>
         <script src="scripts/modules/angular-material.min.js"></script>
+        <script src="scripts/modules/Chart.js"></script>
+        <script src="scripts/modules/angular-chart.min.js"></script>
         <script src="scripts/app.js"></script>
         <script src="scripts/services/ordersFactory.js"></script>
         <script src="scripts/services/storesFactory.js"></script>
@@ -125,6 +127,8 @@
         <script src="scripts/services/areaFactory.js"></script>
         <script src="scripts/services/usersFactory.js"></script>
         <script src="scripts/services/userFactory.js"></script>
+        <script src="scripts/services/imagesFactory.js"></script>
+        <script src="scripts/services/guidFactory.js"></script>
         <script src="scripts/directives/contentView.js"></script>
         <script src="scripts/directives/fileReader.js"></script>
         <script src="scripts/controllers/main.js"></script>
@@ -132,6 +136,8 @@
         <script src="scripts/controllers/magasins.js"></script>
         <script src="scripts/controllers/users.js"></script>
         <script src="scripts/controllers/myOrders.js"></script>
+        <script src="scripts/controllers/imagesCtrl.js"></script>
+        <script src="scripts/controllers/historiqueCtrl.js"></script>
         <!-- endbuild -->
 </body>
 </html>

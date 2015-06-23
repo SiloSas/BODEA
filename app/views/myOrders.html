@@ -49,8 +49,11 @@
             <div class="column large-12 padding0">
                 <input type="file"
                        class="md-button md-primary md-default-theme"
-                       ng-change="addImg()"
                        ng-model="newOrder.image.url" app-filereader>
+                <md-select placeholder="selectionner une image" ng-change="newOrder.image = loadImg(newOrder.image.id)"
+                           ng-model="newOrder.image.id">
+                    <md-option ng-repeat="image in images" value="{{image.id}}">{{image.name}}</md-option>
+                </md-select>
                 <div class="column large-12 md-whiteframe-z1 padding10" ng-if="newOrder.image.url">
                     <i class="float-right fa fa-times pointer" ng-click="newOrder.image = {}"></i>
                     <img ng-src="{{newOrder.image.url}}" class="width100p">
@@ -165,7 +168,7 @@
                     </md-input-container>
                     <md-input-container>
                         <label>Prix d'une bâche (prix m2)</label>
-                        <input type="number" step="any" ng-model="newSubOrder.store.newStore.priceByM2">
+                        <input type="number" step="any" ng-model="newSubOrder.store.newStore.priceByM2" disabled>
                     </md-input-container>
                     <md-input-container>
                         <label>Longueur du tube</label>
@@ -276,7 +279,7 @@
                 <p class="margin0" ng-repeat="subOrder in order.subOrders"
                       ng-click="$parent.$parent.$parent.filter = subOrder.store.name">{{subOrder.store.name}}</p>
             </h5>
-            <h5 class="column medium-2">{{order.date}}</h5>
+            <h5 class="column medium-2">{{order.date | date:'MM/dd/yyyy'}}</h5>
             <div class="column medium-2">
                 <md-button ng-show="order.state != 0" class="md-fab md-mini"
                            aria-label="order.state"
@@ -320,11 +323,19 @@
                     <md-divider></md-divider>
                     <md-list-item>
                         <div class="column large-12 padding0">
-                            <a class="md-primary md-button margin10 md-default-theme" ng-click="showImage = !showImage">Voir {{order.image.name}}</a>
-                            <a class="md-primary md-button margin10 md-default-theme" href="{{order.image.url}}" download="{{order.image.name}}">Telecharger {{order.image.name}}</a>
+                            <a class="md-primary md-button margin10 md-default-theme" ng-click="showImage = !showImage">Voir {{order.newOrder.image.name}}</a>
+                            <a class="md-primary md-button margin10 md-default-theme" href="{{order.newOrder.image.url}}"
+                               download="{{order.newOrder.image.name}}">Telecharger {{order.newOrder.image.name}}</a>
+                            <input type="file"
+                                   class="md-button md-primary md-default-theme"
+                                   ng-model="order.newOrder.image.url" app-filereader>
+                            <md-select placeholder="selectionner une image" ng-change="order.newOrder.image = loadImg(order.newOrder.image.id)"
+                                       ng-model="order.newOrder.image.id">
+                                <md-option ng-repeat="image in images" value="{{image.id}}">{{image.name}}</md-option>
+                            </md-select>
                             <div class="column large-12 md-whiteframe-z1 padding10" ng-if="showImage">
                                 <i class="float-right fa fa-times pointer" ng-click="$parent.showImage = false"></i>
-                                <img ng-src="{{order.image.url}}" class="width100p">
+                                <img ng-src="{{order.newOrder.image.url}}" class="width100p">
                             </div>
                         </div>
                     </md-list-item>
@@ -435,7 +446,7 @@
                             </md-input-container>
                             <md-input-container>
                                 <label>Prix d'une bâche (prix m2)</label>
-                                <input type="number" step="any" ng-model="newSubOrder.store.newStore.priceByM2">
+                                <input type="number" step="any" ng-model="newSubOrder.store.newStore.priceByM2" disabled>
                             </md-input-container>
                             <md-input-container>
                                 <label>Longueur du tube</label>

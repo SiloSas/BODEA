@@ -50,7 +50,6 @@ class ModelActor extends Actor {
 
   def save(objectToSave: ObjectToSaveRequest): Try[Option[Long]] = Try {
     val table = objectToSave.table
-
     DB.withConnection { implicit connection =>
       SQL(s"""INSERT INTO $table(uuid, object) VALUES ({UUID}, {objectString})""")
         .on(
@@ -61,10 +60,35 @@ class ModelActor extends Actor {
   }
 
   def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[GeneralObject]] = Try {
-    val table = objectsToGetRequest.table.name
+    val tableName = objectsToGetRequest.table.name
     DB.withConnection { implicit connection =>
-      SQL(s"""SELECT * FROM $table""")
-        .as(objectParser *)
+      val objects: List[GeneralObject] = SQL(s"""SELECT * FROM $tableName""").as(objectParser *)
+//      tableName match {
+//        case "orders" =>
+//
+//            val brand = SQL(s"""SELECT * FROM brand WHERE uuid = {uuid}""")
+//              .on('uuid -> )
+//              .as(objectParser *)
+//          "1 brand"
+//          "orders" -> "1 store chacun"
+//
+//        case "brand" =>
+//          ~"stores"
+//
+//        case "stores" =>
+//          "users"
+//          "1 brand"
+//          "orders"
+//          "1 area"
+//
+//        case "users" =>
+//          "1 brand"
+//          "stores"
+//          "images"
+//
+//        case "areas" => None
+//      }
+      objects
     }
   }
 

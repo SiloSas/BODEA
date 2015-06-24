@@ -27,10 +27,9 @@ object Application extends Controller {
   val modelActor = Akka.system.actorOf(ModelActor.props, "ModelActor")
 
   def index = Authenticated { request =>
-    val a = true
     request.username match {
-      case Some(username) => Ok(public.html.index(a))
-      case None => Unauthorized(public.html.index(a))
+      case Some(username) => Ok(public.html.index(true))
+      case None => Unauthorized(public.html.index(false))
     }
   }
 
@@ -78,7 +77,6 @@ object Application extends Controller {
               case "brands" => askActorAllModelsInTable(table)
               case "stores" => askActorAllModelsInTable(table)
               case "users" => askActorAllModelsInTable(table)
-              case "roughs" => askActorAllModelsInTable(table)
               case "images" => askActorAllModelsInTable(table)
               case _ => Future { NotFound }
             }
@@ -164,7 +162,6 @@ object Application extends Controller {
     try {
       val uuid = UUID.fromString(uuidString)
       tableName match {
-        case "roughs" => askActorToDeleteModelInTable(table, uuid)
         case "images" => askActorToDeleteModelInTable(table, uuid)
         case otherTable =>
           if (isRequestedByClient(request))

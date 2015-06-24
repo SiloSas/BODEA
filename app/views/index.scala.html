@@ -2,9 +2,10 @@
 @main(title = "Bodea") {
     <div class="container">
         <section layout="row" flex ng-controller="MainCtrl" class="height100p">
-            <md-sidenav class="md-sidenav-left md-whiteframe-z2"
+            <md-sidenav class="md-sidenav-left md-whiteframe-z2 ng-hide height100p"
                         ng-if="$root.connected != false"
-                        class="height100p" md-component-id="left"
+                        ng-show="$root.connected"
+                        md-component-id="left"
                         md-is-locked-open="$mdMedia('gt-md')">
                 <md-toolbar class="md-theme-indigo">
                     <h1 class="md-toolbar-tools" ng-if="$root.connected == 'admin'"><a href="#/">Administration</a></h1>

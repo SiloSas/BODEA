@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $rootScope, $cookies) {
+angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $rootScope, $cookies, $location) {
     $rootScope.connected = false;
     var sessionCoockie = $cookies.get('PLAY_SESSION');
     if (angular.isDefined(sessionCoockie)) {
@@ -8,6 +8,8 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
         } else if (sessionType == 2) {
             $rootScope.connected = 'client';
         }
+    } else {
+        $location.path('/')
     }
     var factory = {
         connect: function (user) {

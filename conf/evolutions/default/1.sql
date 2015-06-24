@@ -14,7 +14,8 @@ INSERT INTO users(uuid, login, password, role)
 CREATE TABLE areas (
   areaId          SERIAL PRIMARY KEY,
   uuid            UUID NOT NULL,
-  object          TEXT NOT NULL
+  object          TEXT NOT NULL,
+  UNIQUE(object)
 );
 
 CREATE TABLE brands (
@@ -41,6 +42,61 @@ CREATE TABLE orders (
   object           TEXT NOT NULL
 );
 
+CREATE TABLE orderBrand (
+  orderId          INT REFERENCES orders (orderId),
+  brandId          INT REFERENCES brands (brandId),
+  PRIMARY KEY (orderId, brandId)
+);
+
+CREATE TABLE orderOrder (
+  orderId          INT REFERENCES orders (orderId),
+  suborderId       INT REFERENCES orders (orderId),
+  PRIMARY KEY (orderId, suborderId)
+);
+
+CREATE TABLE orderStore (
+  orderId          INT REFERENCES orders (orderId),
+  storeId          INT REFERENCES stores (storeId),
+  PRIMARY KEY (orderId, storeId)
+);
+
+CREATE TABLE storeUser (
+  storeId          INT REFERENCES stores (storeId),
+  userId           INT REFERENCES users (userId),
+  PRIMARY KEY (storeId, userId)
+);
+
+CREATE TABLE storeBrand (
+  storeId          INT REFERENCES stores (storeId),
+  brandId          INT REFERENCES brands (brandId),
+  PRIMARY KEY (storeId, brandId)
+);
+
+CREATE TABLE storeOrder (
+  storeId          INT REFERENCES stores (storeId),
+  orderId          INT REFERENCES orders (orderId),
+  PRIMARY KEY (storeId, orderId)
+);
+
+CREATE TABLE storeArea (
+  storeId          INT REFERENCES stores (storeId),
+  areaId           INT REFERENCES areas (areaId),
+  PRIMARY KEY (storeId, areaId)
+);
+
+CREATE TABLE userBrand (
+  userId           INT REFERENCES users (userId),
+  brandId          INT REFERENCES brands (brandId),
+  PRIMARY KEY (userId, brandId)
+);
+
+CREATE TABLE userImage (
+  userId           INT REFERENCES users (userId),
+  imageId          INT REFERENCES images (imageId),
+  PRIMARY KEY (userId, imageId)
+);
+
 
 # --- !Downs
-DROP TABLE IF EXISTS users, areas, brands, stores, images, orders;
+DROP TABLE IF EXISTS orderBrand, orderOrder, orderStore, storeUser, storeBrand, storeOrder, storeArea, userBrand,
+userImage, users, areas, brands, stores, images, orders;

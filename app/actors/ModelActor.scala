@@ -3,6 +3,7 @@ package actors
 import java.util.UUID
 
 import actors.ModelActor._
+import actors.UserActor.User
 import akka.actor._
 import anorm.SqlParser._
 import anorm._
@@ -11,7 +12,7 @@ import play.api.db.DB
 import services.Utilities._
 
 import scala.language.postfixOps
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 object ModelActor {
   case class Table(name: String)
@@ -20,7 +21,9 @@ object ModelActor {
   case class ObjectsToGetRequest(table: Table)
   case class ObjectToDeleteRequest(table: Table, uuid: UUID)
   case class ObjectToAmendRequest(table: Table, uuid: UUID, newObject: String)
-  case class GeneralObject(uuid: UUID, objectString: String)
+  sealed trait ModelReturnType
+  case class GeneralObject(uuid: UUID, objectString: String)  extends ModelReturnType
+  case class UserWithRelations (user: User, stores: GeneralObject, brands: GeneralObject, images: GeneralObject) extends ModelReturnType
   def props = Props[ModelActor]
 }
 
@@ -38,7 +41,7 @@ class ModelActor extends Actor {
     case ObjectToDeleteRequest(table, uuid) =>
       sender ! deleteObject(ObjectToDeleteRequest(table, uuid))
 
-    case _ => sender ! "unknown request"
+    case _ => sender ! Failure(throw new Exception("unknown request"))
   }
 
   private val objectParser: RowParser[GeneralObject] = {
@@ -49,10 +52,9 @@ class ModelActor extends Actor {
   }
 
   def save(objectToSave: ObjectToSaveRequest): Try[Option[Long]] = Try {
-    val table = objectToSave.table
-
+    val tableName = objectToSave.table.name
     DB.withConnection { implicit connection =>
-      SQL(s"""INSERT INTO $table(uuid, object) VALUES ({UUID}, {objectString})""")
+      SQL(s"""INSERT INTO $tableName(uuid, object) VALUES ({UUID}, {objectString})""")
         .on(
           'UUID -> objectToSave.uuid,
           'objectString -> objectToSave.objectString)
@@ -60,11 +62,68 @@ class ModelActor extends Actor {
     }
   }
 
-  def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[GeneralObject]] = Try {
-    val table = objectsToGetRequest.table.name
+  def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[ModelReturnType]] = Try {
+    val tableName = objectsToGetRequest.table.name
     DB.withConnection { implicit connection =>
-      SQL(s"""SELECT * FROM $table""")
+      val objects: List[GeneralObject] = SQL(s"""SELECT * FROM $tableName""")
         .as(objectParser *)
+      tableName match {
+//        case "orders" =>
+//          "1 brand"
+//          "orders" -> "1 store chacun"
+//
+//        case "brand" =>
+//          ~"stores"
+//
+//        case "stores" =>
+//          "users"
+//          "1 brand"
+//          "orders"
+//          "1 area"
+//
+        case "users" =>
+
+
+          SQL(
+            s"""SELECT users.*, stores.*, brands.*, images.* FROM users users
+               |  FULL JOIN storeUser storeUser
+               |    ON users.userid = storeUser.storeId
+               |  FULL JOIN stores stores
+               |    ON stores.storeid = storeUser.storeId
+               |  FULL JOIN userBrand userBrand
+               |    ON users.userid = userBrand.brandId
+               |  FULL JOIN brands brands
+               |    ON brands.brandId = userBrand.brandId
+               |  FULL JOIN userImage userImage
+               |    ON users.userid = userImage.imageId
+               |  FULL JOIN images images
+               |    ON images.imageId = userImage.imageId""".stripMargin)
+            .as(userWithRelationsParser *)
+        case _ => 
+//
+//        case "areas" => None
+      }
+      objects
+    }
+  }
+
+  val userWithRelationsParser: RowParser[UserWithRelations] = {
+    get[UUID]("uuid") ~
+      get[String]("login") ~
+      get[String]("password") ~
+      get[Int]("role") ~
+      get[Option[String]]("object") ~
+      get[UUID]("uuid") ~
+      get[String]("object") ~
+      get[UUID]("uuid") ~
+      get[String]("object") ~
+      get[UUID]("uuid") ~
+      get[String]("object") map {
+      case uuid ~ login ~ password ~ role ~ objectString ~ storeUUID ~ storeObject ~ brandUUID ~ brandObject ~
+        imageUUID ~ imageObject =>
+        UserWithRelations(User(uuid, login, password, role, objectString),
+          GeneralObject(storeUUID, storeObject), GeneralObject(brandUUID, brandObject),
+          GeneralObject(imageUUID, imageObject))
     }
   }
 
@@ -87,7 +146,7 @@ class ModelActor extends Actor {
   }
 
   def amendObject(objectToAmend: ObjectToAmendRequest): Try[Int] = Try {
-    val table = objectToAmend.table
+    val table = objectToAmend.table.name
     DB.withConnection { implicit connection =>
       SQL(
         s"""UPDATE $table

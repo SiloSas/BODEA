@@ -2,6 +2,7 @@ GET         /                   controllers.Application.index
 
 #USERS
 GET         /users/authenticate controllers.Application.authenticate(login: String, password: String)
+POST        /users/logout       controllers.Application.logout
 POST        /users              controllers.Application.saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String])
 
 #MODELS

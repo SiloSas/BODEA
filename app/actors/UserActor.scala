@@ -16,6 +16,7 @@ import services.Utilities._
 import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
+import actors.UserActor.userParser
 
 class AuthenticatedRequest[A](val username: Option[String], val role: Option[Int], request: Request[A])
   extends WrappedRequest[A](request)
@@ -37,6 +38,16 @@ object UserActor {
   case class User(uuid: UUID, login: String, password: String, role: Int, objectString: Option[String])
   case class AuthenticationRequest[A](login: String, password: String)
   case class AuthenticationResponse(authorized: Boolean, maybeUser: Option[User])
+
+  val userParser: RowParser[User] = {
+    get[UUID]("uuid") ~
+      get[String]("login") ~
+      get[String]("password") ~
+      get[Int]("role") ~
+      get[Option[String]]("object") map {
+      case uuid ~ login ~ password ~ role ~ objectString => User(uuid, login, password, role, objectString)
+    }
+  }
 }
 
 class UserActor extends Actor {
@@ -58,16 +69,6 @@ class UserActor extends Actor {
 
     case _ =>
       Logger error "UserActor.receive: unknown request"
-  }
-
-  private val userParser: RowParser[User] = {
-    get[UUID]("uuid") ~
-      get[String]("login") ~
-      get[String]("password") ~
-      get[Int]("role") ~
-      get[Option[String]]("object") map {
-      case uuid ~ login ~ password ~ role ~ objectString => User(uuid, login, password, role, objectString)
-    }
   }
 
   def formApply(uuid: String, login: String, password: String, role: Int, objectString: Option[String]): User =

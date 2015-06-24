@@ -84,7 +84,7 @@ CREATE TABLE storeArea (
   PRIMARY KEY (storeId, areaId)
 );
 
-CREATE TABLE userBand (
+CREATE TABLE userBrand (
   userId           INT REFERENCES users (userId),
   brandId          INT REFERENCES brands (brandId),
   PRIMARY KEY (userId, brandId)
@@ -98,5 +98,5 @@ CREATE TABLE userImage (
 
 
 # --- !Downs
-DROP TABLE IF EXISTS orderBrand, orderOrder, orderStore, storeUser, storeBrand, storeOrder, storeArea, userBand,
+DROP TABLE IF EXISTS orderBrand, orderOrder, orderStore, storeUser, storeBrand, storeOrder, storeArea, userBrand,
 userImage, users, areas, brands, stores, images, orders;

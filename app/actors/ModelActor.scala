@@ -3,6 +3,7 @@ package actors
 import java.util.UUID
 
 import actors.ModelActor._
+import actors.UserActor.User
 import akka.actor._
 import anorm.SqlParser._
 import anorm._
@@ -20,7 +21,9 @@ object ModelActor {
   case class ObjectsToGetRequest(table: Table)
   case class ObjectToDeleteRequest(table: Table, uuid: UUID)
   case class ObjectToAmendRequest(table: Table, uuid: UUID, newObject: String)
-  case class GeneralObject(uuid: UUID, objectString: String)
+  sealed trait ModelReturnType
+  case class GeneralObject(uuid: UUID, objectString: String)  extends ModelReturnType
+  case class UserWithRelations (user: User, stores: GeneralObject, brands: GeneralObject, images: GeneralObject) extends ModelReturnType
   def props = Props[ModelActor]
 }
 
@@ -59,16 +62,12 @@ class ModelActor extends Actor {
     }
   }
 
-  def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[GeneralObject]] = Try {
+  def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[ModelReturnType]] = Try {
     val tableName = objectsToGetRequest.table.name
     DB.withConnection { implicit connection =>
       val objects: List[GeneralObject] = SQL(s"""SELECT * FROM $tableName""").as(objectParser *)
-//      tableName match {
+      tableName match {
 //        case "orders" =>
-//
-//            val brand = SQL(s"""SELECT * FROM brand WHERE uuid = {uuid}""")
-//              .on('uuid -> )
-//              .as(objectParser *)
 //          "1 brand"
 //          "orders" -> "1 store chacun"
 //
@@ -81,14 +80,48 @@ class ModelActor extends Actor {
 //          "orders"
 //          "1 area"
 //
-//        case "users" =>
-//          "1 brand"
-//          "stores"
-//          "images"
+        case "users" =>
+
+
+          SQL(
+            s"""SELECT users.*, stores.*, brands.*, images.* FROM users users
+               |  FULL JOIN storeUser storeUser
+               |    ON users.userid = storeUser.storeId
+               |  FULL JOIN stores stores
+               |    ON stores.storeid = storeUser.storeId
+               |  FULL JOIN userBrand userBrand
+               |    ON users.userid = userBrand.brandId
+               |  FULL JOIN brands brands
+               |    ON brands.brandId = userBrand.brandId
+               |  FULL JOIN userImage userImage
+               |    ON users.userid = userImage.imageId
+               |  FULL JOIN images images
+               |    ON images.imageId = userImage.imageId""".stripMargin)
+            .as(userWithRelationsParser *)
 //
 //        case "areas" => None
-//      }
+      }
       objects
+    }
+  }
+
+  val userWithRelationsParser: RowParser[UserWithRelations] = {
+    get[UUID]("uuid") ~
+      get[String]("login") ~
+      get[String]("password") ~
+      get[Int]("role") ~
+      get[Option[String]]("object") ~
+      get[UUID]("uuid") ~
+      get[String]("object") ~
+      get[UUID]("uuid") ~
+      get[String]("object") ~
+      get[UUID]("uuid") ~
+      get[String]("object") map {
+      case uuid ~ login ~ password ~ role ~ objectString ~ storeUUID ~ storeObject ~ brandUUID ~ brandObject ~
+        imageUUID ~ imageObject =>
+        UserWithRelations(User(uuid, login, password, role, objectString),
+          GeneralObject(storeUUID, storeObject), GeneralObject(brandUUID, brandObject),
+          GeneralObject(imageUUID, imageObject))
     }
   }
 

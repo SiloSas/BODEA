@@ -12,7 +12,7 @@
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="assets/styles/main.css">
     <!-- endbuild -->
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
@@ -23,7 +23,7 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-
+@main(title = "Bodea") {
     <div class="container">
         <section layout="row" flex ng-controller="MainCtrl" class="height100p">
             <md-sidenav class="md-sidenav-left md-whiteframe-z2"
@@ -96,7 +96,7 @@
             </md-content>
         </section>
     </div>
-
+}
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
      <script>
@@ -111,42 +111,42 @@
 
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-animate/angular-animate.js"></script>
-    <script src="bower_components/angular-aria/angular-aria.js"></script>
-    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
-    <script src="bower_components/angular-messages/angular-messages.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.js"></script>
-    <script src="bower_components/angular-route/angular-route.js"></script>
-    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="bower_components/angular-touch/angular-touch.js"></script>
+    <script src="@routes.Assets.at("bower_components/angular/angular.js")"></script>
+    <script src="@routes.Assets.at("bower_components/angular-animate/angular-animate.js")"></script>
+    <script src="@routes.Assets.at("bower_components/angular-aria/angular-aria.js")"></script>
+    <script src="@routes.Assets.at("bower_components/angular-cookies/angular-cookies.js")"></script>
+    <script src="@routes.Assets.at("bower_components/angular-messages/angular-messages.js")"></script>
+    <script src="@routes.Assets.at("bower_components/angular-resource/angular-resource.js")"></script>
+    <script src="@routes.Assets.at("bower_components/angular-route/angular-route.js")"></script>
+    <script src="@routes.Assets.at("bower_components/angular-sanitize/angular-sanitize.js")"></script>
+    <script src="@routes.Assets.at("bower_components/angular-touch/angular-touch.js")"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
-    <script src="app/scripts/modules/foundation/mm-foundation.min.js"></script>
-    <script src="app/scripts/modules/angular-material.min.js"></script>
-    <script src="app/scripts/modules/Chart.js"></script>
-    <script src="app/scripts/modules/angular-chart.min.js"></script>
-    <script src="app/scripts/app.js"></script>
-    <script src="app/scripts/services/ordersFactory.js"></script>
-    <script src="app/scripts/services/storesFactory.js"></script>
-    <script src="app/scripts/services/brandsFactrory.js"></script>
-    <script src="app/scripts/services/areaFactory.js"></script>
-    <script src="app/scripts/services/usersFactory.js"></script>
-    <script src="app/scripts/services/userFactory.js"></script>
-    <script src="app/scripts/services/connectionFactory.js"></script>
-    <script src="app/scripts/services/imagesFactory.js"></script>
-    <script src="app/scripts/services/guidFactory.js"></script>
-    <script src="app/scripts/directives/contentView.js"></script>
-    <script src="app/scripts/directives/fileReader.js"></script>
-    <script src="app/scripts/controllers/main.js"></script>
-    <script src="app/scripts/controllers/commandesCtrl.js"></script>
-    <script src="app/scripts/controllers/magasins.js"></script>
-    <script src="app/scripts/controllers/users.js"></script>
-    <script src="app/scripts/controllers/myOrders.js"></script>
-    <script src="app/scripts/controllers/imagesCtrl.js"></script>
-    <script src="app/scripts/controllers/historiqueCtrl.js"></script>
+    <script src="@routes.Assets.at("app/scripts/modules/foundation/mm-foundation.min.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/modules/angular-material.min.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/modules/Chart.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/modules/angular-chart.min.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/app.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/services/ordersFactory.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/services/storesFactory.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/services/brandsFactrory.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/services/areaFactory.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/services/usersFactory.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/services/userFactory.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/services/connectionFactory.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/services/imagesFactory.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/services/guidFactory.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/directives/contentView.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/directives/fileReader.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/controllers/main.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/controllers/commandesCtrl.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/controllers/magasins.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/controllers/users.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/controllers/myOrders.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/controllers/imagesCtrl.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/controllers/historiqueCtrl.js")"></script>
     <!-- endbuild -->
 </body>
 </html>

@@ -29,8 +29,8 @@ object Application extends Controller {
   def index = Authenticated { request =>
     val a = true
     request.username match {
-      case Some(username) => Ok(views.html.index(a))
-      case None => Unauthorized(views.html.index(a))
+      case Some(username) => Ok(public.html.index(a))
+      case None => Unauthorized(public.html.index(a))
     }
   }
 

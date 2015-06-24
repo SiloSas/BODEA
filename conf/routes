@@ -12,4 +12,4 @@ POST        /models/:uuid       controllers.Application.amendModel(table: String
 DELETE      /models/:uuid       controllers.Application.deleteModel(table: String, uuid: String)
 
 #ASSETS
-GET         /assets/*file       controllers.Assets.at(path="/public", file)
+GET        /assets/*file        controllers.Assets.at(path="/public", file)

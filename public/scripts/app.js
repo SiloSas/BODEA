@@ -25,31 +25,31 @@ angular
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'views/main.html',
+        templateUrl: 'assets/views/main.html',
         controller: 'MainCtrl'
       })
       .when('/Commandes', {
-        templateUrl: 'views/commandes.html',
+        templateUrl: 'assets/views/commandes.html',
         controller: 'CommandesCtrl'
       })
       .when('/Magasins', {
-        templateUrl: 'views/magasins.html',
+        templateUrl: 'assets/views/magasins.html',
         controller: 'MagasinsCtrl'
       })
       .when('/Comptes', {
-        templateUrl: 'views/users.html',
+        templateUrl: 'assets/views/users.html',
         controller: 'UsersCtrl'
       })
       .when('/mesCommandes', {
-        templateUrl: 'views/myOrders.html',
+        templateUrl: 'assets/views/myOrders.html',
         controller: 'MyOrdersCtrl'
       })
       .when('/Visuels', {
-        templateUrl: 'views/images.html',
+        templateUrl: 'assets/views/images.html',
         controller: 'ImagesCtrl'
       })
       .when('/Historique', {
-        templateUrl: 'views/historique.html',
+        templateUrl: 'assets/views/historique.html',
         controller: 'HistoriqueCtrl'
       })
       .otherwise({

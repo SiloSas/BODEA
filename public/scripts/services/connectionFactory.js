@@ -2,7 +2,9 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
     $rootScope.connected = false;
     var factory = {
         connect: function (user) {
-            $http.post('/users/authenticate/'+ user.username + '/'+ user.password).success(function (user) {
+            console.log(user)
+            $http.get('/users/authenticate?login=' + user.login +'&password=' + user.password).
+                success(function (user) {
                 $rootScope.connected = 'admin';
             })
         }

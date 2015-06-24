@@ -2,6 +2,7 @@ GET         /                   controllers.Application.index
 
 #USERS
 GET         /users/authenticate controllers.Application.authenticate(login: String, password: String)
+POST        /users/logout       controllers.Application.logout
 POST        /users              controllers.Application.saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String])
 
 #MODELS
@@ -12,4 +13,4 @@ POST        /models/:uuid       controllers.Application.amendModel(table: String
 DELETE      /models/:uuid       controllers.Application.deleteModel(table: String, uuid: String)
 
 #ASSETS
-GET         /assets/*file       controllers.Assets.at(path="/public", file)
+GET        /assets/*file        controllers.Assets.at(path="/public", file)

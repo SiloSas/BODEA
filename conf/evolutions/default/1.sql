@@ -14,7 +14,8 @@ INSERT INTO users(uuid, login, password, role)
 CREATE TABLE areas (
   areaId          SERIAL PRIMARY KEY,
   uuid            UUID NOT NULL,
-  object          TEXT NOT NULL
+  object          TEXT NOT NULL,
+  UNIQUE(object)
 );
 
 CREATE TABLE brands (

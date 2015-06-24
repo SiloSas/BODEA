@@ -4,8 +4,8 @@
     <form name="connection" ng-submit="connect(user)">
         <md-input-container>
             <label>Email or username</label>
-            <input required name="username" type="text" ng-model="user.username">
-            <div ng-messages="connection.username.$error">
+            <input required name="login" type="text" ng-model="user.login">
+            <div ng-messages="connection.login.$error">
                 <div ng-message="required">This is required.</div>
             </div>
         </md-input-container>

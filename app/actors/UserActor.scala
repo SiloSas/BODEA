@@ -2,7 +2,7 @@ package actors
 
 import java.util.UUID
 
-import actors.UserActor.{AuthenticationRequest, AuthenticationResponse, SaveUserRequest, User}
+import actors.UserActor.{AuthenticationRequest, AuthenticationResponse, SaveUserRequest, User, userParser}
 import akka.actor._
 import anorm.SqlParser._
 import anorm.{RowParser, _}
@@ -16,7 +16,6 @@ import services.Utilities._
 import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
-import actors.UserActor.userParser
 
 class AuthenticatedRequest[A](val username: Option[String], val role: Option[Int], request: Request[A])
   extends WrappedRequest[A](request)
@@ -34,8 +33,8 @@ object Authenticated extends ActionBuilder[AuthenticatedRequest] {
 
 object UserActor {
   def props = Props[UserActor]
-  case class SaveUserRequest(uuid: String, login: String, password: String, role: Int, objectString: Option[String])
   case class User(uuid: UUID, login: String, password: String, role: Int, objectString: Option[String])
+  case class SaveUserRequest(uuid: String, login: String, password: String, role: Int, objectString: Option[String])
   case class AuthenticationRequest[A](login: String, password: String)
   case class AuthenticationResponse(authorized: Boolean, maybeUser: Option[User])
 

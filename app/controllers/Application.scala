@@ -139,7 +139,7 @@ object Application extends Controller {
   }
 
   def askActorAllModelsInTable(table: Table): Future[SimpleResult] = {
-    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[GeneralObject]]] map {
+    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[MaybeGeneralObject]]] map {
       case Success(objects) => Ok(Json.toJson(objects))
       case Failure(failure) => InternalServerError("callGetModelsActor: " + failure)
     }
@@ -174,7 +174,7 @@ object Application extends Controller {
   }
 
   def askActorModelInTable(table: Table, uuid: UUID): Future[SimpleResult] =
-    (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Option[GeneralObject]]] map {
+    (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Option[MaybeGeneralObject]]] map {
       case Success(Some(objectFound)) => Ok(Json.toJson(objectFound))
       case Success(None) => NoContent
       case Failure(failure) => InternalServerError("askActorModelInTable: " + failure)

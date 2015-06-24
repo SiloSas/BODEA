@@ -14,6 +14,8 @@ import services.Utilities._
 import scala.language.postfixOps
 import scala.util.{Failure, Try}
 
+sealed trait ModelReturnType
+
 object ModelActor {
   case class Table(name: String)
   case class ObjectToSaveRequest(table: Table, uuid: UUID, objectString: String)
@@ -21,9 +23,10 @@ object ModelActor {
   case class ObjectsToGetRequest(table: Table)
   case class ObjectToDeleteRequest(table: Table, uuid: UUID)
   case class ObjectToAmendRequest(table: Table, uuid: UUID, newObject: String)
-  sealed trait ModelReturnType
   case class GeneralObject(uuid: UUID, objectString: String)  extends ModelReturnType
-  case class UserWithRelations (user: User, stores: GeneralObject, brands: GeneralObject, images: GeneralObject) extends ModelReturnType
+  case class MaybeGeneralObject(uuid: Option[UUID], objectString: Option[String])  extends ModelReturnType
+  case class UserWithRelations (user: User, stores: MaybeGeneralObject, brands: MaybeGeneralObject,
+                                images: MaybeGeneralObject) extends ModelReturnType
   def props = Props[ModelActor]
 }
 
@@ -51,6 +54,13 @@ class ModelActor extends Actor {
     }
   }
 
+  private val maybeObjectParser: RowParser[MaybeGeneralObject] = {
+    get[Option[UUID]]("uuid") ~
+      get[Option[String]]("object") map {
+      case uuid ~ objectString => MaybeGeneralObject(uuid, objectString)
+    }
+  }
+
   def save(objectToSave: ObjectToSaveRequest): Try[Option[Long]] = Try {
     val tableName = objectToSave.table.name
     DB.withConnection { implicit connection =>
@@ -65,8 +75,6 @@ class ModelActor extends Actor {
   def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[ModelReturnType]] = Try {
     val tableName = objectsToGetRequest.table.name
     DB.withConnection { implicit connection =>
-      val objects: List[GeneralObject] = SQL(s"""SELECT * FROM $tableName""")
-        .as(objectParser *)
       tableName match {
 //        case "orders" =>
 //          "1 brand"
@@ -82,28 +90,30 @@ class ModelActor extends Actor {
 //          "1 area"
 //
         case "users" =>
-
-
-          SQL(
+//          val a = SQL(
+//            s"""SELECT users.* FROM users users""".stripMargin)
+//          println(a)
+//          a.as(userParser.*)
+          val a = SQL(
             s"""SELECT users.*, stores.*, brands.*, images.* FROM users users
-               |  FULL JOIN storeUser storeUser
+               |  LEFT OUTER JOIN storeUser storeUser
                |    ON users.userid = storeUser.storeId
-               |  FULL JOIN stores stores
+               |  LEFT OUTER JOIN stores stores
                |    ON stores.storeid = storeUser.storeId
-               |  FULL JOIN userBrand userBrand
+               |  LEFT OUTER JOIN userBrand userBrand
                |    ON users.userid = userBrand.brandId
-               |  FULL JOIN brands brands
+               |  LEFT OUTER JOIN brands brands
                |    ON brands.brandId = userBrand.brandId
-               |  FULL JOIN userImage userImage
+               |  LEFT OUTER JOIN userImage userImage
                |    ON users.userid = userImage.imageId
-               |  FULL JOIN images images
+               |  LEFT OUTER JOIN images images
                |    ON images.imageId = userImage.imageId""".stripMargin)
-            .as(userWithRelationsParser *)
-        case _ => 
-//
-//        case "areas" => None
+          println(a)
+            a.as(userWithRelationsParser *)
+        case otherTable =>
+          SQL(s"""SELECT * FROM $tableName""")
+            .as(objectParser *)
       }
-      objects
     }
   }
 
@@ -113,26 +123,30 @@ class ModelActor extends Actor {
       get[String]("password") ~
       get[Int]("role") ~
       get[Option[String]]("object") ~
-      get[UUID]("uuid") ~
-      get[String]("object") ~
-      get[UUID]("uuid") ~
-      get[String]("object") ~
-      get[UUID]("uuid") ~
-      get[String]("object") map {
-      case uuid ~ login ~ password ~ role ~ objectString ~ storeUUID ~ storeObject ~ brandUUID ~ brandObject ~
+      get[Option[UUID]]("uuid") ~
+      get[Option[String]]("object") ~
+      get[Option[UUID]]("uuid") ~
+      get[Option[String]]("object") ~
+      get[Option[UUID]]("uuid") ~
+      get[Option[String]]("object") map {
+      case uuid ~ login ~ password ~ role ~ userObject ~ storeUUID ~ storeObject ~ brandUUID ~ brandObject ~
         imageUUID ~ imageObject =>
-        UserWithRelations(User(uuid, login, password, role, objectString),
-          GeneralObject(storeUUID, storeObject), GeneralObject(brandUUID, brandObject),
-          GeneralObject(imageUUID, imageObject))
+        println(login)
+        println(uuid, login, password , role , userObject , storeUUID , storeObject , brandUUID , brandObject ,
+          imageUUID , imageObject)
+        UserWithRelations(User(uuid, login, password, role, userObject),
+          MaybeGeneralObject(storeUUID, storeObject), MaybeGeneralObject(brandUUID, brandObject),
+          MaybeGeneralObject(imageUUID, imageObject))
     }
   }
 
-  def getObject(objectToGet: ObjectToGetRequest): Try[Option[GeneralObject]] = Try {
+  def getObject(objectToGet: ObjectToGetRequest): Try[Option[MaybeGeneralObject]] = Try {
+    //un seul get avec un + """WHERE uuid = " dans la requête sql
     val table = objectToGet.table.name
     DB.withConnection { implicit connection =>
       SQL(s"""SELECT * FROM $table WHERE UUID = {UUID}""")
         .on('UUID -> objectToGet.uuid)
-        .as(objectParser.singleOpt)
+        .as(maybeObjectParser.singleOpt)
     }
   }
 

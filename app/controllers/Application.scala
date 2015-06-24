@@ -55,7 +55,7 @@ object Application extends Controller {
       case None =>
         NotModified
       case username =>
-        Ok("Correcly logout").withNewSession
+        Ok("Correctly logged out").withNewSession
     }
   }
 

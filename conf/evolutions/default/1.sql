@@ -50,7 +50,7 @@ CREATE TABLE orderBrand (
 
 CREATE TABLE orderOrder (
   orderId          INT REFERENCES orders (orderId),
-  suborderId       INT REFERENCES orders (suborderId),
+  suborderId       INT REFERENCES orders (orderId),
   PRIMARY KEY (orderId, suborderId)
 );
 
@@ -62,7 +62,7 @@ CREATE TABLE orderStore (
 
 CREATE TABLE storeUser (
   storeId          INT REFERENCES stores (storeId),
-  userId           INT REFERENCES stores (userId),
+  userId           INT REFERENCES users (userId),
   PRIMARY KEY (storeId, userId)
 );
 
@@ -85,7 +85,7 @@ CREATE TABLE storeArea (
 );
 
 CREATE TABLE userBand (
-  userId           INT REFERENCES stores (userId),
+  userId           INT REFERENCES users (userId),
   brandId          INT REFERENCES brands (brandId),
   PRIMARY KEY (userId, brandId)
 );
@@ -98,5 +98,5 @@ CREATE TABLE userImage (
 
 
 # --- !Downs
-DROP TABLE IF orderBrand, orderOrder, orderStore, storeUser, storeBrand, storeOrder, storeArea, userBand, userImage,
-users, areas, brands, stores, images, orders;
+DROP TABLE IF EXISTS orderBrand, orderOrder, orderStore, storeUser, storeBrand, storeOrder, storeArea, userBand,
+userImage, users, areas, brands, stores, images, orders;

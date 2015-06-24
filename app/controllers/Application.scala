@@ -19,9 +19,10 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
+import java.io.File
 
 object Application extends Controller {
-  implicit val timeout = Timeout(1 seconds)
+  implicit val timeout = Timeout(1000 seconds)
 
   val userActor = Akka.system.actorOf(UserActor.props, "UserActor")
   val modelActor = Akka.system.actorOf(ModelActor.props, "ModelActor")
@@ -59,6 +60,19 @@ object Application extends Controller {
     }
   }
 
+  def uploadImage = Action(parse.multipartFormData) { request =>
+    request.body.file("image").map { image =>
+      val filename = image.filename
+      val contentType = image.contentType
+      image.ref.moveTo(new File("/public/pictures/"))
+      Ok("File uploaded")
+    }.getOrElse {
+      Redirect(routes.Application.index()).flashing(
+        "error" -> "Missing file"
+      )
+    }
+  }
+
   def saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String]) = Authenticated.async { request =>
     request.username match {
       case None =>
@@ -77,20 +91,19 @@ object Application extends Controller {
       val uuid = UUID.fromString(stringUUID)
       tableName match {
         case "orders" => askActorToSaveModel(tableName, objectString, uuid)
-        case otherTable =>
+        case _ =>
           if (isRequestedByClient(request))
             Future { Unauthorized("Vous devez être administrateur pour accèder à cette ressource.") }
           else
-            otherTable match {
-              case "areas" => askActorAllModelsInTable(table)
-              case "brands" => askActorAllModelsInTable(table)
-              case "stores" => askActorAllModelsInTable(table)
-              case "users" => askActorAllModelsInTable(table)
-              case "images" => askActorAllModelsInTable(table)
+            tableName match {
+              case "areas" => askActorToSaveModel(tableName, objectString, uuid)
+              case "brands" => askActorToSaveModel(tableName, objectString, uuid)
+              case "stores" => askActorToSaveModel(tableName, objectString, uuid)
+              case "users" => askActorToSaveModel(tableName, objectString, uuid)
+              case "images" => askActorToSaveModel(tableName, objectString, uuid)
               case _ => Future { NotFound }
             }
       }
-
     } catch {
       case e: Exception =>
         Logger error e.getMessage
@@ -99,9 +112,10 @@ object Application extends Controller {
   }
 
   def askActorToSaveModel(tableName: String, objectString: String, uuid: UUID): Future[SimpleResult] = {
-    (modelActor ? ObjectToSaveRequest(Table(tableName), uuid, objectString)).mapTo[String] map {
-      case failure if failure.contains("failure") => InternalServerError("saveModel: " + failure)
-      case successfulMessage => Ok(successfulMessage)
+    (modelActor ? ObjectToSaveRequest(Table(tableName), uuid, objectString)).mapTo[Try[Option[Long]]] map {
+      case Failure(failure) => InternalServerError("saveModel: " + failure)
+      case Success(Some(_)) => Created
+      case Success(None) => NotModified
     }
   }
 
@@ -125,7 +139,7 @@ object Application extends Controller {
   }
 
   def askActorAllModelsInTable(table: Table): Future[SimpleResult] = {
-    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[GeneralObject]]].map {
+    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[GeneralObject]]] map {
       case Success(objects) => Ok(Json.toJson(objects))
       case Failure(failure) => InternalServerError("callGetModelsActor: " + failure)
     }

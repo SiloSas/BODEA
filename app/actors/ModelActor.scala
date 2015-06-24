@@ -12,7 +12,7 @@ import play.api.db.DB
 import services.Utilities._
 
 import scala.language.postfixOps
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 object ModelActor {
   case class Table(name: String)
@@ -41,7 +41,7 @@ class ModelActor extends Actor {
     case ObjectToDeleteRequest(table, uuid) =>
       sender ! deleteObject(ObjectToDeleteRequest(table, uuid))
 
-    case _ => sender ! "unknown request"
+    case _ => sender ! Failure(throw new Exception("unknown request"))
   }
 
   private val objectParser: RowParser[GeneralObject] = {
@@ -52,9 +52,9 @@ class ModelActor extends Actor {
   }
 
   def save(objectToSave: ObjectToSaveRequest): Try[Option[Long]] = Try {
-    val table = objectToSave.table
+    val tableName = objectToSave.table.name
     DB.withConnection { implicit connection =>
-      SQL(s"""INSERT INTO $table(uuid, object) VALUES ({UUID}, {objectString})""")
+      SQL(s"""INSERT INTO $tableName(uuid, object) VALUES ({UUID}, {objectString})""")
         .on(
           'UUID -> objectToSave.uuid,
           'objectString -> objectToSave.objectString)
@@ -65,7 +65,8 @@ class ModelActor extends Actor {
   def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[ModelReturnType]] = Try {
     val tableName = objectsToGetRequest.table.name
     DB.withConnection { implicit connection =>
-      val objects: List[GeneralObject] = SQL(s"""SELECT * FROM $tableName""").as(objectParser *)
+      val objects: List[GeneralObject] = SQL(s"""SELECT * FROM $tableName""")
+        .as(objectParser *)
       tableName match {
 //        case "orders" =>
 //          "1 brand"
@@ -144,7 +145,7 @@ class ModelActor extends Actor {
   }
 
   def amendObject(objectToAmend: ObjectToAmendRequest): Try[Int] = Try {
-    val table = objectToAmend.table
+    val table = objectToAmend.table.name
     DB.withConnection { implicit connection =>
       SQL(
         s"""UPDATE $table

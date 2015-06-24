@@ -99,6 +99,7 @@ class ModelActor extends Actor {
                |  FULL JOIN images images
                |    ON images.imageId = userImage.imageId""".stripMargin)
             .as(userWithRelationsParser *)
+        case _ => 
 //
 //        case "areas" => None
       }

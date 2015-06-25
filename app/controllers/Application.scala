@@ -112,10 +112,9 @@ object Application extends Controller {
   }
 
   def askActorToSaveModel(tableName: String, objectString: String, uuid: UUID): Future[SimpleResult] = {
-    (modelActor ? ObjectToSaveRequest(PostgresTable(tableName), uuid, objectString)).mapTo[Try[Option[Long]]] map {
+    (modelActor ? ObjectToSaveRequest(PostgresTable(tableName), uuid, objectString)).mapTo[Try[Int]] map {
+      case Success(_) => Created
       case Failure(failure) => InternalServerError("saveModel: " + failure)
-      case Success(Some(_)) => Created
-      case Success(None) => NotModified
     }
   }
 

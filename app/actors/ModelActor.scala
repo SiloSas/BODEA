@@ -38,6 +38,17 @@ object ModelActor {
     def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
   }
 
+//  class relationTable(tag: Tag)(implicit tables: (String, String)) extends
+//  Table[(Int, Int)](tag, tables._1 + tables._2) {
+//    val tableA = table.split("To")(0)
+//    val tableB = table.split("To")(1)
+//    def aId = column[Int](tableA + "id")
+//    def bId = column[Int](tableB + "id")
+//    def * = (aId, bId)
+//    def aFK = foreignKey("a_fk", aId, tableA)(a => a.id)
+//    def bFK = foreignKey("b_fk", bId, tableB)(b => b.id)
+//  }
+
   case class MaybeGeneralObject(uuid: Option[UUID], objectString: Option[String]) extends ModelReturnType
   case class UserWithRelations (user: User, stores: MaybeGeneralObject, brands: MaybeGeneralObject,
                                 images: MaybeGeneralObject) extends ModelReturnType
@@ -111,6 +122,21 @@ class ModelActor extends Actor {
 //          "1 area"
 //
         case "users" =>
+
+
+
+          implicit var table = "stores"
+          val stores = TableQuery[StandardTable]
+          table = "orders"
+          val orders = TableQuery[StandardTable]
+
+
+//          println(storesTable.list)
+//          for {
+//            (orders, stores) <- users innerJoin
+//          }
+
+
           val a = SQL(
             s"""SELECT users.*, stores.*, brands.*, images.* FROM users users
                |  LEFT OUTER JOIN storeUser storeUser
@@ -125,7 +151,6 @@ class ModelActor extends Actor {
                |    ON users.userid = userImage.imageId
                |  LEFT OUTER JOIN images images
                |    ON images.imageId = userImage.imageId""".stripMargin)
-            println(a)
             a.as(userWithRelationsParser *)
         case otherTable =>
           implicit var table = "klj"

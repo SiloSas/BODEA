@@ -47,12 +47,8 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
     });
 
     AreaFactory.getAreas().then(function (areas) {
-        $scope.areas = areas.map(function (area) {
-            return {
-                value: area.toLowerCase(),
-                name: area
-            };
-        })
+        $scope.areas = areas;
+        console.log($scope.areas)
     });
     $scope.querySearchBrand   = querySearchBrand;
     $scope.querySearch  = querySearch;

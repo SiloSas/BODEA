@@ -2,7 +2,6 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
                                                              StoresFactory) {
     UsersFactory.getUsers().then(function (users) {
         $scope.users = users;
-        console.log(users)
     });
     StoresFactory.getStores().then(function (stores) {
         $scope.stores = stores;
@@ -43,11 +42,7 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     };
 
     $scope.refactorUser = function (user) {
-        for (var i = 0; i < $scope.users.length; i++) {
-            if (user.id == $scope.users[i].id) {
-                $scope.users[i] = user.newUser
-            }
-        }
+        UsersFactory.refactorUser(user)
     };
 
     $scope.changeActiveUser = function (user) {

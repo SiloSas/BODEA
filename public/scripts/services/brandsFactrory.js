@@ -19,6 +19,7 @@ angular.module('bodeaApp').factory('BrandFactory', function ($q, $http, GuidFact
             brand.id = GuidFactory();
             delete(brand.$$hashKey);
             factory.brands.push(brand);
+            console.log(factory.brands);
             $http.post('/models?table=brands&uuid='+ brand.id + '&objectString=' + JSON.stringify(brand)).success(function (object) {
             });
             return brand;

@@ -41,12 +41,10 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             $scope.stores = stores;
         });
         AreaFactory.getAreas().then(function (areas) {
-            $scope.areas = areas.split(/, +/g).map( function (area) {
-                return {
-                    value: area.toLowerCase(),
-                    name: area
-                };
-            })
+            $scope.areas = areas;
+        });
+        BrandFactory.getBrands().then(function (brands) {
+            $scope.brands = brands
         });
 
         $scope.limit = 20;
@@ -105,9 +103,9 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                     }
                     store = angular.copy(store.newStore);
                     store.brand = $scope.newOrder.brand;
-                    store.id = GuidFactory();
                     StoresFactory.postStore(store);
                     $scope.selectedStore = store.id;
+                    $scope.newSubOrder.store = store;
                 })
             });
         };
@@ -204,10 +202,6 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         $scope.remove = function (order) {
             OrdersFactory.deleteOrder(order)
         };
-
-        BrandFactory.getBrands().then(function (brands) {
-            $scope.brands = brands
-        });
 
         $scope.querySearchBrand   = querySearchBrand;
         $scope.selectedBrandChange = selectedBrandChange;

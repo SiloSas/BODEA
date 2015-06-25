@@ -1,6 +1,16 @@
 angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout, $filter, $log, StoresFactory,
                                                                 BrandFactory, AreaFactory) {
 
+    StoresFactory.getStores().then(function (stores) {
+        $scope.stores = stores;
+    });
+    BrandFactory.getBrands().then(function (brands) {
+        $scope.brands = brands
+    });
+
+    AreaFactory.getAreas().then(function (areas) {
+        $scope.areas = areas;
+    });
     $scope.limit = 20;
     $scope.predicate = 'brand';
     $scope.reverse = false;
@@ -8,9 +18,6 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
         $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
         $scope.predicate = predicate;
     };
-    StoresFactory.getStores().then(function (stores) {
-        $scope.stores = stores;
-    });
     $scope.copyStore = function (store) {
         $timeout(function () {
             $scope.$apply(function () {
@@ -42,14 +49,6 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
         $scope.newStore = {}
     };
 
-    BrandFactory.getBrands().then(function (brands) {
-        $scope.brands = brands
-    });
-
-    AreaFactory.getAreas().then(function (areas) {
-        $scope.areas = areas;
-        console.log($scope.areas)
-    });
     $scope.querySearchBrand   = querySearchBrand;
     $scope.querySearch  = querySearch;
     $scope.selectedBrandChange = selectedBrandChange;

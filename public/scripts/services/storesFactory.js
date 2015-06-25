@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('StoresFactory', function ($q, $http) {
+angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFactory) {
     var factory = {
         stores: false,
         getStores: function () {
@@ -23,17 +23,29 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http) {
                     delete(store.newStore);
                 }
             }
-            $http.post('stores/' + store.id, {table: 'stores', objectString: store}).success(function (data) {
+            $http.post('models/' + store.id + '?table=stores&objectString=' + JSON.stringify(store)).success(function (data) {
                 console.log(data)
             }).error(function (error) {
                 console.log(error)
             })
         },
         postStore: function (store) {
+            store.id = GuidFactory();
             factory.stores.push(store);
             var stringStore = JSON.stringify(store);
-            console.log(stringStore)
             $http.post('models?table=stores&uuid=' + store.id + '&objectString=' + stringStore).success(function (data) {
+                console.log(data)
+            }).error(function (error) {
+                console.log(error)
+            })
+        },
+        deleteStore: function (store) {
+            for (var i = 0; i < factory.stores.length; i++) {
+                if (factory.stores[i].id == store.id) {
+                    factory.stores.splice(i, 1);
+                }
+            }
+            $http.delete('models/' + store.id + '?table=stores').success(function (data) {
                 console.log(data)
             }).error(function (error) {
                 console.log(error)

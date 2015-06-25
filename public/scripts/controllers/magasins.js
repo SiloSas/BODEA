@@ -20,38 +20,34 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
     };
 
     $scope.refactorStore = function (store) {
-        for (var i = 0; i < $scope.stores.length; i++) {
-            if (store.id == $scope.stores[i].id) {
-                $scope.stores[i] = store.newStore
-            }
-        }
+        StoresFactory.refactorStore(store)
     };
 
     $scope.remove = function (store) {
-        for (var i = 0; i < $scope.stores.length; i++) {
-            if (store.id == $scope.stores[i].id) {
-                $scope.stores.splice(i, 1)
-            }
-        }
+        StoresFactory.deleteStore(store)
     };
 
     $scope.newStore = {};
     $scope.addStore = function () {
-        $scope.stores.push($scope.newStore);
+        if (angular.isDefined($scope.newStore.brand.flag)) {
+            delete($scope.newStore.brand.flag);
+            BrandFactory.postBrand($scope.newStore.brand)
+        }
+        if (angular.isDefined($scope.newStore.area.flag)) {
+            console.log($scope.newStore)
+            //delete($scope.newStore.area.flag);
+            AreaFactory.postArea($scope.newStore.area)
+        }
+        StoresFactory.postStore($scope.newStore);
         $scope.newStore = {}
     };
 
     BrandFactory.getBrands().then(function (brands) {
-        $scope.brands = brands.map( function (brand) {
-            return {
-                value: brand.name.toLowerCase(),
-                name: brand.name
-            };
-        });
+        $scope.brands = brands
     });
 
     AreaFactory.getAreas().then(function (areas) {
-        $scope.areas = areas.split(/, +/g).map( function (area) {
+        $scope.areas = areas.map(function (area) {
             return {
                 value: area.toLowerCase(),
                 name: area
@@ -66,13 +62,13 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
 
     function querySearchBrand (query) {
         if ($scope.brands.filter( createFilterFor(query)).length == 0) {
-            $scope.brands.push({name: query, value: query.toLowerCase()});
+            $scope.brands.push({name: query, value: query.toLowerCase(), flag: true});
         }
         return query ? $scope.brands.filter( createFilterFor(query) ) : $scope.brands;
     }
     function querySearch (query) {
         if ($scope.areas.filter( createFilterFor(query)).length == 0) {
-            $scope.areas.push({name: query, value: query.toLowerCase()});
+            $scope.areas.push({name: query, value: query.toLowerCase(), flag: true});
         }
         return query ? $scope.areas.filter( createFilterFor(query) ) : $scope.areas;
     }

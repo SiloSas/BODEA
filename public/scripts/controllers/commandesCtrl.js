@@ -113,10 +113,6 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         };
 
         $scope.refactorCommande = function (order) {
-            if ($scope.newOrder.brand.flag) {
-                delete($scope.newOrder.brand.flag);
-                BrandFactory.postBrand($scope.newOrder.brand)
-            }
             OrdersFactory.refactorOrder(order)
         };
 
@@ -210,12 +206,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         };
 
         BrandFactory.getBrands().then(function (brands) {
-            $scope.brands = brands.map( function (brand) {
-                return {
-                    value: brand.name.toLowerCase(),
-                    name: brand.name
-                };
-            })
+            $scope.brands = brands
         });
 
         $scope.querySearchBrand   = querySearchBrand;

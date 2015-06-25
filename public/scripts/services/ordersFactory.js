@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http) {
+angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFactory) {
     var factory = {
         orders: false,
         getOrders: function () {
@@ -7,7 +7,9 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http) {
                 deferred.resolve(factory.orders)
             } else {
                 $http.get('models?table=orders').success(function (object) {
-                    factory.orders = object;
+                    factory.orders = object.map(function (el) {
+                        return JSON.parse(el.objectString)
+                    });
                     deferred.resolve(factory.orders);
                 });
             }
@@ -19,20 +21,19 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http) {
                     order = angular.copy(order.newOrder);
                     delete(order.newOrder);
                     factory.orders[i] = angular.copy(order);
+                    $http.post('models/' + order.uuid + '?table=orders&objectString=' + JSON.stringify(order)).success(function (data, statut) {
+                        console.log(data, statut)
+                    }).error(function (error) {
+                        console.log(error)
+                    })
                 }
             }
-            $http.post('orders/' + order.id, {table: 'orders', objectString: order}).success(function (data) {
-                console.log(data)
-            }).error(function (error) {
-                console.log(error)
-            })
         },
         postOrder: function (order) {
+            order.uuid = GuidFactory();
             factory.orders.push(order);
-            $http.post('orders/', {table: 'orders', uuid: order.id, objectString: order}).success(function (data) {
-                console.log(data)
+            $http.post('models?table=orders&uuid=' + order.uuid + '&objectString=' + JSON.stringify(order)).success(function (data) {
             }).error(function (error) {
-                console.log(error)
             })
         },
         deleteOrder: function (order) {
@@ -41,7 +42,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http) {
                     factory.orders.splice(i, 1)
                 }
             }
-            $http.delete('orders/' + order.id).success(function (data) {
+            $http.delete('models/' + order.uuid + '?table=orders').success(function (data) {
                 console.log(data)
             }).error(function (error) {
                 console.log(error)

@@ -7,7 +7,9 @@ angular.module('bodeaApp').factory('BrandFactory', function ($q, $http, GuidFact
                 deferred.resolve(factory.brands)
             } else {
                 $http.get('/models?table=brands').success(function (object) {
-                    factory.brands = object;
+                    factory.brands = object.map(function (el) {
+                        return JSON.parse(el.objectString)
+                    });
                     deferred.resolve(factory.brands);
                 });
             }
@@ -17,7 +19,7 @@ angular.module('bodeaApp').factory('BrandFactory', function ($q, $http, GuidFact
             brand.id = GuidFactory();
             delete(brand.$$hashKey);
             factory.brands.push(brand);
-            $http.post('/models/?table=brands&uuid='+ brand.id + '&objectString=' + JSON.stringify(brand)).success(function (object) {
+            $http.post('/models?table=brands&uuid='+ brand.id + '&objectString=' + JSON.stringify(brand)).success(function (object) {
             });
             return brand;
         }

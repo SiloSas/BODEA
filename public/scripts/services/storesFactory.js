@@ -7,11 +7,9 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http) {
                 deferred.resolve(factory.stores)
             } else {
                 $http.get('models?table=stores').success(function (object) {
-                    factory.stores = [];
-                    function pushStore (element) {
-                        factory.stores = factory.stores.concat(element.stores)
-                    }
-                    object.forEach(pushStore);
+                    factory.stores = object.map(function (el) {
+                        return JSON.parse(el.objectString)
+                    });
                     deferred.resolve(factory.stores);
                 });
             }
@@ -35,7 +33,7 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http) {
             factory.stores.push(store);
             var stringStore = JSON.stringify(store);
             console.log(stringStore)
-            $http.post('models/?table=stores&uuid=' + store.id + '&objectString=' + stringStore).success(function (data) {
+            $http.post('models?table=stores&uuid=' + store.id + '&objectString=' + stringStore).success(function (data) {
                 console.log(data)
             }).error(function (error) {
                 console.log(error)

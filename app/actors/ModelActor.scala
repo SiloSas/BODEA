@@ -10,27 +10,43 @@ import anorm._
 import play.api.Play.current
 import play.api.db.DB
 import services.Utilities._
-
+//import scala.slick.direct.AnnotationMapper.column
+//import slick.lifted.Tag
+//import slick.model.Table
+//import play.api.db.slick.Config.driver.simple._
 import scala.language.postfixOps
+import scala.slick.driver.PostgresDriver.simple._
 import scala.util.{Failure, Try}
+
 
 sealed trait ModelReturnType
 
 object ModelActor {
-  case class Table(name: String)
-  case class ObjectToSaveRequest(table: Table, uuid: UUID, objectString: String)
-  case class ObjectToGetRequest(table: Table, uuid: UUID)
-  case class ObjectsToGetRequest(table: Table)
-  case class ObjectToDeleteRequest(table: Table, uuid: UUID)
-  case class ObjectToAmendRequest(table: Table, uuid: UUID, newObject: String)
+  case class PostgresTable(name: String)
+  case class ObjectToSaveRequest(table: PostgresTable, uuid: UUID, objectString: String)
+  case class ObjectToGetRequest(table: PostgresTable, uuid: UUID)
+  case class ObjectsToGetRequest(table: PostgresTable)
+  case class ObjectToDeleteRequest(table: PostgresTable, uuid: UUID)
+  case class ObjectToAmendRequest(table: PostgresTable, uuid: UUID, newObject: String)
+
   case class GeneralObject(uuid: UUID, objectString: String)  extends ModelReturnType
-  case class MaybeGeneralObject(uuid: Option[UUID], objectString: Option[String])  extends ModelReturnType
+
+  class StandardTable(tag: Tag)(implicit table: String) extends Table[GeneralObject](tag, table) {
+    def id = column[Int](table.dropRight(1) + "id", O.PrimaryKey)
+    def uuid = column[UUID]("uuid", O.DBType("UUID"))
+    def objectString = column[String]("object")
+    def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
+  }
+
+  case class MaybeGeneralObject(uuid: Option[UUID], objectString: Option[String]) extends ModelReturnType
   case class UserWithRelations (user: User, stores: MaybeGeneralObject, brands: MaybeGeneralObject,
                                 images: MaybeGeneralObject) extends ModelReturnType
   def props = Props[ModelActor]
 }
 
 class ModelActor extends Actor {
+  implicit val session = play.api.db.slick.DB.createSession()
+
   def receive = {
     case ObjectToSaveRequest(table, uuid, objectString) =>
       sender ! save(ObjectToSaveRequest(table, uuid, objectString))
@@ -61,15 +77,20 @@ class ModelActor extends Actor {
     }
   }
 
-  def save(objectToSave: ObjectToSaveRequest): Try[Option[Long]] = Try {
-    val tableName = objectToSave.table.name
-    DB.withConnection { implicit connection =>
-      SQL(s"""INSERT INTO $tableName(uuid, object) VALUES ({UUID}, {objectString})""")
-        .on(
-          'UUID -> objectToSave.uuid,
-          'objectString -> objectToSave.objectString)
-        .executeInsert()
-    }
+  def save(objectToSave: ObjectToSaveRequest): Try[Int] = Try {
+    implicit val table = objectToSave.table.name
+    val standardTableQuery = TableQuery[StandardTable]
+//    val tableName = objectToSave.table.name
+//    DB.withConnection { implicit connection =>
+//      SQL(s"""INSERT INTO $tableName(uuid, object) VALUES ({UUID}, {objectString})""")
+//        .on(
+//          'UUID -> objectToSave.uuid,
+//          'objectString -> objectToSave.objectString)
+//        .executeInsert()
+//    }
+    (standardTableQuery returning standardTableQuery.map(_.id)) += GeneralObject(objectToSave.uuid, objectToSave.objectString)
+
+
   }
 
   def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[ModelReturnType]] = Try {
@@ -90,10 +111,6 @@ class ModelActor extends Actor {
 //          "1 area"
 //
         case "users" =>
-//          val a = SQL(
-//            s"""SELECT users.* FROM users users""".stripMargin)
-//          println(a)
-//          a.as(userParser.*)
           val a = SQL(
             s"""SELECT users.*, stores.*, brands.*, images.* FROM users users
                |  LEFT OUTER JOIN storeUser storeUser
@@ -108,11 +125,14 @@ class ModelActor extends Actor {
                |    ON users.userid = userImage.imageId
                |  LEFT OUTER JOIN images images
                |    ON images.imageId = userImage.imageId""".stripMargin)
-          println(a)
+            println(a)
             a.as(userWithRelationsParser *)
         case otherTable =>
-          SQL(s"""SELECT * FROM $tableName""")
-            .as(objectParser *)
+          implicit var table = "klj"
+          val standardTableQuery1 = TableQuery[StandardTable]
+          table = otherTable
+          val standardTableQuery = TableQuery[StandardTable]
+          standardTableQuery.list
       }
     }
   }

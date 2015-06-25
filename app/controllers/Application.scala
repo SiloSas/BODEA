@@ -86,7 +86,7 @@ object Application extends Controller {
   }
 
   def saveModel(tableName: String, stringUUID: String, objectString: String) = Authenticated.async { request =>
-    val table = Table(tableName)
+    val table = PostgresTable(tableName)
     try {
       val uuid = UUID.fromString(stringUUID)
       tableName match {
@@ -112,7 +112,7 @@ object Application extends Controller {
   }
 
   def askActorToSaveModel(tableName: String, objectString: String, uuid: UUID): Future[SimpleResult] = {
-    (modelActor ? ObjectToSaveRequest(Table(tableName), uuid, objectString)).mapTo[Try[Option[Long]]] map {
+    (modelActor ? ObjectToSaveRequest(PostgresTable(tableName), uuid, objectString)).mapTo[Try[Option[Long]]] map {
       case Failure(failure) => InternalServerError("saveModel: " + failure)
       case Success(Some(_)) => Created
       case Success(None) => NotModified
@@ -120,7 +120,7 @@ object Application extends Controller {
   }
 
   def getAllModelsFromTable(tableName: String) = Authenticated.async { request =>
-    val table = Table(tableName)
+    val table = PostgresTable(tableName)
     tableName match {
       case "areas" => askActorAllModelsInTable(table)
       case "brands" => askActorAllModelsInTable(table)
@@ -138,15 +138,15 @@ object Application extends Controller {
     }
   }
 
-  def askActorAllModelsInTable(table: Table): Future[SimpleResult] = {
-    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[MaybeGeneralObject]]] map {
+  def askActorAllModelsInTable(table: PostgresTable): Future[SimpleResult] = {
+    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[GeneralObject]]] map {
       case Success(objects) => Ok(Json.toJson(objects))
       case Failure(failure) => InternalServerError("callGetModelsActor: " + failure)
     }
   }
 
   def getModel(tableName: String, uuidString: String) = Authenticated.async { request =>
-    val table = Table(tableName)
+    val table = PostgresTable(tableName)
     try {
       val uuid = UUID.fromString(uuidString)
       tableName match {
@@ -155,9 +155,7 @@ object Application extends Controller {
         case "stores" => askActorModelInTable(table, uuid)
         case otherTable =>
           if (isRequestedByClient(request))
-            Future {
-              Unauthorized("Vous devez être administrateur pour accèder à cette ressource.")
-            }
+            Future { Unauthorized("Vous devez être administrateur pour accèder à cette ressource.") }
           else
             otherTable match {
               case "users" => askActorModelInTable(table, uuid)
@@ -173,7 +171,7 @@ object Application extends Controller {
     }
   }
 
-  def askActorModelInTable(table: Table, uuid: UUID): Future[SimpleResult] =
+  def askActorModelInTable(table: PostgresTable, uuid: UUID): Future[SimpleResult] =
     (modelActor ? ObjectToGetRequest(table, uuid)).mapTo[Try[Option[MaybeGeneralObject]]] map {
       case Success(Some(objectFound)) => Ok(Json.toJson(objectFound))
       case Success(None) => NoContent
@@ -181,7 +179,7 @@ object Application extends Controller {
     }
 
   def deleteModel(tableName: String, uuidString: String) = Authenticated.async { request =>
-    val table = Table(tableName)
+    val table = PostgresTable(tableName)
     try {
       val uuid = UUID.fromString(uuidString)
       tableName match {
@@ -207,7 +205,7 @@ object Application extends Controller {
     }
   }
 
-  def askActorToDeleteModelInTable(table: Table, uuid: UUID): Future[SimpleResult] = {
+  def askActorToDeleteModelInTable(table: PostgresTable, uuid: UUID): Future[SimpleResult] = {
     (modelActor ? ObjectToDeleteRequest(table, uuid)).mapTo[Try[Int]] map {
       case Success(1) => Ok
       case Success(_) => NotModified
@@ -216,10 +214,10 @@ object Application extends Controller {
   }
 
   def amendModel(tableName: String, uuidString: String, objectString: String) = Action.async {
-    val table = Table(tableName)
+    val table = PostgresTable(tableName)
     try {
       val uuid = UUID.fromString(uuidString)
-      (modelActor ? ObjectToAmendRequest(table, uuid, objectString)).mapTo[Try[Int]].map {
+      (modelActor ? ObjectToAmendRequest(table, uuid, objectString)).mapTo[Try[Int]] map {
         case Success(1) => Ok
         case Success(_) => NotModified
         case Failure(failure) => InternalServerError("amendModel: " + failure)
@@ -227,9 +225,7 @@ object Application extends Controller {
     } catch {
       case e: Exception =>
         Logger error e.getMessage
-        Future {
-          BadRequest("Wrong string UUID")
-        }
+        Future { BadRequest("Wrong string UUID") }
     }
   }
 

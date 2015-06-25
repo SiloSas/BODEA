@@ -48,18 +48,6 @@ CREATE TABLE orderBrand (
   PRIMARY KEY (orderId, brandId)
 );
 
-CREATE TABLE orderOrder (
-  orderId          INT REFERENCES orders (orderId),
-  suborderId       INT REFERENCES orders (orderId),
-  PRIMARY KEY (orderId, suborderId)
-);
-
-CREATE TABLE orderStore (
-  orderId          INT REFERENCES orders (orderId),
-  storeId          INT REFERENCES stores (storeId),
-  PRIMARY KEY (orderId, storeId)
-);
-
 CREATE TABLE storeUser (
   storeId          INT REFERENCES stores (storeId),
   userId           INT REFERENCES users (userId),

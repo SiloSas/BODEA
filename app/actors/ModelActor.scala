@@ -38,16 +38,16 @@ object ModelActor {
     def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
   }
 
-//  class relationTable(tag: Tag)(implicit tables: (String, String)) extends
-//  Table[(Int, Int)](tag, tables._1 + tables._2) {
-//    val tableA = table.split("To")(0)
-//    val tableB = table.split("To")(1)
-//    def aId = column[Int](tableA + "id")
-//    def bId = column[Int](tableB + "id")
-//    def * = (aId, bId)
-//    def aFK = foreignKey("a_fk", aId, tableA)(a => a.id)
-//    def bFK = foreignKey("b_fk", bId, tableB)(b => b.id)
-//  }
+  class relationTable(tag: Tag)(implicit tables: (String, String, TableQuery[StandardTable], TableQuery[StandardTable])) extends
+  Table[(Int, Int)](tag, tables._1.dropRight(1) + tables._2.dropRight(1)) {
+    val aIdString: String = tables._1.dropRight(1) + "id"
+    val bIdString: String = tables._2.dropRight(1) + "id"
+    def aId = column[Int](aIdString)
+    def bId = column[Int](bIdString)
+    def * = (aId, bId)
+    def aFK = foreignKey(aIdString, aId, tables._3)(a => a.id)
+    def bFK = foreignKey(bIdString, bId, tables._4)(b => b.id)
+  }
 
   case class MaybeGeneralObject(uuid: Option[UUID], objectString: Option[String]) extends ModelReturnType
   case class UserWithRelations (user: User, stores: MaybeGeneralObject, brands: MaybeGeneralObject,
@@ -70,6 +70,9 @@ class ModelActor extends Actor {
 
     case ObjectToDeleteRequest(table, uuid) =>
       sender ! deleteObject(ObjectToDeleteRequest(table, uuid))
+
+    case ObjectToAmendRequest(table, uuid, newObjectString) =>
+      sender ! amendObject(ObjectToAmendRequest(table, uuid, newObjectString))
 
     case _ => sender ! Failure(throw new Exception("unknown request"))
   }
@@ -100,8 +103,6 @@ class ModelActor extends Actor {
 //        .executeInsert()
 //    }
     (standardTableQuery returning standardTableQuery.map(_.id)) += GeneralObject(objectToSave.uuid, objectToSave.objectString)
-
-
   }
 
   def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[ModelReturnType]] = Try {
@@ -121,14 +122,14 @@ class ModelActor extends Actor {
 //          "orders"
 //          "1 area"
 //
-        case "users" =>
+//        case "users" =>
 
 
 
-          implicit var table = "stores"
-          val stores = TableQuery[StandardTable]
-          table = "orders"
-          val orders = TableQuery[StandardTable]
+//          implicit var table = "stores"
+//          val stores = TableQuery[StandardTable]
+//          table = "orders"
+//          val orders = TableQuery[StandardTable]
 
 
 //          println(storesTable.list)
@@ -136,26 +137,24 @@ class ModelActor extends Actor {
 //            (orders, stores) <- users innerJoin
 //          }
 
-
-          val a = SQL(
-            s"""SELECT users.*, stores.*, brands.*, images.* FROM users users
-               |  LEFT OUTER JOIN storeUser storeUser
-               |    ON users.userid = storeUser.storeId
-               |  LEFT OUTER JOIN stores stores
-               |    ON stores.storeid = storeUser.storeId
-               |  LEFT OUTER JOIN userBrand userBrand
-               |    ON users.userid = userBrand.brandId
-               |  LEFT OUTER JOIN brands brands
-               |    ON brands.brandId = userBrand.brandId
-               |  LEFT OUTER JOIN userImage userImage
-               |    ON users.userid = userImage.imageId
-               |  LEFT OUTER JOIN images images
-               |    ON images.imageId = userImage.imageId""".stripMargin)
-            a.as(userWithRelationsParser *)
+//
+//          val a = SQL(
+//            s"""SELECT users.*, stores.*, brands.*, images.* FROM users users
+//               |  LEFT OUTER JOIN storeUser storeUser
+//               |    ON users.userid = storeUser.storeId
+//               |  LEFT OUTER JOIN stores stores
+//               |    ON stores.storeid = storeUser.storeId
+//               |  LEFT OUTER JOIN userBrand userBrand
+//               |    ON users.userid = userBrand.brandId
+//               |  LEFT OUTER JOIN brands brands
+//               |    ON brands.brandId = userBrand.brandId
+//               |  LEFT OUTER JOIN userImage userImage
+//               |    ON users.userid = userImage.imageId
+//               |  LEFT OUTER JOIN images images
+//               |    ON images.imageId = userImage.imageId""".stripMargin)
+//            a.as(userWithRelationsParser *)
         case otherTable =>
-          implicit var table = "klj"
-          val standardTableQuery1 = TableQuery[StandardTable]
-          table = otherTable
+          implicit val table = otherTable
           val standardTableQuery = TableQuery[StandardTable]
           standardTableQuery.list
       }
@@ -211,7 +210,8 @@ class ModelActor extends Actor {
         s"""UPDATE $table
             |  SET object = {object}
             |  WHERE UUID = {UUID}""".stripMargin)
-        .on('UUID -> objectToAmend.uuid)
+        .on('UUID -> objectToAmend.uuid,
+            'object -> objectToAmend.newObject)
         .executeUpdate()
     }
   }

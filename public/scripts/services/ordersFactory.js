@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http) {
+angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFactory) {
     var factory = {
         orders: false,
         getOrders: function () {
@@ -6,31 +6,47 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http) {
             if (factory.orders != false) {
                 deferred.resolve(factory.orders)
             } else {
-                $http.get('scripts/object.json').success(function (object) {
-                    factory.orders = [];
-                    function pushStore (element) {
-                        var numberOrders = element.orders.length;
-                        for (var j = 0; j < numberOrders; j++) {
-                            element.orders[j].brand = element.brand;
-                            element.orders[j].state = Math.floor((Math.random() * 5) + 1);
-                            function randomDate(start, end) {
-                                return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-                            }
-                            element.orders[j].date = randomDate(new Date(2015, 4, 4), new Date());
-                            var numberStores = element.stores.length;
-                            var numberSubOrders = element.orders[j].subOrders.length;
-                            for (var i = 0; i < numberSubOrders; i++) {
-                                element.orders[j].subOrders[i].store =
-                                    element.stores[Math.floor((Math.random() * numberStores) + 1)]
-                            }
-                        }
-                        factory.orders = factory.orders.concat(element.orders)
-                    }
-                    object.forEach(pushStore);
+                $http.get('models?table=orders').success(function (object) {
+                    factory.orders = object.map(function (el) {
+                        return JSON.parse(el.objectString)
+                    });
                     deferred.resolve(factory.orders);
                 });
             }
             return deferred.promise
+        },
+        refactorOrder: function (order) {
+            for (var i = 0; i < factory.orders.length; i++) {
+                if (factory.orders[i].id == order.id) {
+                    order = angular.copy(order.newOrder);
+                    delete(order.newOrder);
+                    factory.orders[i] = angular.copy(order);
+                    $http.post('models/' + order.uuid + '?table=orders&objectString=' + JSON.stringify(order)).success(function (data, statut) {
+                        console.log(data, statut)
+                    }).error(function (error) {
+                        console.log(error)
+                    })
+                }
+            }
+        },
+        postOrder: function (order) {
+            order.uuid = GuidFactory();
+            factory.orders.push(order);
+            $http.post('models?table=orders&uuid=' + order.uuid + '&objectString=' + JSON.stringify(order)).success(function (data) {
+            }).error(function (error) {
+            })
+        },
+        deleteOrder: function (order) {
+            for (var i = 0; i < factory.orders.length; i++) {
+                if (order.id == factory.orders[i].id) {
+                    factory.orders.splice(i, 1)
+                }
+            }
+            $http.delete('models/' + order.uuid + '?table=orders').success(function (data) {
+                console.log(data)
+            }).error(function (error) {
+                console.log(error)
+            })
         }
     };
     return factory;

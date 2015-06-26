@@ -2,5 +2,6 @@
            ng-model="filter">
     <md-option ng-repeat="brand in brands" value="{{brand.name}}">{{brand.name}}</md-option>
 </md-select>
+<md-button ng-show="filter != ''" ng-click="filter=''; initChart()">Supprimer le filtre</md-button>
 <canvas id="bar" class="chart chart-bar column large-12" data="data"
         labels="labels"></canvas>

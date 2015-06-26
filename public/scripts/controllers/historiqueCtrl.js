@@ -25,7 +25,7 @@ angular.module('bodeaApp').controller('HistoriqueCtrl', function ($scope, Orders
             var filtredOrders = $filter('filter')($scope.orders, $scope.filter, 'brand');
             var ordersLength = filtredOrders.length;
             for (var j = 0; j < ordersLength; j++){
-                if (filtredOrders[j].date > startDate && filtredOrders[j].date <= endDate) {
+                if (new Date(filtredOrders[j].date) > startDate && new Date(filtredOrders[j].date) <= endDate) {
                     dataValue++
                 }
             }

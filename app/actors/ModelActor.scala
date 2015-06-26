@@ -71,6 +71,9 @@ class ModelActor extends Actor {
     case ObjectToDeleteRequest(table, uuid) =>
       sender ! deleteObject(ObjectToDeleteRequest(table, uuid))
 
+    case ObjectToAmendRequest(table, uuid, newObjectString) =>
+      sender ! amendObject(ObjectToAmendRequest(table, uuid, newObjectString))
+
     case _ => sender ! Failure(throw new Exception("unknown request"))
   }
 
@@ -207,7 +210,8 @@ class ModelActor extends Actor {
         s"""UPDATE $table
             |  SET object = {object}
             |  WHERE UUID = {UUID}""".stripMargin)
-        .on('UUID -> objectToAmend.uuid)
+        .on('UUID -> objectToAmend.uuid,
+            'object -> objectToAmend.newObject)
         .executeUpdate()
     }
   }

@@ -72,83 +72,19 @@
                 No matches found for "{{searchBrand}}".
             </md-not-found>
         </md-autocomplete>
-        <md-input-container>
-            <label>Nom</label>
-            <input type="text" ng-model="newStore.name">
-        </md-input-container>
-        <md-input-container>
-            <label>Référent</label>
-            <input type="text" ng-model="newStore.contactName">
-        </md-input-container>
-        <md-input-container>
-            <label>Adresse de livraison</label>
-            <input type="text" ng-model="newStore.deliveryAddress">
-        </md-input-container>
-        <md-input-container>
-            <label>Adresse de facturation</label>
-            <input type="text" ng-model="newStore.billingAddress">
-        </md-input-container>
-        <md-autocomplete flex required
-                         md-autofocus="false"
-                         md-no-cache="noCache"
-                         md-selected-item="newStore.area"
-                         md-search-text-change="searchTextChange(searchArea)"
-                         md-search-text="searchArea"
-                         md-selected-item-change="selectedItemChange(area)"
-                         md-items="area in querySearch(searchArea)"
-                         md-item-text="area.name"
-                         md-floating-label="Région (cliquez pour valider votre choix)">
-            <md-item-template>
-                <span md-highlight-text="searchArea" md-highlight-flags="^i">{{area.name}}</span>
-            </md-item-template>
-            <md-not-found>
-                No matches found for "{{searchArea}}".
-            </md-not-found>
-        </md-autocomplete>
-        <md-input-container>
-            <label>Numero de téléphone</label>
-            <input type="text" ng-model="newStore.phone">
-        </md-input-container>
-        <md-input-container>
-            <label>Prix d'une bâche (prix m2)</label>
-            <input type="number" step="any" ng-model="newStore.priceByM2">
-        </md-input-container>
-        <md-input-container>
-            <label>Longueur du tube</label>
-            <input type="number" step="any" ng-model="newStore.pipeSize">
-        </md-input-container>
-        <md-input-container>
-            <label>Poid de la bache</label>
-            <input type="number" step="any" ng-model="newStore.weight">
-        </md-input-container>
-        <md-input-container>
-            <label>Format d'impression</label>
-            <input type="text" ng-model="newStore.printFormat">
-        </md-input-container>
-        <md-input-container>
-            <label>Laize utilisé</label>
-            <input type="number" step="any" ng-model="newStore.width">
-        </md-input-container>
-        <md-input-container>
-            <label>Longueur du jonc</label>
-            <input type="number" step="any" ng-model="newStore.caneWidth">
-        </md-input-container>
-        <md-input-container>
-            <label>Nombre de moteurs</label>
-            <input type="number" ng-model="newStore.enginesNumber">
-        </md-input-container>
-        <md-button class="md-primary md-raised" type="submit">Valider</md-button>
+        <store-form ng-init="store = newStore"></store-form>
+        <md-button class="md-primary md-raised" ng-click="newStore = store" type="submit">Valider</md-button>
         <md-button class="md-warn md-raised" ng-click="$parent.createStore = false">Annuler</md-button>
     </form>
 </div>
-<div class="column large-12 fade" ng-repeat="store in filteredStores = (stores | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
+<div class="column large-12 fade" ng-repeat="store in filteredStores = (stores | filter: $root.filter) | orderBy:predicate:reverse | limitTo: limit">
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
-            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.name">{{store.name}}</h5>
-            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.brand.name">{{store.brand.name}}</h5>
-            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.contactName">{{store.contactName}}</h5>
-            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = store.area.name">{{store.area.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = store.name">{{store.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = store.brand.name">{{store.brand.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = store.contactName">{{store.contactName}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = store.area.name">{{store.area.name}}</h5>
             <h5 class="column medium-2">{{store.phone}}</h5>
             <h5><i class="column medium-1 pointer fa fa-pencil"
                    ng-click="copyStore(store); refactor = true"></i></h5>
@@ -189,72 +125,8 @@
                         No matches found for "{{searchBrand}}".
                     </md-not-found>
                 </md-autocomplete>
-                <md-input-container>
-                    <label>Nom</label>
-                    <input type="text" ng-model="store.newStore.name">
-                </md-input-container>
-                <md-input-container>
-                    <label>Référent</label>
-                    <input type="text" ng-model="store.newStore.contactName">
-                </md-input-container>
-                <md-input-container>
-                    <label>Adresse de livraison</label>
-                    <input type="text" ng-model="store.newStore.deliveryAddress">
-                </md-input-container>
-                <md-input-container>
-                    <label>Adresse de facturation</label>
-                    <input type="text" ng-model="store.newStore.billingAddress">
-                </md-input-container>
-                <md-autocomplete flex required
-                                 md-autofocus="false"
-                                 md-no-cache="noCache"
-                                 md-selected-item="store.newStore.area"
-                                 md-search-text-change="searchTextChange(searchArea)"
-                                 md-search-text="searchArea"
-                                 md-selected-item-change="selectedItemChange(area)"
-                                 md-items="area in querySearch(searchArea)"
-                                 md-item-text="area.name"
-                                 md-floating-label="Région (cliquez pour valider votre choix)">
-                    <md-item-template>
-                        <span md-highlight-text="searchArea" md-highlight-flags="^i">{{area.name}}</span>
-                    </md-item-template>
-                    <md-not-found>
-                        No matches found for "{{searchArea}}".
-                    </md-not-found>
-                </md-autocomplete>
-                <md-input-container>
-                    <label>Numero de téléphone</label>
-                    <input type="text" ng-model="store.newStore.phone">
-                </md-input-container>
-                <md-input-container>
-                    <label>Prix d'une bâche (prix m2)</label>
-                    <input type="number" step="any" ng-model="store.newStore.priceByM2">
-                </md-input-container>
-                <md-input-container>
-                    <label>Longueur du tube</label>
-                    <input type="number" step="any" ng-model="store.newStore.pipeSize">
-                </md-input-container>
-                <md-input-container>
-                    <label>Poid de la bache</label>
-                    <input type="number" step="any" ng-model="store.newStore.weight">
-                </md-input-container>
-                <md-input-container>
-                    <label>Format d'impression</label>
-                    <input type="text" ng-model="store.newStore.printFormat">
-                </md-input-container>
-                <md-input-container>
-                    <label>Laize utilisé</label>
-                    <input type="number" step="any" ng-model="store.newStore.width">
-                </md-input-container>
-                <md-input-container>
-                    <label>Longueur du jonc</label>
-                    <input type="number" step="any" ng-model="store.newStore.caneWidth">
-                </md-input-container>
-                <md-input-container>
-                    <label>Nombre de moteurs</label>
-                    <input type="number" ng-model="store.newStore.enginesNumber">
-                </md-input-container>
-                <md-button class="md-primary md-raised" type="submit">Valider</md-button>
+                <store-form ng-init="store = store.newStore"></store-form>
+                <md-button class="md-primary md-raised" ng-click="store.newStore = store" type="submit">Valider</md-button>
                 <md-button class="md-warn md-raised" ng-click="$parent.refactor = false">Annuler</md-button>
             </form>
         </md-list>

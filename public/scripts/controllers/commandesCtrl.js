@@ -31,7 +31,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
     // other color intentions will be inherited
     // from default
 }).controller('CommandesCtrl', function ($scope, $timeout, OrdersFactory, BrandFactory, StoresFactory, $log,
-                                         $filter, AreaFactory, GuidFactory) {
+                                         $filter, AreaFactory, $mdToast) {
         $scope.orders = [];
         $scope.selectedStore = '';
         OrdersFactory.getOrders().then(function (orders) {
@@ -63,18 +63,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             }, 0)
         };
         $scope.copyStore = function (store) {
-            $timeout(function () {
-                $scope.$apply(function () {
-                    store.newStore = angular.copy(store);
-                })
-            }, 0)
-        };
-        $scope.removeCopyStore = function (store) {
-            $timeout(function () {
-                $scope.$apply(function () {
-                    delete(store.newStore);
-                })
-            }, 0)
+            return angular.copy(store);
         };
         $scope.refactorStore = function (store) {
             if (store.area.flag) {
@@ -146,19 +135,41 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                         $scope.newOrder.subOrders.push(angular.copy(subOrder));
                         ordersTotalCalculs();
                         subOrder = {store: {}};
+                        $scope.selectedStore = false;
                         return subOrder;
                     })
                 }, 0)
             }
         };
         $scope.addOrder = function () {
-            if ($scope.newOrder.brand.flag) {
-                delete($scope.newOrder.brand.flag);
-                BrandFactory.postBrand($scope.newOrder.brand)
+            if ($scope.newOrder.subOrders.length > 0) {
+                if ($scope.newOrder.brand.flag) {
+                    delete($scope.newOrder.brand.flag);
+                    BrandFactory.postBrand($scope.newOrder.brand)
+                }
+                $scope.newOrder.date = new Date();
+                OrdersFactory.postOrder($scope.newOrder);
+                $scope.newOrder = {subOrders: [], state: 1};
+                $scope.createOrder = false
+            } else {
+                $scope.toastPosition = {
+                    bottom: false,
+                    top: true,
+                    left: false,
+                    right: true
+                };
+                $scope.getToastPosition = function() {
+                    return Object.keys($scope.toastPosition)
+                        .filter(function(pos) { return $scope.toastPosition[pos]; })
+                        .join(' ');
+                };
+                $mdToast.show(
+                    $mdToast.simple()
+                        .content('Veuillez entrer au moins une sous commande')
+                        .position($scope.getToastPosition())
+                        .hideDelay(3000)
+                );
             }
-            $scope.newOrder.date = new Date();
-            OrdersFactory.postOrder($scope.newOrder);
-            $scope.newOrder = {subOrders: [], state: 1};
         };
 
         $scope.addImg = function () {

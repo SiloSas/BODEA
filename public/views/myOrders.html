@@ -270,14 +270,14 @@
     </form>
 </md-list>
 <div class="column large-12 fade" md-theme="commandeTheme"
-     ng-repeat="order in filteredOrders = ($root.user.orders | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
+     ng-repeat="order in filteredOrders = ($root.user.orders | filter: $root.filter) | orderBy:predicate:reverse | limitTo: limit">
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
             <h5 class="column medium-2">{{order.id}}</h5>
             <h5 class="column medium-2 pointer">
                 <p class="margin0" ng-repeat="subOrder in order.subOrders"
-                      ng-click="$parent.$parent.$parent.filter = subOrder.store.name">{{subOrder.store.name}}</p>
+                      ng-click="$root.filter = subOrder.store.name">{{subOrder.store.name}}</p>
             </h5>
             <h5 class="column medium-2">{{order.date | date:'MM/dd/yyyy'}}</h5>
             <div class="column medium-2">

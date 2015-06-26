@@ -1,7 +1,7 @@
 angular.module('bodeaApp').controller('HistoriqueCtrl', function ($scope, OrdersFactory, $filter, BrandFactory) {
     $scope.weeks = 8;
     $scope.labels = [];
-    $scope.filter = '';
+    $scope.filterChart = '';
     $scope.series = ['Ventes totals'];
 
     $scope.data = [
@@ -22,7 +22,7 @@ angular.module('bodeaApp').controller('HistoriqueCtrl', function ($scope, Orders
             newLabel = $filter('date')(startDate, 'MM/dd/yyyy') + ' - ' + $filter('date')(endDate, 'MM/dd/yyyy');
             $scope.labels.push(newLabel);
             var dataValue = 0;
-            var filtredOrders = $filter('filter')($scope.orders, $scope.filter, 'brand');
+            var filtredOrders = $filter('filter')($scope.orders, $scope.filterChart, 'brand');
             var ordersLength = filtredOrders.length;
             for (var j = 0; j < ordersLength; j++){
                 if (new Date(filtredOrders[j].date) > startDate && new Date(filtredOrders[j].date) <= endDate) {

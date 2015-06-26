@@ -55,6 +55,25 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                 }
             }
         };
+        $scope.toggle = function (item, list) {
+            var idx = false;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].id == item.id) {
+                    list.splice(i, 1);
+                    idx = true
+                }
+            }
+            if (idx == false) {
+                list.push(item);
+            }
+        };
+        $scope.exists = function (item, list) {
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].id == item.id) {
+                    return true;
+                }
+            }
+        };
         $scope.copyCommande = function (order) {
             $timeout(function () {
                 $scope.$apply(function () {
@@ -62,23 +81,8 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                 })
             }, 0)
         };
-        $scope.copyStore = function (store) {
-            return angular.copy(store);
-        };
-        $scope.refactorStore = function (store) {
-            if (store.area.flag) {
-                delete(store.area.flag);
-                AreaFactory.postArea(store.area)
-            }
-            StoresFactory.refactorStore(store);
-        };
-        $scope.createNewStore = function (store) {
-            $timeout(function () {
-                $scope.$apply(function () {
-                    store.newStore = {brand: $scope.newOrder.brand};
-                })
-            }, 0);
-        };
+
+
         $scope.addNewStore = function (store) {
             $timeout(function () {
                 $scope.$apply(function () {
@@ -104,10 +108,10 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         };
 
         $scope.newOrder = {subOrders: [], state: 1};
-        $scope.newSubOrder = {store: {}};
+        $scope.newSubOrder = {stores: []};
         $scope.cancelNewOrder = function () {
             $scope.newOrder = {subOrders: [], state: 1};
-            $scope.newSubOrder = {store: {}};
+            $scope.newSubOrder = {stores: []};
             $scope.selectedStore = false;
         };
         function ordersTotalCalculs() {
@@ -129,47 +133,58 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         };
 
         $scope.addNewSubOrder = function (subOrder) {
-            if (subOrder != {store: {}}) {
-                $timeout(function () {
-                    $scope.$apply(function () {
-                        $scope.newOrder.subOrders.push(angular.copy(subOrder));
-                        ordersTotalCalculs();
-                        subOrder = {store: {}};
-                        $scope.selectedStore = false;
-                        return subOrder;
-                    })
-                }, 0)
+            for (var i = 0; i < subOrder.stores.length; i++) {
+                var subOrderToPush = {
+                    numberItems: subOrder.numberItems,
+                    store: subOrder.stores[i]
+                };
+                subOrderToPush = $scope.calculPriceAndWeight(subOrderToPush);
+                $scope.newOrder.subOrders.push(angular.copy(subOrderToPush));
             }
+
+            ordersTotalCalculs();
+            return {stores: []};
         };
         $scope.addOrder = function () {
-            if ($scope.newOrder.subOrders.length > 0) {
-                if ($scope.newOrder.brand.flag) {
-                    delete($scope.newOrder.brand.flag);
-                    BrandFactory.postBrand($scope.newOrder.brand)
+            $scope.toastPosition = {
+                bottom: false,
+                top: true,
+                left: false,
+                right: true
+            };
+            $scope.getToastPosition = function () {
+                return Object.keys($scope.toastPosition)
+                    .filter(function (pos) {
+                        return $scope.toastPosition[pos];
+                    })
+                    .join(' ');
+            };
+            //if (angular.isDefined($scope.newOrder.image)) {
+                if ($scope.newOrder.subOrders.length > 0) {
+                    if ($scope.newOrder.brand.flag) {
+                        delete($scope.newOrder.brand.flag);
+                        BrandFactory.postBrand($scope.newOrder.brand)
+                    }
+                    $scope.newOrder.date = new Date();
+                    OrdersFactory.postOrder($scope.newOrder);
+                    $scope.newOrder = {subOrders: [], state: 1};
+                    $scope.createOrder = false
+                } else {
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .content('Veuillez entrer au moins une sous commande')
+                            .position($scope.getToastPosition())
+                            .hideDelay(3000)
+                    );
                 }
-                $scope.newOrder.date = new Date();
-                OrdersFactory.postOrder($scope.newOrder);
-                $scope.newOrder = {subOrders: [], state: 1};
-                $scope.createOrder = false
-            } else {
-                $scope.toastPosition = {
-                    bottom: false,
-                    top: true,
-                    left: false,
-                    right: true
-                };
-                $scope.getToastPosition = function() {
-                    return Object.keys($scope.toastPosition)
-                        .filter(function(pos) { return $scope.toastPosition[pos]; })
-                        .join(' ');
-                };
+            /*} else {
                 $mdToast.show(
                     $mdToast.simple()
-                        .content('Veuillez entrer au moins une sous commande')
+                        .content('Veuillez ajouter une image')
                         .position($scope.getToastPosition())
                         .hideDelay(3000)
                 );
-            }
+            }*/
         };
 
         $scope.addImg = function () {

@@ -87,7 +87,7 @@
             <h5 class="column medium-2 pointer" ng-click="$root.filter = store.area.name">{{store.area.name}}</h5>
             <h5 class="column medium-2">{{store.phone}}</h5>
             <h5><i class="column medium-1 pointer fa fa-pencil"
-                   ng-click="copyStore(store); refactor = true"></i></h5>
+                   ng-click="store.newStore = copyStore(store); refactor = true"></i></h5>
             <h5><i class="column medium-1 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove"></i></h5>
         </div>
         <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
@@ -125,7 +125,7 @@
                         No matches found for "{{searchBrand}}".
                     </md-not-found>
                 </md-autocomplete>
-                <store-form ng-init="store = store.newStore"></store-form>
+                <store-form ng-init="store = copyStore(store)"></store-form>
                 <md-button class="md-primary md-raised" ng-click="store.newStore = store" type="submit">Valider</md-button>
                 <md-button class="md-warn md-raised" ng-click="$parent.refactor = false">Annuler</md-button>
             </form>

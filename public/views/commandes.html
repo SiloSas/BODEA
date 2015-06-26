@@ -143,21 +143,13 @@
                 <div>
                     <md-subheader class="md-no-sticky">Choisissez un magasin</md-subheader>
                     <md-divider></md-divider>
-                    <md-radio-group
-                            ng-change="newSubOrder.store = getStoreById(selectedStore);
-                            newSubOrder = calculPriceAndWeight(newSubOrder);
-                    viewStoreDetail = false"
-                            ng-model="$parent.selectedStore">
-                        <md-radio-button ng-repeat="store in filtredStores =(stores | filter: newOrder.brand.name)"
-                                         value="{{store.id}}"
-                                         class="md-primary fade">{{store.name}}</md-radio-button>
-                    </md-radio-group>
-                    <a class="md-button md-primary md-raised md-default-theme"
-                       ng-show="selectedStore.length > 0 && !viewStoreDetail"
-                       ng-click="store = copyStore(newSubOrder.store); viewStoreDetail = true;
-                       createStore = false;">
-                        Voir / modifier les details du magasin
-                    </a>
+                    <div flex="50"
+                         class="fade"
+                         ng-repeat="store in filtredStores =(stores | filter: newOrder.brand.name)">
+                        <md-checkbox ng-checked="exists(store, newSubOrder.stores)" ng-click="toggle(store, newSubOrder.stores)">
+                            {{ store.name }}
+                        </md-checkbox>
+                    </div>
                     <a class="md-button md-primary md-raised md-default-theme"
                        ng-show="!viewStoreDetail"
                        ng-click="store = {};
@@ -173,15 +165,8 @@
                 <div ng-show="viewStoreDetail" ng-form="storeForm">
                     <store-form></store-form>
                     <md-button class="md-primary md-raised md-default-theme"
-                       ng-show="createStore == false"
-                       ng-click="newSubOrder.store.newStore = store; refactorStore(newSubOrder.store);
-                       newSubOrder = calculPriceAndWeight(newSubOrder);viewStoreDetail = false">
-                        Valider
-                    </md-button>
-                    <md-button class="md-primary md-raised md-default-theme"
                        ng-show="createStore == true"
-                       ng-click="newSubOrder.store.newStore = store; addNewStore(newSubOrder.store);
-                       newSubOrder = calculPriceAndWeight(newSubOrder); viewStoreDetail = false">
+                       ng-click="newSubOrder.store.newStore = store; addNewStore(newSubOrder.store); viewStoreDetail = false">
                         Créer
                     </md-button>
                     <a class="md-button md-warn md-raised md-default-theme"
@@ -189,22 +174,11 @@
                         Annuler
                     </a>
                 </div>
-                <div ng-show="selectedStore">
+                <div ng-show="newSubOrder.stores.length">
                     <md-input-container>
                         <label>Nombre de bâches</label>
                         <input type="number"
-                               ng-change="newSubOrder = calculPriceAndWeight(newSubOrder)"
                                ng-model="newSubOrder.numberItems">
-                    </md-input-container>
-                    <md-input-container>
-                        <label>Prix</label>
-                        <input type="number"
-                               step="any"
-                               ng-model="newSubOrder.price">
-                    </md-input-container>
-                    <md-input-container>
-                        <label>Poids</label>
-                        <input type="number" step="any" ng-model="newSubOrder.weight">
                     </md-input-container>
                     <a class="md-button md-raised md-default-theme md-primary"
                        ng-click="newSubOrder = addNewSubOrder(newSubOrder);">
@@ -230,7 +204,7 @@
                 <input type="number" step="any" ng-model="newOrder.weight" disabled>
             </md-input-container>
         </md-list>
-        <md-button class="md-primary md-raised" ng-show="newOrder.subOrders.length" ng-click="addOrder(); $parent.createOrder = false">Valider</md-button>
+        <md-button class="md-primary md-raised" ng-show="newOrder.subOrders.length" ng-click="addOrder();">Valider</md-button>
         <md-button class="md-warn md-raised" ng-click="cancelNewOrder(); $parent.createOrder = false">Annuler</md-button>
     </div>
 </md-list>

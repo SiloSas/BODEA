@@ -19,11 +19,7 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
         $scope.predicate = predicate;
     };
     $scope.copyStore = function (store) {
-        $timeout(function () {
-            $scope.$apply(function () {
-                store.newStore = angular.copy(store);
-            })
-        }, 0)
+        return angular.copy(store);
     };
 
     $scope.refactorStore = function (store) {

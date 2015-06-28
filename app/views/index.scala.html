@@ -11,9 +11,25 @@
                     <h1 class="md-toolbar-tools" ng-if="$root.connected == 'admin'"><a href="#/">Administration</a></h1>
                     <h1 class="md-toolbar-tools" ng-if="$root.connected == 'client'"><a href="#/">Gestion des commandes</a></h1>
                 </md-toolbar>
-                <md-content layout-padding>
+                <md-content layout-padding class="center">
                     <md-button ng-click="close()" class="md-primary" hide-gt-md>
                         Fermer le menu
+                    </md-button>
+                    <md-button class="fa fa-cog md-fab md-mini md-primary" ng-href="#/Settings">
+                        <md-tooltip>
+                            Settings
+                        </md-tooltip>
+                    </md-button>
+                    <md-button class="fa fa-envelope md-fab md-mini md-primary" ng-href="#/">
+                        1
+                        <md-tooltip>
+                            Notifications
+                        </md-tooltip>
+                    </md-button>
+                    <md-button class="fa fa-sign-out md-fab md-mini md-warn" ng-click="disconnect()">
+                        <md-tooltip>
+                            Deconnection
+                        </md-tooltip>
                     </md-button>
                     <ul class="padding0 navAdmin" ng-if="$root.connected == 'admin'">
                         <li ng-class="{'active': active == '/Commandes'}">
@@ -45,6 +61,29 @@
                             <md-button class="md-primary width100p margin0" ng-href="#/Historique">Historique</md-button>
                         </li>
                     </ul>
+                    <md-list class="padding0 navAdmin fade" md-theme="commandeTheme" ng-if="active == '/mesCommandes' || active == '/Commandes'">
+                        <md-subheader>Etats des commandes</md-subheader>
+                        <md-list-item class="padding0">
+                            <md-button class="md-fab md-mini md-accent" aria-label="Commande en préparation"></md-button>
+                            Commande en préparation
+                        </md-list-item>
+                        <md-list-item class="padding0">
+                            <md-button class="md-fab md-mini md-accent md-hue-1" aria-label="Commande validée"></md-button>
+                            Commande validée
+                        </md-list-item>
+                        <md-list-item class="padding0">
+                            <md-button class="md-fab md-mini md-accent md-hue-2" aria-label="En cours de traitement"></md-button>
+                            En cours de traitement
+                        </md-list-item>
+                        <md-list-item class="padding0">
+                            <md-button class="md-fab md-mini md-primary" aria-label="En cours de livraison"></md-button>
+                            En cours de livraison
+                        </md-list-item>
+                        <md-list-item class="padding0">
+                            <md-button class="md-fab md-mini md-accent md-hue-3" aria-label="Livré"></md-button>
+                            Livré
+                        </md-list-item>
+                    </md-list>
                 </md-content>
             </md-sidenav>
             <md-content flex class="height100p">
@@ -54,9 +93,6 @@
                             <label>Recherche</label>
                             <input ng-model="$root.filter">
                         </md-input-container>
-                        <md-button ng-click="disconnect()" class="md-primary md-hue-2 md-raised column small-4 float-right">
-                            Deconnection
-                        </md-button>
                     </div>
                     <div class="md-toolbar-tools" ng-if="$root.connected == false">
                        BODEA v.0.0

@@ -89,19 +89,17 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         $scope.addNewStore = function (store) {
             $timeout(function () {
                 $scope.$apply(function () {
-                    if (store.newStore.area.flag) {
-                        delete(store.newStore.area.flag);
-                        AreaFactory.postArea(store.newStore.area)
+                    if (store.area.flag) {
+                        delete(store.area.flag);
+                        AreaFactory.postArea(store.area)
                     }
                     if (angular.isDefined($scope.newOrder.brand.flag)) {
                         delete($scope.newOrder.brand.flag);
                         $scope.newOrder.brand = BrandFactory.postBrand($scope.newOrder.brand)
                     }
-                    store = angular.copy(store.newStore);
                     store.brand = $scope.newOrder.brand;
                     StoresFactory.postStore(store);
-                    $scope.selectedStore = store.id;
-                    $scope.newSubOrder.store = store;
+                    $scope.stores.push(store)
                 })
             });
         };

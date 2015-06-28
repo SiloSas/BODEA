@@ -90,7 +90,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                         delete(store.newStore.area.flag);
                         AreaFactory.postArea(store.newStore.area)
                     }
-                    if ($scope.newOrder.brand.flag) {
+                    if (angular.isDefined($scope.newOrder.brand.flag)) {
                         delete($scope.newOrder.brand.flag);
                         $scope.newOrder.brand = BrandFactory.postBrand($scope.newOrder.brand)
                     }
@@ -161,7 +161,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             };
             //if (angular.isDefined($scope.newOrder.image)) {
                 if ($scope.newOrder.subOrders.length > 0) {
-                    if ($scope.newOrder.brand.flag) {
+                    if (angular.isDefined($scope.newOrder.brand.flag)) {
                         delete($scope.newOrder.brand.flag);
                         BrandFactory.postBrand($scope.newOrder.brand)
                     }

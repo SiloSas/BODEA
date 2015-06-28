@@ -38,5 +38,8 @@ angular.module('bodeaApp')
         });
         $scope.connect = function (user) {
             ConnectionFactory.connect(user)
+        };
+        $scope.disconnect = function () {
+            ConnectionFactory.disconnect()
         }
     });

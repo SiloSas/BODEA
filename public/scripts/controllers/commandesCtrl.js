@@ -47,6 +47,9 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             $scope.brands = brands
         });
 
+        $scope.changeOrderState = function (order) {
+            //post refactor order
+        };
         $scope.limit = 20;
         $scope.getStoreById = function (id) {
             for (var i = 0; i < $scope.stores.length; i++) {
@@ -104,6 +107,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         };
 
         $scope.refactorCommande = function (order) {
+            console.log(order);
             OrdersFactory.refactorOrder(order)
         };
 
@@ -114,35 +118,53 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             $scope.newSubOrder = {stores: []};
             $scope.selectedStore = false;
         };
-        function ordersTotalCalculs() {
-            var subOrdersLength = $scope.newOrder.subOrders.length;
+        function ordersTotalCalculs(array) {
+            var subOrdersLength;
             var newPrice = 0;
             var newWeight = 0;
             var newNumberItems = 0;
-            for (var i = 0; i < subOrdersLength; i++) {
-                newPrice = newPrice + $scope.newOrder.subOrders[i].price;
-                newWeight = newWeight + $scope.newOrder.subOrders[i].weight;
-                newNumberItems = newNumberItems + $scope.newOrder.subOrders[i].numberItems
+            if (angular.isDefined(array)) {
+                subOrdersLength = array.subOrders.length;
+                for (var j = 0; j < subOrdersLength; j++) {
+                    newPrice = newPrice + array.subOrders[j].price;
+                    newWeight = newWeight + array.subOrders[j].weight;
+                    newNumberItems = newNumberItems + array.subOrders[j].numberItems
+                }
+                array.price = newPrice;
+                array.weight = newWeight;
+                array.numberItems = newNumberItems
+            } else {
+                subOrdersLength = $scope.newOrder.subOrders.length;
+                for (var i = 0; i < subOrdersLength; i++) {
+                    newPrice = newPrice + $scope.newOrder.subOrders[i].price;
+                    newWeight = newWeight + $scope.newOrder.subOrders[i].weight;
+                    newNumberItems = newNumberItems + $scope.newOrder.subOrders[i].numberItems
+                }
+                $scope.newOrder.price = newPrice;
+                $scope.newOrder.weight = newWeight;
+                $scope.newOrder.numberItems = newNumberItems
             }
-            $scope.newOrder.price = newPrice;
-            $scope.newOrder.weight = newWeight;
-            $scope.newOrder.numberItems = newNumberItems;
         }
-        $scope.ordersTotalCalculs = function () {
-            ordersTotalCalculs()
+        $scope.ordersTotalCalculs = function (array) {
+            console.log(array)
+            ordersTotalCalculs(array)
         };
 
-        $scope.addNewSubOrder = function (subOrder) {
+        $scope.addNewSubOrder = function (subOrder, array) {
             for (var i = 0; i < subOrder.stores.length; i++) {
                 var subOrderToPush = {
                     numberItems: subOrder.numberItems,
                     store: subOrder.stores[i]
                 };
                 subOrderToPush = $scope.calculPriceAndWeight(subOrderToPush);
-                $scope.newOrder.subOrders.push(angular.copy(subOrderToPush));
+                if (angular.isDefined(array)) {
+                    array.subOrders.push(angular.copy(subOrderToPush));
+                } else {
+                    $scope.newOrder.subOrders.push(angular.copy(subOrderToPush));
+                }
             }
 
-            ordersTotalCalculs();
+            ordersTotalCalculs(array);
             return {stores: []};
         };
         $scope.addOrder = function () {
@@ -164,6 +186,16 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                     if (angular.isDefined($scope.newOrder.brand.flag)) {
                         delete($scope.newOrder.brand.flag);
                         BrandFactory.postBrand($scope.newOrder.brand)
+                    }
+                    if (angular.isDefined($scope.newOrder.id) === false) {
+                        console.log($scope.newOrder.brand)
+                        var brandOrders = $filter('filter')($scope.orders, $scope.newOrder.brand.name, 'brand');
+                        if (brandOrders.length > 0) {
+                            var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
+                            $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + (parseInt(lastId.replace(/[^0-9.]/g, '')) + 1);
+                        } else {
+                            $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + '1';
+                        }
                     }
                     $scope.newOrder.date = new Date();
                     OrdersFactory.postOrder($scope.newOrder);

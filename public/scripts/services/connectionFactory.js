@@ -21,6 +21,13 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
                         $rootScope.connected = 'client';
                     }
             })
+        },
+        disconnect: function () {
+            $http.post('/users/logout').
+                success(function () {
+                    $rootScope.connected = false;
+                    $location.path('/')
+            })
         }
     };
     return factory;

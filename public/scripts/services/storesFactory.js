@@ -15,6 +15,28 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
             }
             return deferred.promise
         },
+        getStoreById: function (id) {
+            var deferred = $q.defer();
+            if (factory.stores != false) {
+                for (var i = 0; i < factory.stores.length; i++) {
+                    if (id === factory.stores[i].id) {
+                        deferred.resolve(factory.stores[i])
+                    }
+                }
+            } else {
+                $http.get('models?table=stores').success(function (object) {
+                    factory.stores = object.map(function (el) {
+                        return JSON.parse(el.objectString)
+                    });
+                    for (var i = 0; i < factory.stores.length; i++) {
+                        if (id === factory.stores[i].id) {
+                            deferred.resolve(factory.stores[i])
+                        }
+                    }
+                });
+            }
+            return deferred.promise
+        },
         refactorStore: function (store) {
             for (var i = 0; i < factory.stores.length; i++) {
                 if (factory.stores[i].id == store.id) {

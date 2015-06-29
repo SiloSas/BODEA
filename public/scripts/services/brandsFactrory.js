@@ -18,7 +18,15 @@ angular.module('bodeaApp').factory('BrandFactory', function ($q, $http, GuidFact
         postBrand: function (brand) {
             brand.id = GuidFactory();
             delete(brand.$$hashKey);
-            factory.brands.push(brand);
+            if (factory.brands.indexOf(brand) == -1) {
+                factory.brands.push(brand);
+            }
+            for (var i =0; i < factory.brands.length; i++) {
+                if (angular.isDefined(factory.brands[i].flag)) {
+                    factory.brands.splice(i, 1);
+                    i--;
+                }
+            }
             console.log(factory.brands);
             $http.post('/models?table=brands&uuid='+ brand.id + '&objectString=' + JSON.stringify(brand)).success(function (object) {
             });

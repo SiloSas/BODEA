@@ -52,6 +52,10 @@ angular
         templateUrl: 'assets/views/historique.html',
         controller: 'HistoriqueCtrl'
       })
+      .when('/Settings', {
+        templateUrl: 'assets/views/settings.html',
+        controller: 'SettingsCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

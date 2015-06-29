@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFactory) {
+angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFactory, StoresFactory) {
     var factory = {
         orders: false,
         getOrders: function () {
@@ -9,6 +9,33 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                 $http.get('models?table=orders').success(function (object) {
                     factory.orders = object.map(function (el) {
                         return JSON.parse(el.objectString)
+                    });
+                    console.log(object)
+                    factory.orders = factory.orders.map(function (order) {
+                        order.subOrders.map(function (subOrder) {
+                            StoresFactory.getStoreById(subOrder.store.id).then(function (store) {
+                                subOrder.store = store;
+                            });
+                            subOrder.price =
+                                subOrder.store.priceByM2 * (parseInt(subOrder.store.printFormat.split('*')[0]) *
+                                parseInt(subOrder.store.printFormat.split('*')[1]))*subOrder.numberItems;
+                            subOrder.weight =
+                                subOrder.store.weight*subOrder.numberItems;
+                            return subOrder
+                        });
+                        var subOrdersLength = order.subOrders.length;
+                        var newPrice = 0;
+                        var newWeight = 0;
+                        var newNumberItems = 0;
+                        for (var i = 0; i < subOrdersLength; i++) {
+                            newPrice = newPrice + order.subOrders[i].price;
+                            newWeight = newWeight + order.subOrders[i].weight;
+                            newNumberItems = newNumberItems + order.subOrders[i].numberItems
+                        }
+                        order.price = newPrice;
+                        order.weight = newWeight;
+                        order.numberItems = newNumberItems;
+                        return order;
                     });
                     deferred.resolve(factory.orders);
                 });

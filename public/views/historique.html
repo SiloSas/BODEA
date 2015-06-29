@@ -1,7 +1,11 @@
-<md-select placeholder="Filtrer par enseigne" ng-change="initChart()"
-           ng-model="filter">
-    <md-option ng-repeat="brand in brands" value="{{brand.name}}">{{brand.name}}</md-option>
+<md-select placeholder="Filtrer par enseigne" ng-show="$root.connected == 'admin'" ng-change="filterType = 'brand'; initChart()"
+           ng-model="filterChart">
+    <md-option ng-repeat="brand in brands" value="{{brand.id}}">{{brand.name}}</md-option>
 </md-select>
-<md-button ng-show="filter != ''" ng-click="filter=''; initChart()">Supprimer le filtre</md-button>
+<md-select placeholder="Filtrer par magasins" ng-change="filterType = 'subOrders'; initChart()"
+           ng-model="filterChart">
+    <md-option ng-repeat="store in stores" value="{{store.id}}">{{store.name}}</md-option>
+</md-select>
+<md-button ng-show="filterChart != ''" ng-click="filterChart=''; filterType=''; initChart()">Supprimer le filtre</md-button>
 <canvas id="bar" class="chart chart-bar column large-12" data="data"
         labels="labels"></canvas>

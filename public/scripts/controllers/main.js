@@ -8,12 +8,14 @@
  * Controller of the bodeaApp
  */
 angular.module('bodeaApp')
-  .controller('MainCtrl', function ($scope, $timeout, $mdSidenav, $mdUtil, $log, $location, ConnectionFactory) {
+  .controller('MainCtrl', function ($scope, $timeout, $mdSidenav, $mdUtil, $log, $location, ConnectionFactory, $rootScope) {
         $scope.toggleLeft = buildToggler('left');
         /**
          * Build handler to open/close a SideNav; when animation finishes
          * report completion in console
          */
+
+        $rootScope.filter = '';
         function buildToggler(navID) {
             var debounceFn =  $mdUtil.debounce(function(){
                 $mdSidenav(navID)
@@ -36,5 +38,8 @@ angular.module('bodeaApp')
         });
         $scope.connect = function (user) {
             ConnectionFactory.connect(user)
+        };
+        $scope.disconnect = function () {
+            ConnectionFactory.disconnect()
         }
     });

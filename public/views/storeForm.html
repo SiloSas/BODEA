@@ -1,0 +1,70 @@
+<md-input-container>
+    <label>Nom du magasin</label>
+    <input type="text" ng-model="store.name" required>
+</md-input-container>
+<md-input-container>
+    <label>Référent</label>
+    <input type="text" ng-model="store.contactName" required>
+</md-input-container>
+<md-input-container>
+    <label>Adresse de livraison</label>
+    <input type="text" ng-model="store.deliveryAddress" required>
+</md-input-container>
+<md-input-container>
+    <label>Adresse de facturation</label>
+    <input type="text" ng-model="store.billingAddress">
+</md-input-container>
+<md-autocomplete flex required
+                 md-min-length="0"
+                 md-autofocus="false"
+                 md-no-cache="noCache"
+                 md-selected-item="store.area"
+                 md-search-text-change="searchTextChange(searchArea)"
+                 md-search-text="searchArea"
+                 md-selected-item-change="selectedItemChange(area)"
+                 md-items="area in querySearch(searchArea)"
+                 md-item-text="area.name"
+                 md-floating-label="Région (cliquez pour valider votre choix)">
+    <md-item-template>
+        <span md-highlight-text="searchArea" md-highlight-flags="^i">{{area.name}}</span>
+    </md-item-template>
+    <md-not-found>
+        No matches found for "{{searchArea}}".
+    </md-not-found>
+</md-autocomplete>
+<md-input-container>
+    <label>Numero de téléphone</label>
+    <input type="text" ng-model="store.phone">
+</md-input-container>
+<md-input-container>
+    <label>Prix d'une bâche (prix m2)</label>
+    <input type="number" step="any" ng-model="store.priceByM2" required>
+</md-input-container>
+<md-input-container>
+    <label>Longueur du tube</label>
+    <input type="number" step="any" ng-model="store.pipeSize">
+</md-input-container>
+<md-input-container>
+    <label>Poid de la bache</label>
+    <input type="number" step="any" ng-model="store.weight" required>
+</md-input-container>
+<md-input-container>
+    <label>Format d'impression (utilisé pour le calcule du prix -- format n*n)</label>
+    <input type="text" ng-model="store.printFormat" required>
+</md-input-container>
+<md-input-container>
+    <label>Format d'impression 2</label>
+    <input type="text" ng-model="store.printFormat2">
+</md-input-container>
+<md-input-container>
+    <label>Laize utilisé</label>
+    <input type="number" step="any" ng-model="store.width">
+</md-input-container>
+<md-input-container>
+    <label>Longueur du jonc</label>
+    <input type="number" step="any" ng-model="store.caneWidth">
+</md-input-container>
+<md-input-container>
+    <label>Nombre de moteurs</label>
+    <input type="number" ng-model="store.enginesNumber">
+</md-input-container>

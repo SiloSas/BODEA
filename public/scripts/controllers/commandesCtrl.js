@@ -31,7 +31,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
     // other color intentions will be inherited
     // from default
 }).controller('CommandesCtrl', function ($scope, $timeout, OrdersFactory, BrandFactory, StoresFactory, $log,
-                                         $filter, AreaFactory, GuidFactory) {
+                                         $filter, AreaFactory, $mdToast) {
         $scope.orders = [];
         $scope.selectedStore = '';
         OrdersFactory.getOrders().then(function (orders) {
@@ -47,11 +47,33 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             $scope.brands = brands
         });
 
+        $scope.changeOrderState = function (order) {
+            //post refactor order
+        };
         $scope.limit = 20;
         $scope.getStoreById = function (id) {
             for (var i = 0; i < $scope.stores.length; i++) {
                 if ($scope.stores[i].id == id) {
                     return $scope.stores[i];
+                }
+            }
+        };
+        $scope.toggle = function (item, list) {
+            var idx = false;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].id == item.id) {
+                    list.splice(i, 1);
+                    idx = true
+                }
+            }
+            if (idx == false) {
+                list.push(item);
+            }
+        };
+        $scope.exists = function (item, list) {
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].id == item.id) {
+                    return true;
                 }
             }
         };
@@ -62,103 +84,137 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                 })
             }, 0)
         };
-        $scope.copyStore = function (store) {
-            $timeout(function () {
-                $scope.$apply(function () {
-                    store.newStore = angular.copy(store);
-                })
-            }, 0)
-        };
-        $scope.removeCopyStore = function (store) {
-            $timeout(function () {
-                $scope.$apply(function () {
-                    delete(store.newStore);
-                })
-            }, 0)
-        };
-        $scope.refactorStore = function (store) {
-            if (store.area.flag) {
-                delete(store.area.flag);
-                AreaFactory.postArea(store.area)
-            }
-            StoresFactory.refactorStore(store);
-        };
-        $scope.createNewStore = function (store) {
-            $timeout(function () {
-                $scope.$apply(function () {
-                    store.newStore = {brand: $scope.newOrder.brand};
-                })
-            }, 0);
-        };
+
+
         $scope.addNewStore = function (store) {
             $timeout(function () {
                 $scope.$apply(function () {
-                    if (store.newStore.area.flag) {
-                        delete(store.newStore.area.flag);
-                        AreaFactory.postArea(store.newStore.area)
+                    if (store.area.flag) {
+                        delete(store.area.flag);
+                        AreaFactory.postArea(store.area)
                     }
-                    if ($scope.newOrder.brand.flag) {
+                    if (angular.isDefined($scope.newOrder.brand.flag)) {
                         delete($scope.newOrder.brand.flag);
                         $scope.newOrder.brand = BrandFactory.postBrand($scope.newOrder.brand)
                     }
-                    store = angular.copy(store.newStore);
                     store.brand = $scope.newOrder.brand;
                     StoresFactory.postStore(store);
-                    $scope.selectedStore = store.id;
-                    $scope.newSubOrder.store = store;
+                    $scope.stores.push(store)
                 })
             });
         };
 
         $scope.refactorCommande = function (order) {
+            console.log(order);
             OrdersFactory.refactorOrder(order)
         };
 
         $scope.newOrder = {subOrders: [], state: 1};
-        $scope.newSubOrder = {store: {}};
+        $scope.newSubOrder = {stores: []};
         $scope.cancelNewOrder = function () {
             $scope.newOrder = {subOrders: [], state: 1};
-            $scope.newSubOrder = {store: {}};
+            $scope.newSubOrder = {stores: []};
             $scope.selectedStore = false;
         };
-        function ordersTotalCalculs() {
-            var subOrdersLength = $scope.newOrder.subOrders.length;
+        function ordersTotalCalculs(array) {
+            var subOrdersLength;
             var newPrice = 0;
             var newWeight = 0;
             var newNumberItems = 0;
-            for (var i = 0; i < subOrdersLength; i++) {
-                newPrice = newPrice + $scope.newOrder.subOrders[i].price;
-                newWeight = newWeight + $scope.newOrder.subOrders[i].weight;
-                newNumberItems = newNumberItems + $scope.newOrder.subOrders[i].numberItems
+            if (angular.isDefined(array)) {
+                subOrdersLength = array.subOrders.length;
+                for (var j = 0; j < subOrdersLength; j++) {
+                    newPrice = newPrice + array.subOrders[j].price;
+                    newWeight = newWeight + array.subOrders[j].weight;
+                    newNumberItems = newNumberItems + array.subOrders[j].numberItems
+                }
+                array.price = newPrice;
+                array.weight = newWeight;
+                array.numberItems = newNumberItems
+            } else {
+                subOrdersLength = $scope.newOrder.subOrders.length;
+                for (var i = 0; i < subOrdersLength; i++) {
+                    newPrice = newPrice + $scope.newOrder.subOrders[i].price;
+                    newWeight = newWeight + $scope.newOrder.subOrders[i].weight;
+                    newNumberItems = newNumberItems + $scope.newOrder.subOrders[i].numberItems
+                }
+                $scope.newOrder.price = newPrice;
+                $scope.newOrder.weight = newWeight;
+                $scope.newOrder.numberItems = newNumberItems
             }
-            $scope.newOrder.price = newPrice;
-            $scope.newOrder.weight = newWeight;
-            $scope.newOrder.numberItems = newNumberItems;
         }
-        $scope.ordersTotalCalculs = function () {
-            ordersTotalCalculs()
+        $scope.ordersTotalCalculs = function (array) {
+            console.log(array)
+            ordersTotalCalculs(array)
         };
 
-        $scope.addNewSubOrder = function (subOrder) {
-            if (subOrder != {store: {}}) {
-                $timeout(function () {
-                    $scope.$apply(function () {
-                        $scope.newOrder.subOrders.push(angular.copy(subOrder));
-                        ordersTotalCalculs();
-                        subOrder = {store: {}};
-                        return subOrder;
-                    })
-                }, 0)
+        $scope.addNewSubOrder = function (subOrder, array) {
+            for (var i = 0; i < subOrder.stores.length; i++) {
+                var subOrderToPush = {
+                    numberItems: subOrder.numberItems,
+                    store: subOrder.stores[i]
+                };
+                subOrderToPush = $scope.calculPriceAndWeight(subOrderToPush);
+                if (angular.isDefined(array)) {
+                    array.subOrders.push(angular.copy(subOrderToPush));
+                } else {
+                    $scope.newOrder.subOrders.push(angular.copy(subOrderToPush));
+                }
             }
+
+            ordersTotalCalculs(array);
+            return {stores: []};
         };
         $scope.addOrder = function () {
-            if ($scope.newOrder.brand.flag) {
-                delete($scope.newOrder.brand.flag);
-                BrandFactory.postBrand($scope.newOrder.brand)
-            }
-            $scope.newOrder.date = new Date();
-            OrdersFactory.postOrder($scope.newOrder);
-            $scope.newOrder = {subOrders: [], state: 1};
+            $scope.toastPosition = {
+                bottom: false,
+                top: true,
+                left: false,
+                right: true
+            };
+            $scope.getToastPosition = function () {
+                return Object.keys($scope.toastPosition)
+                    .filter(function (pos) {
+                        return $scope.toastPosition[pos];
+                    })
+                    .join(' ');
+            };
+            //if (angular.isDefined($scope.newOrder.image)) {
+                if ($scope.newOrder.subOrders.length > 0) {
+                    if (angular.isDefined($scope.newOrder.brand.flag)) {
+                        delete($scope.newOrder.brand.flag);
+                        BrandFactory.postBrand($scope.newOrder.brand)
+                    }
+                    if (angular.isDefined($scope.newOrder.id) === false) {
+                        console.log($scope.newOrder.brand)
+                        var brandOrders = $filter('filter')($scope.orders, $scope.newOrder.brand.name, 'brand');
+                        if (brandOrders.length > 0) {
+                            var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
+                            $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + (parseInt(lastId.replace(/[^0-9.]/g, '')) + 1);
+                        } else {
+                            $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + '1';
+                        }
+                    }
+                    $scope.newOrder.date = new Date();
+                    OrdersFactory.postOrder($scope.newOrder);
+                    $scope.newOrder = {subOrders: [], state: 1};
+                    $scope.createOrder = false
+                } else {
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .content('Veuillez entrer au moins une sous commande')
+                            .position($scope.getToastPosition())
+                            .hideDelay(3000)
+                    );
+                }
+            /*} else {
+                $mdToast.show(
+                    $mdToast.simple()
+                        .content('Veuillez ajouter une image')
+                        .position($scope.getToastPosition())
+                        .hideDelay(3000)
+                );
+            }*/
         };
 
         $scope.addImg = function () {

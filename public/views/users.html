@@ -55,10 +55,6 @@
             <input type="text" ng-model="newUser.firstName">
         </md-input-container>
         <md-input-container>
-            <label>Identifiant</label>
-            <input type="text" ng-model="newUser.id">
-        </md-input-container>
-        <md-input-container>
             <label>E-mail</label>
             <input type="email" ng-model="newUser.mail">
         </md-input-container>
@@ -116,13 +112,13 @@
         <md-button class="md-warn md-raised" ng-click="$parent.createUser = false">Annuler</md-button>
     </form>
 </div>
-<div class="column large-12 fade" ng-repeat="user in filteredUsers = (users | filter: filter) | orderBy:predicate:reverse | limitTo: limit">
+<div class="column large-12 fade" ng-repeat="user in filteredUsers = (users | filter: $root.filter) | orderBy:predicate:reverse | limitTo: limit">
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
-            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = user.name">{{user.name}}</h5>
-            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = user.firstName">{{user.firstName}}</h5>
-            <h5 class="column medium-2 pointer" ng-click="$parent.$parent.filter = user.brand.name">{{user.brand.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.name">{{user.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.firstName">{{user.firstName}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.brand.name">{{user.brand.name}}</h5>
             <h3 class="column medium-2">
                 <md-checkbox style="margin: 0 0 0 50%"
                              ng-change="changeActiveUser(user)"
@@ -158,10 +154,6 @@
                 <md-input-container>
                     <label>Prénom</label>
                     <input type="text" ng-model="user.newUser.firstName">
-                </md-input-container>
-                <md-input-container>
-                    <label>Identifiant</label>
-                    <input type="text" ng-model="user.newUser.id">
                 </md-input-container>
                 <md-input-container>
                     <label>E-mail</label>

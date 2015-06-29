@@ -138,7 +138,7 @@ object Application extends Controller {
   }
 
   def askActorAllModelsInTable(table: PostgresTable): Future[SimpleResult] = {
-    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[GeneralObject]]] map {
+    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[GeneralObjectWithRelations]]] map {
       case Success(objects) => Ok(Json.toJson(objects))
       case Failure(failure) => InternalServerError("callGetModelsActor: " + failure)
     }

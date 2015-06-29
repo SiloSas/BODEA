@@ -10,10 +10,7 @@ import anorm._
 import play.api.Play.current
 import play.api.db.DB
 import services.Utilities._
-//import scala.slick.direct.AnnotationMapper.column
-//import slick.lifted.Tag
-//import slick.model.Table
-//import play.api.db.slick.Config.driver.simple._
+
 import scala.language.postfixOps
 import scala.slick.driver.PostgresDriver.simple._
 import scala.util.{Failure, Try}
@@ -30,6 +27,13 @@ object ModelActor {
   case class ObjectToAmendRequest(table: PostgresTable, uuid: UUID, newObject: String)
 
   case class GeneralObject(uuid: UUID, objectString: String)  extends ModelReturnType
+  case class Relation(relationName: String, relationObject: GeneralObject)
+//  case class Relations(relations: List[Relation])
+
+  case class MaybeRelation(relationName: String, maybeGeneralObject: MaybeGeneralObject)
+
+  case class GeneralObjectWithRelations(generalObject: GeneralObject, relations: Seq[MaybeRelation])
+    extends ModelReturnType
 
   class StandardTable(tag: Tag)(implicit table: String) extends Table[GeneralObject](tag, table) {
     def id = column[Int](table.dropRight(1) + "id", O.PrimaryKey)
@@ -38,16 +42,86 @@ object ModelActor {
     def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
   }
 
-  class relationTable(tag: Tag)(implicit tables: (String, String, TableQuery[StandardTable], TableQuery[StandardTable])) extends
-  Table[(Int, Int)](tag, tables._1.dropRight(1) + tables._2.dropRight(1)) {
-    val aIdString: String = tables._1.dropRight(1) + "id"
-    val bIdString: String = tables._2.dropRight(1) + "id"
-    def aId = column[Int](aIdString)
-    def bId = column[Int](bIdString)
-    def * = (aId, bId)
-    def aFK = foreignKey(aIdString, aId, tables._3)(a => a.id)
-    def bFK = foreignKey(bIdString, bId, tables._4)(b => b.id)
+  class StoreTable(tag: Tag) extends Table[GeneralObject](tag, "stores") {
+    def id = column[Int]("storeid", O.PrimaryKey)
+    def uuid = column[UUID]("uuid", O.DBType("UUID"))
+    def objectString = column[String]("object")
+
+    def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
+  }  
+  
+  class BrandTable(tag: Tag) extends Table[GeneralObject](tag, "brands") {
+    def id = column[Int]("brandid", O.PrimaryKey)
+    def uuid = column[UUID]("uuid", O.DBType("UUID"))
+    def objectString = column[String]("object")
+
+    def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
   }
+  
+  class ImageTable(tag: Tag) extends Table[GeneralObject](tag, "images") {
+    def id = column[Int]("imageid", O.PrimaryKey)
+    def uuid = column[UUID]("uuid", O.DBType("UUID"))
+    def objectString = column[String]("object")
+
+    def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
+  }
+
+  class OrderTable(tag: Tag) extends Table[GeneralObject](tag, "orders") {
+    def id = column[Int]("orderid", O.PrimaryKey)
+    def uuid = column[UUID]("uuid", O.DBType("UUID"))
+    def objectString = column[String]("object")
+
+    def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
+  }
+  
+  class StoreBrandTable(tag: Tag) extends Table[(Int, Int)](tag, "storebrand") {
+    def storeId = column[Int]("storeid")
+    def brandId = column[Int]("brandid")
+
+    def * = (storeId, brandId)
+
+    def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
+    def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
+  }
+  
+  class OrderBrandTable(tag: Tag) extends Table[(Int, Int)](tag, "orderbrand") {
+    def orderId = column[Int]("orderid")
+    def brandId = column[Int]("brandid")
+
+    def * = (orderId, brandId)
+
+    def aFK = foreignKey("orderid", orderId, orders)(a => a.id)
+    def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
+  }
+
+  class StoreOrderTable(tag: Tag) extends Table[(Int, Int)](tag, "storeorder") {
+    def storeId = column[Int]("storeid")
+    def orderId = column[Int]("orderid")
+
+    def * = (storeId, orderId)
+
+    def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
+    def bFK = foreignKey("orderid", orderId, orders)(b => b.id)
+  }
+
+  class OrderImageTable(tag: Tag) extends Table[(Int, Int)](tag, "orderimage") {
+    def orderId = column[Int]("orderid")
+    def imageId = column[Int]("imageid")
+
+    def * = (orderId, imageId)
+
+    def aFK = foreignKey("orderid", orderId, orders)(a => a.id)
+    def bFK = foreignKey("imageid", imageId, images)(b => b.id)
+  }
+
+  val stores = TableQuery[StoreTable]
+  val orders = TableQuery[OrderTable]
+  val brands = TableQuery[BrandTable]
+  val images = TableQuery[ImageTable]
+  val storeOrder = TableQuery[StoreOrderTable]
+  val storeBrand = TableQuery[StoreBrandTable]
+  val orderBrand = TableQuery[OrderBrandTable]
+  val orderImage = TableQuery[OrderImageTable]
 
   case class MaybeGeneralObject(uuid: Option[UUID], objectString: Option[String]) extends ModelReturnType
   case class UserWithRelations (user: User, stores: MaybeGeneralObject, brands: MaybeGeneralObject,
@@ -94,69 +168,46 @@ class ModelActor extends Actor {
   def save(objectToSave: ObjectToSaveRequest): Try[Int] = Try {
     implicit val table = objectToSave.table.name
     val standardTableQuery = TableQuery[StandardTable]
-//    val tableName = objectToSave.table.name
-//    DB.withConnection { implicit connection =>
-//      SQL(s"""INSERT INTO $tableName(uuid, object) VALUES ({UUID}, {objectString})""")
-//        .on(
-//          'UUID -> objectToSave.uuid,
-//          'objectString -> objectToSave.objectString)
-//        .executeInsert()
-//    }
     (standardTableQuery returning standardTableQuery.map(_.id)) += GeneralObject(objectToSave.uuid, objectToSave.objectString)
   }
 
-  def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[ModelReturnType]] = Try {
+  def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[GeneralObjectWithRelations]] = Try {
     val tableName = objectsToGetRequest.table.name
     DB.withConnection { implicit connection =>
       tableName match {
-//        case "orders" =>
-//          "1 brand"
-//          "orders" -> "1 store chacun"
-//
-//        case "brand" =>
-//          ~"stores"
-//
-//        case "stores" =>
-//          "users"
-//          "1 brand"
-//          "orders"
-//          "1 area"
-//
-//        case "users" =>
+          //case users => 
+//              "1 brand"
+//              "stores"
 
+        case "orders" =>
+          val query = for {
+            ((((order, _), brand), _), image) <- orders outerJoin
+              orderBrand on (_.id === _.brandId) leftJoin
+              brands on (_._2.brandId === _.id) outerJoin
+              orderImage on (_._1._1.id === _.imageId) leftJoin
+              images on (_._2.imageId === _.id)
+          } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
 
+          query.list.groupBy(_._1).map { generalObjectsWithRelations =>
+            (generalObjectsWithRelations._1,
+              generalObjectsWithRelations._2.foldLeft(Seq.empty[MaybeRelation]) { (res, generalObjectWithRelation) =>
+                res :+
+                  MaybeRelation("brands", MaybeGeneralObject(generalObjectWithRelation._2, generalObjectWithRelation._3)) :+
+                  MaybeRelation("images", MaybeGeneralObject(generalObjectWithRelation._4, generalObjectWithRelation._5))
+              }.distinct.filterNot(_.maybeGeneralObject.objectString == None))
+          }
+            .toSeq
+            .map { generalObjectWithRelation =>
+            GeneralObjectWithRelations(generalObjectWithRelation._1, generalObjectWithRelation._2)
+          }
 
-//          implicit var table = "stores"
-//          val stores = TableQuery[StandardTable]
-//          table = "orders"
-//          val orders = TableQuery[StandardTable]
-
-
-//          println(storesTable.list)
-//          for {
-//            (orders, stores) <- users innerJoin
-//          }
-
-//
-//          val a = SQL(
-//            s"""SELECT users.*, stores.*, brands.*, images.* FROM users users
-//               |  LEFT OUTER JOIN storeUser storeUser
-//               |    ON users.userid = storeUser.storeId
-//               |  LEFT OUTER JOIN stores stores
-//               |    ON stores.storeid = storeUser.storeId
-//               |  LEFT OUTER JOIN userBrand userBrand
-//               |    ON users.userid = userBrand.brandId
-//               |  LEFT OUTER JOIN brands brands
-//               |    ON brands.brandId = userBrand.brandId
-//               |  LEFT OUTER JOIN userImage userImage
-//               |    ON users.userid = userImage.imageId
-//               |  LEFT OUTER JOIN images images
-//               |    ON images.imageId = userImage.imageId""".stripMargin)
-//            a.as(userWithRelationsParser *)
+        case "users" =>
+          Seq(GeneralObjectWithRelations(GeneralObject(UUID.randomUUID(), "je ne suis pas un user"), List()))
+        
         case otherTable =>
           implicit val table = otherTable
           val standardTableQuery = TableQuery[StandardTable]
-          standardTableQuery.list
+          standardTableQuery.list map { x => GeneralObjectWithRelations(x, List.empty) }
       }
     }
   }
@@ -176,8 +227,8 @@ class ModelActor extends Actor {
       case uuid ~ login ~ password ~ role ~ userObject ~ storeUUID ~ storeObject ~ brandUUID ~ brandObject ~
         imageUUID ~ imageObject =>
         println(login)
-        println(uuid, login, password , role , userObject , storeUUID , storeObject , brandUUID , brandObject ,
-          imageUUID , imageObject)
+        println((uuid, login, password , role , userObject , storeUUID , storeObject , brandUUID , brandObject ,
+          imageUUID , imageObject))
         UserWithRelations(User(uuid, login, password, role, userObject),
           MaybeGeneralObject(storeUUID, storeObject), MaybeGeneralObject(brandUUID, brandObject),
           MaybeGeneralObject(imageUUID, imageObject))

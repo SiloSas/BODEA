@@ -232,8 +232,7 @@ CREATE TABLE storeBrand (
 
 CREATE TABLE storeOrder (
   storeId          INT REFERENCES stores (storeId),
-  orderId          INT REFERENCES orders (orderId),
-  PRIMARY KEY (storeId, orderId)
+  orderId          INT REFERENCES orders (orderId)
 );
 
 CREATE TABLE storeArea (
@@ -254,7 +253,13 @@ CREATE TABLE userImage (
   PRIMARY KEY (userId, imageId)
 );
 
+CREATE TABLE orderImage (
+  orderId          INT REFERENCES orders (orderId),
+  imageId          INT REFERENCES images (imageId),
+  PRIMARY KEY (orderId, imageId)
+);
+
 
 # --- !Downs
 DROP TABLE IF EXISTS orderBrand, orderOrder, orderStore, storeUser, storeBrand, storeOrder, storeArea, userBrand,
-userImage, users, areas, brands, stores, images, orders;
+userImage, orderImage, users, areas, brands, stores, images, orders;

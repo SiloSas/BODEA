@@ -1,5 +1,6 @@
 package controllers
 
+import java.io.File
 import java.util.UUID
 
 import actors.ModelActor._
@@ -19,7 +20,6 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
-import java.io.File
 
 object Application extends Controller {
   implicit val timeout = Timeout(1000 seconds)
@@ -129,7 +129,7 @@ object Application extends Controller {
           Future { Unauthorized("Vous devez être administrateur pour accèder à cette ressource.") }
         else 
           otherTable match {
-            case "users" => askActorAllModelsInTable(table)
+            case "users" => askActorAllModelsInUsersTable
             case "images" => askActorAllModelsInTable(table)
             case "orders" => askActorAllModelsInTable(table)
             case _ => Future { NotFound }
@@ -141,6 +141,16 @@ object Application extends Controller {
     (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[GeneralObjectWithRelations]]] map {
       case Success(objects) => Ok(Json.toJson(objects))
       case Failure(failure) => InternalServerError("callGetModelsActor: " + failure)
+    }
+  }
+
+  def askActorAllModelsInUsersTable: Future[SimpleResult] = {
+    (modelActor ? "users").mapTo[Try[Seq[UserWithRelations]]] map {
+      case Success(usersFound) =>
+        Ok(Json.toJson(usersFound))
+      case Failure(failure) =>
+        Logger error ("failure" + failure)
+        InternalServerError("askActorAllModelsInUsersTable: " + failure)
     }
   }
 

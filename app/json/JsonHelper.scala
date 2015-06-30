@@ -40,6 +40,8 @@ object JsonHelper {
 //  implicit val relationReads = Json.reads[Relation]
 //  implicit val relationsWrites = Json.writes[Relations]
 
+  implicit val userWithRelationsWrites = Json.writes[UserWithRelations]
+
   implicit val objectWithRelationsWrites = Json.writes[GeneralObjectWithRelations]
 //  implicit val objectWithRelationsReads = Json.reads[GeneralObjectWithRelations]
 

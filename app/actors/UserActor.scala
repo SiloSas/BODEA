@@ -15,6 +15,7 @@ import services.Utilities._
 
 import scala.concurrent.Future
 import scala.language.postfixOps
+import scala.slick.driver.PostgresDriver.simple._
 import scala.util.{Failure, Success, Try}
 
 class AuthenticatedRequest[A](val username: Option[String], val role: Option[Int], request: Request[A])
@@ -37,6 +38,18 @@ object UserActor {
   case class SaveUserRequest(uuid: String, login: String, password: String, role: Int, objectString: Option[String])
   case class AuthenticationRequest[A](login: String, password: String)
   case class AuthenticationResponse(authorized: Boolean, maybeUser: Option[User])
+
+
+  class UserTable(tag: Tag) extends Table[User](tag, "users") {
+    def id = column[Int]("userid", O.PrimaryKey)
+    def uuid = column[UUID]("uuid", O.DBType("UUID"))
+    def login = column[String]("login")
+    def password = column[String]("password")
+    def role = column[Int]("role")
+    def objectString = column[Option[String]]("object")
+
+    def * = (uuid, login, password, role, objectString) <> (User.tupled, User.unapply)
+  }
 
   val userParser: RowParser[User] = {
     get[UUID]("uuid") ~

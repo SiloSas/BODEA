@@ -12,7 +12,7 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     });
     AreaFactory.getAreas().then(function(areas) {
         $scope.areas = areas;
-    })
+    });
     $scope.limit = 20;
     $scope.predicate = 'brand';
     $scope.reverse = false;
@@ -65,13 +65,12 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
                     delete(store.area.flag);
                     AreaFactory.postArea(store.area)
                 }
-                if (angular.isDefined($scope.newOrder.brand.flag)) {
-                    delete($scope.newOrder.brand.flag);
-                    $scope.newOrder.brand = BrandFactory.postBrand($scope.newOrder.brand)
+                if (angular.isDefined($scope.newUser.brand.flag)) {
+                    delete($scope.newUser.brand.flag);
+                    $scope.newUser.brand = BrandFactory.postBrand($scope.newUser.brand)
                 }
-                store.brand = $scope.newUser.brand;
+                store.brand = $scope.newUser.brand
                 StoresFactory.postStore(store);
-                $scope.stores.push(store)
             })
         });
     };
@@ -102,15 +101,6 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         $log.info('Text changed to ' + text);
     }
     function selectedBrandChange(item) {
-        if (angular.isDefined(item)) {
-            var brandOrders = $filter('filter')($scope.orders, item.name, 'brand');
-            if (brandOrders.length > 0) {
-                var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
-                $scope.newOrder.id = item.name.substring(0, 2).toUpperCase() + (parseInt(lastId.replace(/[^0-9.]/g, '')) + 1);
-            } else {
-                $scope.newOrder.id = item.name.substring(0, 2).toUpperCase() + '1';
-            }
-        }
         $log.info('Item changed to ' + JSON.stringify(item));
         //$scope.stores[index].area = item;
     }

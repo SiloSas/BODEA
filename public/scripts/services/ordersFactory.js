@@ -8,9 +8,8 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
             } else {
                 $http.get('models?table=orders').success(function (object) {
                     factory.orders = object.map(function (el) {
-                        return JSON.parse(el.objectString)
+                        return JSON.parse(el.generalObject.objectString)
                     });
-                    console.log(object)
                     factory.orders = factory.orders.map(function (order) {
                         order.subOrders.map(function (subOrder) {
                             StoresFactory.getStoreById(subOrder.store.id).then(function (store) {

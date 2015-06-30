@@ -8,6 +8,9 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
             } else {
                 $http.get('models?table=users').success(function (users) {
                     factory.users = users.map(function(user) {
+                        if (user.user.objectString == "undefined") {
+                            delete(user.user.objectString);
+                        }
                         if (angular.isDefined(user.user.objectString)) {
                             user.user.objectString = JSON.parse(user.user.objectString);
                         }

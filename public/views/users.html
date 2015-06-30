@@ -3,18 +3,18 @@
         <div class="column md-whiteframe-z1 float-left">
             Nom
             <i class="fa"
-               ng-class="{'fa-chevron-down': predicate != 'name' || (predicate == 'name' && reverse == false),
-              'fa-chevron-up': predicate == 'name' && reverse == true}"
-               ng-click="order('name')"></i>
+               ng-class="{'fa-chevron-down': predicate != 'user.objectString.name' || (predicate == 'user.objectString.name' && reverse == false),
+              'fa-chevron-up': predicate == 'user.objectString.name' && reverse == true}"
+               ng-click="order('user.objectString.name')"></i>
         </div>
     </div>
     <div class="column medium-2 table-title">
         <div class="column md-whiteframe-z1 float-left">
             Prénom
             <i class="fa"
-               ng-class="{'fa-chevron-down': predicate != 'firstName' || (predicate == 'firstName' && reverse == false),
-              'fa-chevron-up': predicate == 'firstName' && reverse == true}"
-               ng-click="order('firstName')"></i>
+               ng-class="{'fa-chevron-down': predicate != 'user.objectString.firstName' || (predicate == 'user.objectString.firstName' && reverse == false),
+              'fa-chevron-up': predicate == 'user.objectString.firstName' && reverse == true}"
+               ng-click="order('user.objectString.firstName')"></i>
         </div>
     </div>
     <div class="column medium-2 table-title float-left">
@@ -145,16 +145,23 @@
         <md-button class="md-warn md-raised" ng-click="$parent.createUser = false">Annuler</md-button>
     </div>
 </div>
-<div class="column large-12 fade" ng-repeat="user in filteredUsers = (users | filter: $root.filter) | orderBy:predicate:reverse | limitTo: limit">
+<div class="column large-12 fade"
+     ng-repeat="user in filteredUsers = (users | filter: $root.filter) | orderBy:predicate:reverse | limitTo: limit">
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
-            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.objectString.name">{{user.user.objectString.name}}</h5>
-            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.objectString.firstName">{{user.user.objectString.firstName}}</h5>
-            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.brand.name">{{user.user.brand.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.objectString.name">
+                {{user.user.objectString.name}}
+            </h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.objectString.firstName">
+                {{user.user.objectString.firstName}}
+            </h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.brand.name">
+                {{user.user.brand.name}}
+            </h5>
             <h3 class="column medium-2">
                 <md-checkbox style="margin: 0 0 0 50%"
-                             ng-change="refactorUser(user)"
+                             ng-change="user.newUser = copyUser(user); refactorUser(user)"
                              ng-model="user.isActive" class="md-primary" aria-label="Actif">
                 </md-checkbox>
             </h3>

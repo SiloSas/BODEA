@@ -22,6 +22,7 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
             return deferred.promise;
         },
         refactorUser: function (user) {
+            console.log(user)
             for (var i = 0; i < factory.users.length; i++) {
                 if (user.user.uuid == factory.users[i].user.uuid) {
                     user = angular.copy(user.newUser);

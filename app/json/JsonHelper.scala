@@ -3,7 +3,7 @@ package json
 import java.util.UUID
 
 import actors.ModelActor._
-import actors.UserActor.User
+import actors.UserActor.{UserWithId, User}
 import play.api.libs.json.{JsNumber, _}
 
 object JsonHelper {
@@ -34,6 +34,7 @@ object JsonHelper {
 //  implicit val objectReads = Json.reads[GeneralObject]
   implicit val maybeObjectWrites = Json.writes[MaybeGeneralObject]
   implicit val userWrites = Json.writes[User]
+  implicit val userWithIdWrites = Json.writes[UserWithId]
 
   implicit val relationWrites = Json.writes[Relation]
   implicit val maybeRelationWrites = Json.writes[MaybeRelation]

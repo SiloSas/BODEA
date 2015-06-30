@@ -36,11 +36,12 @@ object Application extends Controller {
 
   def authenticate(login: String, password: String) = Action.async {
     (userActor ? AuthenticationRequest(login, password)).mapTo[Try[AuthenticationResponse]] map {
+
       case Success(authenticationResponse) if authenticationResponse.authorized =>
-        Ok(Json.toJson(authenticationResponse.maybeUser.get))
+        Ok(Json.toJson(authenticationResponse.role))
           .withSession(
-            "connected" -> authenticationResponse.maybeUser.get.login,
-            "role" -> authenticationResponse.maybeUser.get.role.toString)
+            "connected" -> "t",
+            "role" -> authenticationResponse.role.toString)
 
       case Failure(failure) =>
         Logger error "Application.authenticate: " + failure.getMessage
@@ -78,15 +79,26 @@ object Application extends Controller {
       case None =>
         Future { Unauthorized("Unauthorized") }
       case username =>
-        (userActor ? SaveUserRequest(uuid: String, login, password, role, objectString)).mapTo[String] map {
-          case failure if failure.contains("failure") => InternalServerError("saveUser: " + failure)
-          case successfulMessage => Ok(successfulMessage)
+        (userActor ? SaveUserRequest(uuid: String, login, password, role, objectString)).mapTo[Try[Int]] map {
+          case Success(_) => Created
+          case Failure(failure) => InternalServerError("saveUser: " + failure)
+        }
+    }
+  }
+
+  def updateUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String]) = Authenticated.async { request =>
+    request.username match {
+      case None =>
+        Future { Unauthorized("Unauthorized") }
+      case username =>
+        (userActor ? SaveUserRequest(uuid: String, login, password, role, objectString)).mapTo[Try[Int]] map {
+          case Success(_) => Created
+          case Failure(failure) => InternalServerError("saveUser: " + failure)
         }
     }
   }
 
   def saveModel(tableName: String, stringUUID: String, objectString: String) = Authenticated.async { request =>
-    val table = PostgresTable(tableName)
     try {
       val uuid = UUID.fromString(stringUUID)
       tableName match {
@@ -138,7 +150,7 @@ object Application extends Controller {
   }
 
   def askActorAllModelsInTable(table: PostgresTable): Future[SimpleResult] = {
-    (modelActor ? ObjectsToGetRequest(table)).mapTo[Try[Seq[GeneralObjectWithRelations]]] map {
+    (modelActor ? FindObjectsRequest(table, None)).mapTo[Try[Seq[GeneralObjectWithRelations]]] map {
       case Success(objects) => Ok(Json.toJson(objects))
       case Failure(failure) => InternalServerError("callGetModelsActor: " + failure)
     }
@@ -195,9 +207,7 @@ object Application extends Controller {
         case "images" => askActorToDeleteModelInTable(table, uuid)
         case otherTable =>
           if (isRequestedByClient(request))
-            Future {
-              Unauthorized("Vous devez être administrateur pour accèder à cette ressource.")
-            }
+            Future { Unauthorized("Vous devez être administrateur pour supprimer cette ressource.") }
           else
             otherTable match {
               case "users" => askActorToDeleteModelInTable(table, uuid)

@@ -22,7 +22,7 @@ object ModelActor {
   case class PostgresTable(name: String)
   case class ObjectToSaveRequest(table: PostgresTable, uuid: UUID, objectString: String)
   case class ObjectToGetRequest(table: PostgresTable, uuid: UUID)
-  case class ObjectsToGetRequest(table: PostgresTable)
+  case class FindObjectsRequest(table: PostgresTable, userId: Option[Int])
   case class ObjectToDeleteRequest(table: PostgresTable, uuid: UUID)
   case class ObjectToAmendRequest(table: PostgresTable, uuid: UUID, newObject: String)
 
@@ -169,8 +169,8 @@ class ModelActor extends Actor {
     case ObjectToSaveRequest(table, uuid, objectString) =>
       sender ! save(ObjectToSaveRequest(table, uuid, objectString))
 
-    case ObjectsToGetRequest(table) =>
-      sender ! getAllObjects(ObjectsToGetRequest(table))
+    case FindObjectsRequest(table, None) =>
+      sender ! getAllObjects(FindObjectsRequest(table, None))
 
     case "users" =>
       sender ! findUsers
@@ -207,7 +207,7 @@ class ModelActor extends Actor {
     (standardTableQuery returning standardTableQuery.map(_.id)) += GeneralObject(objectToSave.uuid, objectToSave.objectString)
   }
 
-  def getAllObjects(objectsToGetRequest: ObjectsToGetRequest): Try[Seq[GeneralObjectWithRelations]] = Try {
+  def getAllObjects(objectsToGetRequest: FindObjectsRequest): Try[Seq[GeneralObjectWithRelations]] = Try {
     val tableName = objectsToGetRequest.table.name
     DB.withConnection { implicit connection =>
       tableName match {
@@ -228,6 +228,8 @@ class ModelActor extends Actor {
         brands on (_._2.brandId === _.id) outerJoin
         orderImage on (_._1._1.id === _.imageId) leftJoin
         images on (_._2.imageId === _.id)
+//      WHERE orders.orderid IN (SELECT orderid FROM storeorder WHERE storeid = 1);
+//        if order.id in (usersOrders.filter(_.login === "client").map(_);
     } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
 
     query.list.groupBy(_._1).map { generalObjectsWithRelations =>

@@ -6,6 +6,7 @@ CREATE TABLE users (
   password        VARCHAR(255) NOT NULL,
   role            INT NOT NULL,
   object          TEXT,
+  isActive        BOOLEAN DEFAULT TRUE NOT NULL,
   UNIQUE(login)
 );
 INSERT INTO users(uuid, login, password, role)

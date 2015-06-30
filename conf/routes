@@ -1,17 +1,20 @@
-GET         /                   controllers.Application.index
+GET           /                          controllers.Application.index
 
 #USERS
-GET         /users/authenticate controllers.Application.authenticate(login: String, password: String)
-POST        /users/logout       controllers.Application.logout
-POST        /users              controllers.Application.saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String], isActive: Boolean)
-PUT         /users              controllers.Application.updateUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String], isActive: Boolean)
+GET           /users/authenticate        controllers.Application.authenticate(login: String, password: String)
+POST          /users/logout              controllers.Application.logout
+POST          /users                     controllers.Application.saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String], isActive: Boolean)
+PUT           /users                     controllers.Application.updateUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String], isActive: Boolean)
 
 #MODELS
-GET         /models             controllers.Application.getAllModelsFromTable(table: String)
-POST        /models             controllers.Application.saveModel(table: String, uuid: String, objectString: String)
-GET         /models/:uuid       controllers.Application.getModel(table: String, uuid: String)
-POST        /models/:uuid       controllers.Application.amendModel(table: String, uuid: String, objectString: String)
-DELETE      /models/:uuid       controllers.Application.deleteModel(table: String, uuid: String)
+GET           /models                    controllers.Application.getAllModelsFromTable(table: String)
+POST          /models                    controllers.Application.saveModel(table: String, uuid: String, objectString: String)
+GET           /models/:uuid              controllers.Application.getModel(table: String, uuid: String)
+POST          /models/:uuid              controllers.Application.amendModel(table: String, uuid: String, objectString: String)
+DELETE        /models/:uuid              controllers.Application.deleteModel(table: String, uuid: String)
+
+#RELATIONS
+POST          /relations                 controllers.Application.saveRelations
 
 #ASSETS
-GET        /assets/*file        controllers.Assets.at(path="/public", file)
+GET           /assets/*file              controllers.Assets.at(path="/public", file)

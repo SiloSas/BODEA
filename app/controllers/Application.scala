@@ -11,6 +11,8 @@ import akka.util.Timeout
 import json.JsonHelper._
 import play.api.Logger
 import play.api.Play.current
+import play.api.data.Form
+import play.api.data.Forms._
 import play.api.libs.concurrent.Akka
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
@@ -127,6 +129,35 @@ object Application extends Controller {
 
   def askActorToSaveModel(tableName: String, objectString: String, uuid: UUID): Future[SimpleResult] = {
     (modelActor ? ObjectToSaveRequest(PostgresTable(tableName), uuid, objectString)).mapTo[Try[Int]] map {
+      case Success(_) => Created
+      case Failure(failure) => InternalServerError("saveModel: " + failure)
+    }
+  }
+
+  def relationFormApply(relationTable: String, uuidA: String, uuidB: String): RelationBetweenTwoTables =
+    RelationBetweenTwoTables(relationTable, uuidA, uuidB)
+
+  def relationFormUnapply(relationBetweenTwoTables: RelationBetweenTwoTables) =
+    Some((relationBetweenTwoTables.relationTable, relationBetweenTwoTables.uuidA, relationBetweenTwoTables.uuidB))
+
+  val saveRelationsRequestBindingForm = Form(
+      "relations" -> list(mapping(
+        "relationTable" -> nonEmptyText,
+        "uuidA" -> nonEmptyText,
+        "uuidB" -> nonEmptyText
+    )(relationFormApply)(relationFormUnapply)))
+
+  def saveRelations = Authenticated.async { implicit request =>
+    saveRelationsRequestBindingForm.bindFromRequest().fold(
+      formWithErrors => {
+        Logger.error("Application.saveRelation: " + formWithErrors.errorsAsJson)
+        Future { BadRequest(formWithErrors.errorsAsJson) }
+      },
+      saveRelationsRequest => askActorToSaveRelations(saveRelationsRequest))
+  }
+
+  def askActorToSaveRelations(saveRelationsRequest: List[RelationBetweenTwoTables]): Future[SimpleResult] = {
+    (modelActor ? saveRelationsRequest).mapTo[Try[Int]] map {
       case Success(_) => Created
       case Failure(failure) => InternalServerError("saveModel: " + failure)
     }

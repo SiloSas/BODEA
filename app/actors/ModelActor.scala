@@ -21,6 +21,8 @@ sealed trait ModelReturnType
 object ModelActor {
   case class PostgresTable(name: String)
   case class ObjectToSaveRequest(table: PostgresTable, uuid: UUID, objectString: String)
+  case class RelationBetweenTwoTables(relationTable: String, uuidA: String, uuidB: String)
+  case class SaveRelationsRequest(relationsBetweenTwoTables: List[RelationBetweenTwoTables])
   case class ObjectToGetRequest(table: PostgresTable, uuid: UUID)
   case class FindObjectsRequest(table: PostgresTable, userId: Option[Int])
   case class ObjectToDeleteRequest(table: PostgresTable, uuid: UUID)
@@ -184,6 +186,9 @@ class ModelActor extends Actor {
     case ObjectToAmendRequest(table, uuid, newObjectString) =>
       sender ! amendObject(ObjectToAmendRequest(table, uuid, newObjectString))
 
+    case saveRelationsRequest: SaveRelationsRequest =>
+      sender ! saveRelation(saveRelationsRequest)
+
     case _ => sender ! Failure(throw new Exception("unknown request"))
   }
 
@@ -219,6 +224,15 @@ class ModelActor extends Actor {
           standardTableQuery.list map { x => GeneralObjectWithRelations(x, List.empty) }
       }
     }
+  }
+
+  def saveRelation(saveRelationRequest: SaveRelationsRequest): Try[Int] = Try {
+//    val tableQuery = (saveRelationRequest.relation)
+//    saveRelationRequest map { relation =>
+//      if
+//    }
+
+    0
   }
 
   def findOrders: Seq[GeneralObjectWithRelations] = {

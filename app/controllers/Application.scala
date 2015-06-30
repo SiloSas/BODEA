@@ -74,7 +74,8 @@ object Application extends Controller {
     }
   }
 
-  def saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String]) = Authenticated.async { request =>
+  def saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String],
+               isActive: Boolean) = Authenticated.async { request =>
     request.username match {
       case None =>
         Future { Unauthorized("Unauthorized") }
@@ -86,7 +87,8 @@ object Application extends Controller {
     }
   }
 
-  def updateUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String]) = Authenticated.async { request =>
+  def updateUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String],
+                 isActive: Boolean) = Authenticated.async { request =>
     request.username match {
       case None =>
         Future { Unauthorized("Unauthorized") }

@@ -29,10 +29,13 @@ object Authenticated extends ActionBuilder[AuthenticatedRequest] {
 
 object UserActor {
   def props = Props[UserActor]
-  case class UserWithId(id: Int, uuid: UUID, login: String, role: Int, objectString: Option[String])
-  case class User(uuid: UUID, login: String, role: Int, objectString: Option[String])
-  case class SaveUserRequest(uuid: String, login: String, password: String, role: Int, objectString: Option[String])
-  case class UpdateUserRequest(uuid: String, login: String, password: String, role: Int, objectString: Option[String])
+  case class UserWithId(id: Int, uuid: UUID, login: String, role: Int, objectString: Option[String],
+                        isActive: Boolean = true)
+  case class User(uuid: UUID, login: String, role: Int, objectString: Option[String], isActive: Boolean = true)
+  case class SaveUserRequest(uuid: String, login: String, password: String, role: Int, objectString: Option[String],
+                             isActive: Boolean = true)
+  case class UpdateUserRequest(uuid: String, login: String, password: String, role: Int,
+                               objectString: Option[String], isActive: Boolean = true)
   case class AuthenticationRequest[A](login: String, password: String)
   case class AuthenticationResponse(authorized: Boolean, role: Int)
 
@@ -43,8 +46,9 @@ object UserActor {
     def password = column[String]("password")
     def role = column[Int]("role")
     def objectString = column[Option[String]]("object")
+    def isActive = column[Boolean]("isactive")
 
-    def * = (uuid, login, role, objectString) <> (User.tupled, User.unapply)
+    def * = (uuid, login, role, objectString, isActive) <> (User.tupled, User.unapply)
   }
 }
 
@@ -53,11 +57,11 @@ class UserActor extends Actor {
 
   def receive = {
 
-    case SaveUserRequest(uuid, login, password, role, objectString) =>
-      save(SaveUserRequest(uuid, login, password, role, objectString))
+    case SaveUserRequest(uuid, login, password, role, objectString, isActive) =>
+      save(SaveUserRequest(uuid, login, password, role, objectString, isActive))
 
-    case UpdateUserRequest(uuid, login, password, role, objectString) =>
-      sender ! update(UpdateUserRequest(uuid, login, password, role, objectString))
+    case UpdateUserRequest(uuid, login, password, role, objectString, isActive) =>
+      sender ! update(UpdateUserRequest(uuid, login, password, role, objectString, isActive))
 
     case AuthenticationRequest(login: String, password: String) =>
       sender ! verifyIdentity(login, password)
@@ -69,18 +73,18 @@ class UserActor extends Actor {
   def update(updateUserRequest: UpdateUserRequest): Try[Int] = Try {
     users
       .filter(_.uuid === UUID.fromString("2bcfb184-c24c-420f-af62-0ca26a2f85bd"))
-      .map(user => (user.uuid, user.login, user.password, user.role, user.objectString))
+      .map(user => (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive))
       .update(
         (UUID.fromString(updateUserRequest.uuid), updateUserRequest.login, updateUserRequest.password,
-          updateUserRequest.role, updateUserRequest.objectString))
+          updateUserRequest.role, updateUserRequest.objectString, updateUserRequest.isActive))
   }
 
   def save(saveUserRequest: SaveUserRequest): Try[Int] = Try {
     users
-      .map(user => (user.uuid, user.login, user.password, user.role, user.objectString))
+      .map(user => (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive))
       .insert(
         (UUID.fromString(saveUserRequest.uuid), saveUserRequest.login, saveUserRequest.password, saveUserRequest.role,
-          saveUserRequest.objectString))
+          saveUserRequest.objectString, saveUserRequest.isActive))
   }
 
   def verifyIdentity(login: String, password: String): Try[AuthenticationResponse] = Try {

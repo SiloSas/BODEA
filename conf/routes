@@ -3,8 +3,8 @@ GET         /                   controllers.Application.index
 #USERS
 GET         /users/authenticate controllers.Application.authenticate(login: String, password: String)
 POST        /users/logout       controllers.Application.logout
-POST        /users              controllers.Application.saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String])
-PUT         /users              controllers.Application.updateUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String])
+POST        /users              controllers.Application.saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String], isActive: Boolean)
+PUT         /users              controllers.Application.updateUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String], isActive: Boolean)
 
 #MODELS
 GET         /models             controllers.Application.getAllModelsFromTable(table: String)

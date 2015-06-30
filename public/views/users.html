@@ -48,20 +48,20 @@
         <md-divider></md-divider>
         <md-input-container>
             <label>Nom</label>
-            <input type="text" ng-model="newUser.name">
+            <input type="text" ng-model="newUser.user.objectString.name">
         </md-input-container>
         <md-input-container>
             <label>Prénom</label>
-            <input type="text" ng-model="newUser.firstName">
+            <input type="text" ng-model="newUser.user.objectString.firstName">
         </md-input-container>
         <md-input-container>
             <label>E-mail</label>
-            <input type="email" ng-model="newUser.mail">
+            <input type="email" ng-model="newUser.user.login">
         </md-input-container>
         <div class="column large-12 padding0">
             <md-input-container ng-init="password = 'password'" class="column medium-8 padding0">
                 <label>Mot de passe</label>
-                <input type="{{password}}" ng-model="newUser.password">
+                <input type="{{password}}" ng-model="newUser.user.password">
             </md-input-container>
             <a class="md-button md-primary md-default-theme column medium-4 padding0 margin0 absolute bottom0">
                 <span ng-if="password == 'password'" ng-click="$parent.password = 'text'">Voir le password</span>
@@ -70,9 +70,9 @@
         </div>
         <md-input-container>
             <label>Fonction</label>
-            <input type="text" ng-model="newUser.job">
+            <input type="text" ng-model="newUser.user.objectString.job">
         </md-input-container>
-        <md-select ng-model="newUser.countType" placeholder="Type de compte">
+        <md-select ng-model="newUser.user.role" placeholder="Type de compte">
             <md-option value="1">Admin</md-option>
             <md-option value="2">Client</md-option>
         </md-select>
@@ -116,9 +116,9 @@
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
-            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.name">{{user.name}}</h5>
-            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.firstName">{{user.firstName}}</h5>
-            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.brand.name">{{user.brand.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.objectString.name">{{user.user.objectString.name}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.objectString.firstName">{{user.user.objectString.firstName}}</h5>
+            <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.brand.name">{{user.user.brand.name}}</h5>
             <h3 class="column medium-2">
                 <md-checkbox style="margin: 0 0 0 50%"
                              ng-change="changeActiveUser(user)"
@@ -149,20 +149,21 @@
                 <md-divider></md-divider>
                 <md-input-container>
                     <label>Nom</label>
-                    <input type="text" ng-model="user.newUser.name">
+                    <input type="text" ng-model="user.newUser.user.objectString.name">
                 </md-input-container>
                 <md-input-container>
                     <label>Prénom</label>
-                    <input type="text" ng-model="user.newUser.firstName">
+                    <input type="text" ng-model="user.newUser.user.objectString.firstName">
                 </md-input-container>
                 <md-input-container>
                     <label>E-mail</label>
-                    <input type="email" ng-model="user.newUser.mail">
+                    <input type="email" ng-model="user.newUser.user.login">
                 </md-input-container>
-                <div class="column large-12 padding0">
+                <md-button class="md-primary" ng-click="refactorPassword = !refactorPassword">Modifier le mot de passe</md-button>
+                <div class="column large-12 padding0" ng-show="refactorPassword">
                     <md-input-container ng-init="password = 'password'" class="column medium-8 padding0">
                         <label>Mot de passe</label>
-                        <input type="{{password}}" ng-model="user.newUser.password">
+                        <input type="{{password}}" ng-model="user.newUser.user.password">
                     </md-input-container>
                     <a class="md-button md-primary md-default-theme column medium-4 padding0 margin0 absolute bottom0">
                         <span ng-if="password == 'password'" ng-click="$parent.password = 'text'">Voir le password</span>
@@ -171,9 +172,9 @@
                 </div>
                 <md-input-container>
                     <label>Fonction</label>
-                    <input type="text" ng-model="user.newUser.job">
+                    <input type="text" ng-model="user.newUser.user.objectString.job">
                 </md-input-container>
-                <md-select ng-model="user.newUser.countType" placeholder="Type de compte">
+                <md-select ng-model="user.newUser.user.role" placeholder="Type de compte">
                     <md-option value="1">Admin</md-option>
                     <md-option value="2">Client</md-option>
                 </md-select>

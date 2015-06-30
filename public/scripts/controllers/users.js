@@ -1,7 +1,8 @@
 angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactory, $timeout, BrandFactory, $log,
                                                              StoresFactory) {
     UsersFactory.getUsers().then(function (users) {
-        $scope.users = users;
+        $scope.users = users
+        console.log($scope.users)
     });
     StoresFactory.getStores().then(function (stores) {
         $scope.stores = stores;
@@ -59,7 +60,8 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
 
     $scope.newUser = {isActive: true, stores: []};
     $scope.addUser = function () {
-        $scope.users.push($scope.newUser);
+        console.log($scope.newUser);
+        UsersFactory.postUser($scope.newUser)
         $scope.newUser = {isActive: true, stores: []};
     };
 

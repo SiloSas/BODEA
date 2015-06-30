@@ -44,8 +44,9 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
         },
         refactorOrder: function (order) {
             for (var i = 0; i < factory.orders.length; i++) {
-                if (factory.orders[i].id == order.id) {
+                if (factory.orders[i].uuid == order.uuid) {
                     order = angular.copy(order.newOrder);
+                    delete(order.newOrder);
                     delete(order.newOrder);
                     factory.orders[i] = angular.copy(order);
                     $http.post('models/' + order.uuid + '?table=orders&objectString=' + JSON.stringify(order)).success(function (data, statut) {

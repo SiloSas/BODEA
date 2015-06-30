@@ -80,6 +80,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         $scope.copyCommande = function (order) {
             $timeout(function () {
                 $scope.$apply(function () {
+                    $scope.newSubOrder = {stores: []};
                     order.newOrder = angular.copy(order);
                 })
             }, 0)

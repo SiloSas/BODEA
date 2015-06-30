@@ -87,7 +87,7 @@
                     <md-radio-button value="2" class="md-accent md-hue-1 marginLeft0"> Commande validée </md-radio-button>
                     <md-radio-button value="3" class="md-accent md-hue-2 marginLeft0">En cours de traitement</md-radio-button>
                     <md-radio-button value="4" class="md-primary marginLeft0">En cours de livraison</md-radio-button>
-                    <md-radio-button value="5" class="md-accent md-hue-3 marginLeft0">Livré</md-radio-button>
+                    <md-radio-button value="5" class="md-accent md-hue-3 marginLeft0">livrée</md-radio-button>
                 </md-radio-group>
             </md-list-item>
         </md-list>
@@ -242,7 +242,7 @@
            </div>
         </div>
         <md-list ng-if="refactor" class="md-whiteframe-z1">
-            <form ng-submit="refactorCommande($parent.order); $parent.order = order.newOrder; $parent.refactor = false">
+            <form ng-submit="refactorCommande($parent.order); $parent.refactor = false">
                 <i class="md-warn relative fa fa-times-circle"
                    style="  font-size: 30px;right: -15px;float: right;top: -22px;"
                    ng-click="$parent.refactor = false"></i>
@@ -286,7 +286,7 @@
                             <md-radio-button value="2" class="md-accent md-hue-1 marginLeft0"> Commande validée </md-radio-button>
                             <md-radio-button value="3" class="md-accent md-hue-2 marginLeft0">En cours de traitement</md-radio-button>
                             <md-radio-button value="4" class="md-primary marginLeft0">En cours de livraison</md-radio-button>
-                            <md-radio-button value="5" class="md-accent md-hue-3 marginLeft0">Livré</md-radio-button>
+                            <md-radio-button value="5" class="md-accent md-hue-3 marginLeft0">livrée</md-radio-button>
                         </md-radio-group>
                     </md-list-item>
                 </md-list>
@@ -330,7 +330,7 @@
                         <p>{{subOrder.weight}} kg</p>
                     </md-list-item>
                     <md-list-item ng-if="order.newOrder.state != 1 && order.newOrder.state != 2">
-                        <p class="column medium-4">Livré</p>
+                        <p class="column medium-4">livrée</p>
                         <md-switch class="md-accent md-hue-3"
                                    ng-change="changeState($parent.order)"
                                    ng-model="subOrder.delivered"></md-switch>

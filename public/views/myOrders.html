@@ -154,6 +154,7 @@
                                 'md-accent md-hue-3': order.state == 5}"></md-button>
                         <md-checkbox
                                 ng-show="order.state == 0"
+                                ng-change="order.newOrder = order; refactorCommande(order)"
                                 ng-model="order.state"
                                 aria-label="Brouillon"
                                 ng-true-value="0"
@@ -326,8 +327,8 @@
                                 Brouillon
                             </md-checkbox>
                         </md-list>
-                        <md-button class="md-primary md-raised" type="submit"
-                                   ng-click="refactorCommande(order); $parent.order = order.newOrder;
+                        <md-button class="md-primary md-raised"
+                                   ng-click="refactorCommande(order);
                                    $parent.refactor = false">Valider
                         </md-button>
                         <md-button class="md-warn md-raised" ng-click="$parent.refactor = false">Annuler</md-button>

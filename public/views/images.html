@@ -25,24 +25,7 @@
     <md-button class="md-primary md-raised column medium-4 marginLeft0 marginRight0" ng-click="addImage = true">ajouter une image</md-button>
 </div>
 <div ng-show="addImage" class="ng-whiteframe-z1">
-    <form ng-submit="addNewImage(); addImage = false">
-        <md-input-container class="column medium-4">
-            <label>Theme</label>
-            <input ng-model="newImage.theme" required="">
-        </md-input-container>
-        <md-input-container class="column medium-4">
-            <label>Nom</label>
-            <input ng-model="newImage.name" required="">
-        </md-input-container>
-        <md-input-container>
-            <label></label>
-            <input type="file"
-                   value="Charger une image"
-                   ng-model="newImage.url" app-filereader required="">
-        </md-input-container>
-        <md-button class="md-primary" type="submit">Valider</md-button>
-        <md-button  class="md-primary" ng-click="newImage={}; addImage = false">Annuler</md-button >
-    </form>
+    <add-image-form></add-image-form>
 </div>
 <md-list class="column" ng-repeat="image in images">
     <md-divider class="marginBottom10"></md-divider>

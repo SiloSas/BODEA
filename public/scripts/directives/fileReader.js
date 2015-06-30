@@ -23,6 +23,7 @@ angular.module('bodeaApp').directive('appFilereader', function($q) {
 
                     var reader = new FileReader();
                     reader.onload = function(e) {
+                        console.log(e)
                         deferred.resolve(e.target.result);
                     };
                     reader.onerror = function(e) {

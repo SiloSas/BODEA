@@ -8,7 +8,7 @@ angular.module('bodeaApp').factory('AreaFactory',  function ($q,  $http,  GuidFa
             } else {
                 $http.get('models?table=areas').success(function(object) {
                     factory.area = object.map(function (el) {
-                        return JSON.parse(el.objectString)
+                        return JSON.parse(el.generalObject.objectString)
                     });
                     deferred.resolve(factory.area)
                 })

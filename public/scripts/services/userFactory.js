@@ -6,7 +6,14 @@ angular.module('bodeaApp').factory('UserFactory', function ($q, $http) {
            if (factory.user != false) {
                deferred.resolve(factory.user)
            } else {
-               factory.user = {name: 'test', firstName: 'test', mail: 'test@test.test', password:'test', job: 'test'}
+               factory.user = {
+                   name: 'test',
+                   firstName: 'test',
+                   mail: 'test@test.test',
+                   password:'test',
+                   job: 'test',
+                   brand: {name: 'ensegne1'}
+               };
                deferred.resolve(factory.user)
            }
            return deferred.promise;

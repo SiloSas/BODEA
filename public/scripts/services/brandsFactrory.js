@@ -8,7 +8,7 @@ angular.module('bodeaApp').factory('BrandFactory', function ($q, $http, GuidFact
             } else {
                 $http.get('/models?table=brands').success(function (object) {
                     factory.brands = object.map(function (el) {
-                        return JSON.parse(el.objectString)
+                        return JSON.parse(el.generalObject.objectString)
                     });
                     deferred.resolve(factory.brands);
                 });

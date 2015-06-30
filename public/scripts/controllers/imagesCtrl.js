@@ -1,21 +1,15 @@
-angular.module('bodeaApp').controller('ImagesCtrl', function ($scope, ImagesFactory, GuidFactory, $timeout) {
+angular.module('bodeaApp').controller('ImagesCtrl', function ($scope, ImagesFactory) {
     ImagesFactory.getImages().then(function (images) {
         $scope.images = images;
     });
 
     $scope.remove = function (image) {
-        var imagesLength = $scope.images.length;
-        for (var i = 0; i < imagesLength; i++) {
-            if ($scope.images[i].id == image.id) {
-                ImagesFactory.deleteImage(image.id);
-                //delete image
-            }
-        }
+        ImagesFactory.deleteImage(image);
     };
 
     $scope.newImage = {};
     $scope.addNewImage = function () {
-        $scope.newImage.id = GuidFactory();
+        console.log($scope.newImage);
         ImagesFactory.postImage($scope.newImage);
         $scope.newImage = {};
     };
@@ -25,10 +19,6 @@ angular.module('bodeaApp').controller('ImagesCtrl', function ($scope, ImagesFact
     };
 
     $scope.copyImage = function (image) {
-        $timeout(function () {
-            $scope.$apply(function () {
-                image.newImage = angular.copy(image);
-            })
-        })
+        image.newImage = angular.copy(image);
     }
 });

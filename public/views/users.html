@@ -108,6 +108,31 @@
                ng-click="limit = limit+20"
                     >Voir plus de magasins</a>
         </div>
+        <a class="md-button md-primary md-raised md-default-theme"
+           ng-show="!viewStoreDetail && newUser.brand.length"
+           ng-click="store = {};
+                       viewStoreDetail = true; $parent.selectedStore = false; createStore = true">
+            Ajouter un magasin
+        </a>
+        <a class="md-button md-primary md-raised md-default-theme"
+           ng-show="viewStoreDetail"
+           ng-click="store = {}; viewStoreDetail = false">
+            Cacher les details du magasin
+        </a>
+        <div ng-show="viewStoreDetail" ng-form="storeForm">
+            <form ng-submit="addNewStore(store); viewStoreDetail = false">
+                <store-form></store-form>
+                <md-button class="md-primary md-raised md-default-theme"
+                           ng-show="createStore == true"
+                           type="submit">
+                    Créer
+                </md-button>
+                <md-button class="md-button md-warn md-raised md-default-theme"
+                           ng-click="store = {}; viewStoreDetail = false">
+                    Annuler
+                </md-button>
+            </form>
+        </div>
         <md-button class="md-primary md-raised" type="submit">Valider</md-button>
         <md-button class="md-warn md-raised" ng-click="$parent.createUser = false">Annuler</md-button>
     </form>
@@ -121,12 +146,12 @@
             <h5 class="column medium-2 pointer" ng-click="$root.filter = user.user.brand.name">{{user.user.brand.name}}</h5>
             <h3 class="column medium-2">
                 <md-checkbox style="margin: 0 0 0 50%"
-                             ng-change="changeActiveUser(user)"
+                             ng-change="refactorUser(user)"
                              ng-model="user.isActive" class="md-primary" aria-label="Actif">
                 </md-checkbox>
             </h3>
             <h5><i class="column medium-2 pointer fa fa-pencil"
-                   ng-click="copyUser(user); refactor = true"></i></h5>
+                   ng-click="user.newUser = copyUser(user); refactor = true"></i></h5>
             <h5><i class="column medium-2 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove"></i></h5>
         </div>
         <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
@@ -159,11 +184,11 @@
                     <label>E-mail</label>
                     <input type="email" ng-model="user.newUser.user.login">
                 </md-input-container>
-                <md-button class="md-primary" ng-click="refactorPassword = !refactorPassword">Modifier le mot de passe</md-button>
-                <div class="column large-12 padding0" ng-show="refactorPassword">
+                <a class="md-primary md-button md-default-theme" ng-click="refactorPassword = !refactorPassword">Modifier le mot de passe</a>
+                <div class="column large-12 padding0" ng-if="refactorPassword">
                     <md-input-container ng-init="password = 'password'" class="column medium-8 padding0">
                         <label>Mot de passe</label>
-                        <input type="{{password}}" ng-model="user.newUser.user.password">
+                        <input type="{{password}}" ng-model="$parent.user.newUser.user.password">
                     </md-input-container>
                     <a class="md-button md-primary md-default-theme column medium-4 padding0 margin0 absolute bottom0">
                         <span ng-if="password == 'password'" ng-click="$parent.password = 'text'">Voir le password</span>

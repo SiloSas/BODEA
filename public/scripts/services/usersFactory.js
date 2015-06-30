@@ -8,7 +8,6 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
             } else {
                 $http.get('models?table=users').success(function (users) {
                     factory.users = users.map(function(user) {
-                        console.log(user)
                         if (angular.isDefined(user.user.objectString)) {
                             user.user.objectString = JSON.parse(user.user.objectString);
                         }
@@ -21,18 +20,27 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
         },
         refactorUser: function (user) {
             for (var i = 0; i < factory.users.length; i++) {
-                if (user.uuid == factory.users[i].uuid) {
+                if (user.user.uuid == factory.users[i].user.uuid) {
                     user = angular.copy(user.newUser);
                     factory.users[i] = user
                 }
             }
-        $http.post('models/' + user.uuid + '?table=users&objectString=' + JSON.stringify(user.object))
+        $http.post('models/' + user.user.uuid + '?table=users&objectString=' + JSON.stringify(user.user.objectString))
+        },
+        deleteUser: function (user) {
+            for (var i = 0; i < factory.users.length; i++) {
+                if (user.user.uuid == factory.users[i].user.uuid) {
+                    factory.users.splice(i, 1)
+                }
+            }
+        $http.delete('models/' + user.user.uuid + '?table=users');
         },
         postUser: function (user) {
         user.uuid = GuidFactory();
         factory.users.push(user);
         $http.post('users?uuid='+user.uuid+'&password='+user.user.password+
-            '&login='+user.user.login+'&role='+user.user.role+'&objectString=' + JSON.stringify(user.user.objectString))
+            '&login='+user.user.login+'&role='+user.user.role+'&objectString=' +
+            JSON.stringify(user.user.objectString))
         }
     };
     return factory;

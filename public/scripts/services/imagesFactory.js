@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http) {
+angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFactory) {
     var factory = {
         images : false,
         getImages: function () {
@@ -34,7 +34,9 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http) {
             }
         },
         postImage: function (image) {
+            image.uuid = GuidFactory();
             factory.images.push(image);
+            $http.post('/upload', image.file)
         }
     };
     return factory;

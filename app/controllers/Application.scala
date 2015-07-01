@@ -4,7 +4,7 @@ import java.io.File
 import java.util.UUID
 
 import actors.ModelActor._
-import actors.UserActor.{UpdateUserRequest, AuthenticationRequest, AuthenticationResponse, SaveUserRequest}
+import actors.UserActor._
 import actors._
 import akka.pattern.ask
 import akka.util.Timeout
@@ -91,14 +91,26 @@ object Application extends Controller {
     }
   }
 
-  def updateUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String],
-                 isActive: Boolean) = Authenticated.async { request =>
+  def updateUser(uuid: String, login: String, role: Int, objectString: Option[String], isActive: Boolean)
+  = Authenticated.async { request =>
     request.uuid match {
       case None =>
         Future { Unauthorized("Unauthorized") }
       case _ =>
         (userActor ? UpdateUserRequest(uuid: String, login, role, objectString, isActive)).mapTo[Try[Int]] map {
           case Success(_) => Created
+          case Failure(failure) => InternalServerError("saveUser: " + failure)
+        }
+    }
+  }
+  
+  def updateUserPassword(password: String) = Authenticated.async { request =>
+    request.uuid match {
+      case None =>
+        Future { Unauthorized("Unauthorized") }
+      case uuid =>
+        (userActor ? UpdateUserPasswordRequest(uuid.get, password)).mapTo[Try[Int]] map {
+          case Success(_) => Ok
           case Failure(failure) => InternalServerError("saveUser: " + failure)
         }
     }

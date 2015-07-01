@@ -14,7 +14,7 @@ INSERT INTO users(uuid, login, password, role)
   VALUES ('2bcfb180-c24c-420f-af62-0ca26a2f85bd', 'admin', '$2a$10$l9Pp4kERl8gqM3XxaB1lOubuRNkysJVUO.x2EaUuoLj4jQHxcIey6', 1);
 
 INSERT INTO users(uuid, login, password, role)
-  VALUES ('2bcfb184-c24c-420f-af62-0ca26a2f85bd', 'client', '$2a$10$l9Pp4kERl8gqM3XxaB1lOubuRNkysJVUO.x2EaUuoLj4jQHxcIey6', 2);
+  VALUES ('2bcfb184-c24c-420f-af62-0ca26a2f84bd', 'client', '$2a$10$l9Pp4kERl8gqM3XxaB1lOubuRNkysJVUO.x2EaUuoLj4jQHxcIey6', 2);
 
 CREATE TABLE areas (
   areaId          SERIAL PRIMARY KEY,

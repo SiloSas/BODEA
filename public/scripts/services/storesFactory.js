@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFactory) {
+angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFactory, MessagesFactory) {
     var factory = {
         stores: false,
         getStores: function () {
@@ -10,7 +10,6 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
                     factory.stores = object.map(function (el) {
                         return JSON.parse(el.generalObject.objectString)
                     });
-                    console.log(object)
                     deferred.resolve(factory.stores);
                 });
             }
@@ -44,9 +43,9 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
                 }
             }
             $http.post('models/' + store.id + '?table=stores&objectString=' + JSON.stringify(store)).success(function (data) {
-                console.log(data)
+                MessagesFactory.displayMessage('Le magasin est bien mise à jours')
             }).error(function (error) {
-                console.log(error)
+                MessagesFactory.displayMessage(error)
             })
         },
         postStore: function (store) {
@@ -55,7 +54,6 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
             var stringStore = JSON.stringify(store);
             $http.post('models?table=stores&uuid=' + store.id + '&objectString=' + stringStore).success(function (data) {
                 if (angular.isDefined(store.brand.id)) {
-                    console.log(store)
                     $http.post('relations',
                         [{
                             relationTable: 'stores',
@@ -65,8 +63,10 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
                             console.log(success)
                         });
                 }
+            }).success(function (data) {
+                MessagesFactory.displayMessage('Le magasin est bien enregistré')
             }).error(function (error) {
-                console.log(error)
+                MessagesFactory.displayMessage(error)
             })
         },
         deleteStore: function (store) {

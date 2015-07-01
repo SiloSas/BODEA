@@ -3,20 +3,21 @@
     <md-divider></md-divider>
     <md-input-container>
         <label>Nom</label>
-        <input type="text" ng-model="user.name">
+        <input type="text" ng-model="user.newUser.user.objectString.name">
     </md-input-container>
     <md-input-container>
         <label>Prénom</label>
-        <input type="text" ng-model="user.firstName">
+        <input type="text" ng-model="user.newUser.user.objectString.firstName">
     </md-input-container>
     <md-input-container>
         <label>E-mail</label>
-        <input type="email" ng-model="user.mail">
+        <input type="email" ng-model="user.newUser.user.login" required>
     </md-input-container>
-    <div class="column large-12 padding0">
+    <a class="md-button md-primary md-raised md-default-theme" ng-click="changePassword = !changePassword">Modifier le mot de passe</a>
+    <div class="column large-12 padding0" ng-if="changePassword">
         <md-input-container ng-init="password = 'password'" class="column medium-8 padding0">
             <label>Mot de passe</label>
-            <input type="{{password}}" ng-model="user.password">
+            <input type="{{password}}" ng-model="$parent.user.newUser.user.password">
         </md-input-container>
         <a class="md-button md-primary md-default-theme column medium-4 padding0 margin0 absolute bottom0">
             <span ng-if="password == 'password'" ng-click="$parent.password = 'text'">Voir le password</span>
@@ -25,7 +26,7 @@
     </div>
     <md-input-container>
         <label>Fonction</label>
-        <input type="text" ng-model="user.job">
+        <input type="text" ng-model="user.newUser.user.objectString.job">
     </md-input-container>
     <md-button class="md-primary md-raised" type="submit">Valider</md-button>
 </form>

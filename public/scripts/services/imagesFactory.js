@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFactory) {
+angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFactory, MessagesFactory) {
     var factory = {
         images : false,
         getImages: function () {
@@ -36,7 +36,11 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
         postImage: function (image) {
             image.uuid = GuidFactory();
             factory.images.push(image);
-            $http.post('/upload', image.file)
+            $http.post('/upload', image.file).success(function (success) {
+                MessagesFactory.displayMessage('Votre image est bien enregistré')
+            }).error(function (error) {
+                MessagesFactory.displayMessage(error)
+            })
         }
     };
     return factory;

@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFactory, StoresFactory) {
+angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFactory, StoresFactory, MessagesFactory) {
     var factory = {
         orders: false,
         getOrders: function () {
@@ -49,9 +49,9 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                     delete(order.newOrder);
                     factory.orders[i] = angular.copy(order);
                     $http.post('models/' + order.uuid + '?table=orders&objectString=' + JSON.stringify(order)).success(function (data, statut) {
-                        console.log(data, statut)
+                        MessagesFactory.displayMessage('Votre commande est bien mise à jours')
                     }).error(function (error) {
-                        console.log(error)
+                        MessagesFactory.displayMessage(error)
                     })
                 }
             }
@@ -59,8 +59,11 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
         postOrder: function (order) {
             order.uuid = GuidFactory();
             factory.orders.push(order);
-            $http.post('models?table=orders&uuid=' + order.uuid + '&objectString=' + JSON.stringify(order)).success(function (data) {
+            $http.post('models?table=orders&uuid=' + order.uuid + '&objectString=' + JSON.stringify(order)).
+                success(function (data) {
+                    MessagesFactory.displayMessage('Votre command est bien enregistré')
             }).error(function (error) {
+                    MessagesFactory.displayMessage(error)
             })
         },
         deleteOrder: function (order) {

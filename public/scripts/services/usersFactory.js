@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFactory, StoresFactory) {
+angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFactory, StoresFactory, MessagesFactory) {
     var factory = {
         users: false,
         getUsers:  function () {
@@ -46,10 +46,13 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                     factory.users[i] = user
                 }
             }
-            console.log(user)
             $http.put('users?uuid='+ user.user.uuid + '&login=' + user.user.login + '&password=' + user.user.password +
                 '&role=' + user.user.role + '&objectString='+ JSON.stringify(user.user.objectString) +
-                '&isActive=' + user.user.isActive).error(function(error) {console.log(error)});
+                '&isActive=' + user.user.isActive).success(function (success) {
+                MessagesFactory.displayMessage('L\'utilisateur a bien été mis à jours')
+            }).error(function(error) {
+                MessagesFactory.displayMessage(error)
+            });
         },
         deleteUser: function (user) {
             for (var i = 0; i < factory.users.length; i++) {
@@ -64,7 +67,11 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
         factory.users.push(user);
         $http.post('users?uuid='+user.uuid+'&password='+user.user.password+
             '&login='+user.user.login+'&role='+user.user.role+'&objectString=' +
-            JSON.stringify(user.user.objectString) + '&isActive=' + user.user.isActive)
+            JSON.stringify(user.user.objectString) + '&isActive=' + user.user.isActive).success(function (success) {
+            MessagesFactory.displayMessage('L\'utilisateur est bien enregistré')
+        }).error(function(error) {
+            MessagesFactory.displayMessage(error)
+        })
         }
     };
     return factory;

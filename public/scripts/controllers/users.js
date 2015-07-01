@@ -2,7 +2,6 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
                                                              StoresFactory, AreaFactory, $filter) {
     UsersFactory.getUsers().then(function (users) {
         $scope.users = users;
-        console.log($scope.users)
     });
     StoresFactory.getStores().then(function (stores) {
         $scope.stores = stores;
@@ -64,14 +63,17 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         UsersFactory.deleteUser(user)
     };
 
-    $scope.newUser = {user: {isActive: true}, stores: []};
+    $scope.newUser = {user: {isActive: true, objectString: {}}, stores: []};
     $scope.addUser = function () {
         $scope.newUser.user.objectString.stores = $scope.newUser.stores.map(function(store) {
             return store.id;
         });
-        console.log($scope.newUser);
-        UsersFactory.postUser($scope.newUser);
-        $scope.newUser = {user: {isActive: true}, stores: []};
+        UsersFactory.postUser($scope.newUser).then(function () {
+            $scope.newUser = {user: {isActive: true, objectString: {}}, stores: []};
+            console.log('yo')
+            $scope.createUser = false
+
+        });
     };
 
     $scope.addNewStore = function (store) {

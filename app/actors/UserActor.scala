@@ -13,14 +13,15 @@ import scala.language.{implicitConversions, postfixOps}
 import scala.slick.driver.PostgresDriver.simple._
 import scala.util.Try
 
-class AuthenticatedRequest[A](val username: Option[String], val role: Option[Int], request: Request[A])
+class AuthenticatedRequest[A](val uuid: Option[UUID], val role: Option[Int], request: Request[A])
   extends WrappedRequest[A](request)
 
 object Authenticated extends ActionBuilder[AuthenticatedRequest] {
   def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[SimpleResult]) = {
     request.session.get("connected") match {
-      case Some(userId) =>
-        block(new AuthenticatedRequest(Some(userId), Some(request.session.get("role").getOrElse("0").toInt), request))
+      case Some(uuid) =>
+        block(new AuthenticatedRequest(
+          Some(UUID.fromString(uuid)), Some(request.session.get("role").getOrElse("0").toInt), request))
       case None =>
         block(new AuthenticatedRequest(None, None, request))
     }
@@ -37,7 +38,7 @@ object UserActor {
   case class UpdateUserRequest(uuid: String, login: String, password: String, role: Int,
                                objectString: Option[String], isActive: Boolean = true)
   case class AuthenticationRequest[A](login: String, password: String)
-  case class AuthenticationResponse(authorized: Boolean, role: Int)
+  case class AuthenticationResponse(authorized: Boolean, role: Int, uuid: Option[UUID])
 
   class UserTable(tag: Tag) extends Table[User](tag, "users") {
     def id = column[Int]("userid", O.PrimaryKey)
@@ -76,13 +77,6 @@ class UserActor extends Actor {
 
     query.update((UUID.fromString(updateUserRequest.uuid), updateUserRequest.login, updateUserRequest.password,
     updateUserRequest.role, updateUserRequest.objectString, updateUserRequest.isActive))
-//
-//    users
-//      .filter(_.uuid === UUID.fromString("2bcfb184-c24c-420f-af62-0ca26a2f85bd"))
-//      .map(user => (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive))
-//      .update(
-//        (UUID.fromString(updateUserRequest.uuid), updateUserRequest.login, updateUserRequest.password,
-//          updateUserRequest.role, updateUserRequest.objectString, updateUserRequest.isActive))
   }
 
   def save(saveUserRequest: SaveUserRequest): Try[Int] = Try {
@@ -99,14 +93,14 @@ class UserActor extends Actor {
 
     users
       .filter(_.login === login)
-      .map(user => (user.login, user.password, user.role, user.isActive))
+      .map(user => (user.uuid, user.password, user.role, user.isActive))
       .list
       .headOption match {
         case None =>
-          AuthenticationResponse(authorized = false, 0)
+          AuthenticationResponse(authorized = false, 0, None)
         case Some(user) =>
           val authorized = BCrypt.checkpw(password, user._2)
-          AuthenticationResponse(authorized = authorized && user._4, user._3)
+          AuthenticationResponse(authorized = authorized && user._4, user._3, Some(user._1))
     }
   }
 }

@@ -24,16 +24,13 @@ object ModelActor {
   case class RelationBetweenTwoTables(relationTable: String, uuidA: String, uuidB: String)
   case class SaveRelationsRequest(relationsBetweenTwoTables: List[RelationBetweenTwoTables])
   case class ObjectToGetRequest(table: PostgresTable, uuid: UUID)
-  case class FindObjectsRequest(table: PostgresTable, userId: Option[Int])
+  case class FindObjectsRequest(table: PostgresTable, userId: Option[Int], isClient: Boolean,
+                                clientUUID: UUID)
   case class ObjectToDeleteRequest(table: PostgresTable, uuid: UUID)
   case class ObjectToAmendRequest(table: PostgresTable, uuid: UUID, newObject: String)
-
   case class GeneralObject(uuid: UUID, objectString: String)  extends ModelReturnType
   case class Relation(relationName: String, relationObject: GeneralObject)
-//  case class Relations(relations: List[Relation])
-
   case class MaybeRelation(relationName: String, maybeGeneralObject: MaybeGeneralObject)
-
   case class GeneralObjectWithRelations(generalObject: GeneralObject, relations: Seq[MaybeRelation])
     extends ModelReturnType
 
@@ -171,8 +168,8 @@ class ModelActor extends Actor {
     case ObjectToSaveRequest(table, uuid, objectString) =>
       sender ! save(ObjectToSaveRequest(table, uuid, objectString))
 
-    case FindObjectsRequest(table, None) =>
-      sender ! getAllObjects(FindObjectsRequest(table, None))
+    case findObjectsRequest: FindObjectsRequest =>
+      sender ! getAllObjects(findObjectsRequest)
 
     case "users" =>
       sender ! findUsers
@@ -218,7 +215,7 @@ class ModelActor extends Actor {
     DB.withConnection { implicit connection =>
       tableName match {
         case "orders" =>
-          findOrders
+          findOrders(objectsToGetRequest.isClient, objectsToGetRequest.clientUUID)
         case otherTable =>
           implicit val table = otherTable
           val standardTableQuery = TableQuery[StandardTable]
@@ -238,29 +235,53 @@ class ModelActor extends Actor {
      }
   }
 
-  def findOrders: Seq[GeneralObjectWithRelations] = {
-    val query = for {
-      ((((order, _), brand), _), image) <- orders outerJoin
-        orderBrand on (_.uuid === _.brandId) leftJoin
-        brands on (_._2.brandId === _.uuid) outerJoin
-        orderImage on (_._1._1.uuid === _.imageId) leftJoin
-        images on (_._2.imageId === _.uuid)
-//      WHERE orders.orderid IN (SELECT orderid FROM storeorder WHERE storeid = 1);
-//        if order.id in (usersOrders.filter(_.login === "client").map(_);
-    } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
+  def findOrders(isClient: Boolean, userUUID: UUID): Seq[GeneralObjectWithRelations] = isClient match {
+    case false =>
+      val query = for {
+        ((((order, _), brand), _), image) <- orders outerJoin
+          orderBrand on (_.uuid === _.brandId) leftJoin
+          brands on (_._2.brandId === _.uuid) outerJoin
+          orderImage on (_._1._1.uuid === _.imageId) leftJoin
+          images on (_._2.imageId === _.uuid)
+      } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
 
-    query.list.groupBy(_._1).map { generalObjectsWithRelations =>
-      (generalObjectsWithRelations._1,
-        generalObjectsWithRelations._2.foldLeft(Seq.empty[MaybeRelation]) { (res, generalObjectWithRelation) =>
-          res :+
-            MaybeRelation("brands", MaybeGeneralObject(generalObjectWithRelation._2, generalObjectWithRelation._3)) :+
-            MaybeRelation("images", MaybeGeneralObject(generalObjectWithRelation._4, generalObjectWithRelation._5))
-        }.distinct.filterNot(_.maybeGeneralObject.objectString == None))
-    }
-      .toSeq
-      .map { generalObjectWithRelation =>
-      GeneralObjectWithRelations(generalObjectWithRelation._1, generalObjectWithRelation._2)
-    }
+      query.list.groupBy(_._1).map { generalObjectsWithRelations =>
+        (generalObjectsWithRelations._1,
+          generalObjectsWithRelations._2.foldLeft(Seq.empty[MaybeRelation]) { (res, generalObjectWithRelation) =>
+            res :+
+              MaybeRelation("brands", MaybeGeneralObject(generalObjectWithRelation._2, generalObjectWithRelation._3)) :+
+              MaybeRelation("images", MaybeGeneralObject(generalObjectWithRelation._4, generalObjectWithRelation._5))
+          }.distinct.filterNot(_.maybeGeneralObject.objectString == None))
+      }
+        .toSeq
+        .map { generalObjectWithRelation =>
+        GeneralObjectWithRelations(generalObjectWithRelation._1, generalObjectWithRelation._2)
+      }
+
+    case true =>
+      val query = for {
+        ((((order, _), brand), _), image) <- orders outerJoin
+          orderBrand on (_.uuid === _.brandId) leftJoin
+          brands on (_._2.brandId === _.uuid) outerJoin
+          orderImage on (_._1._1.uuid === _.imageId) leftJoin
+          images on (_._2.imageId === _.uuid)
+      //      WHERE orders.orderid IN (SELECT orderid FROM storeorder WHERE storeid = 1);
+//          if order.id in (userOrder.filter(_.userId === userUUID))
+      } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
+
+      query.list.groupBy(_._1).map { generalObjectsWithRelations =>
+        (generalObjectsWithRelations._1,
+          generalObjectsWithRelations._2.foldLeft(Seq.empty[MaybeRelation]) { (res, generalObjectWithRelation) =>
+            res :+
+              MaybeRelation("brands", MaybeGeneralObject(generalObjectWithRelation._2, generalObjectWithRelation._3)) :+
+              MaybeRelation("images", MaybeGeneralObject(generalObjectWithRelation._4, generalObjectWithRelation._5))
+          }.distinct.filterNot(_.maybeGeneralObject.objectString == None))
+      }
+        .toSeq
+        .map { generalObjectWithRelation =>
+        GeneralObjectWithRelations(generalObjectWithRelation._1, generalObjectWithRelation._2)
+      }
+
   }
 
   def findUsers: Try[Seq[UserWithRelations]] = Try {

@@ -30,8 +30,8 @@ object Application extends Controller {
   val modelActor = Akka.system.actorOf(ModelActor.props, "ModelActor")
 
   def index = Authenticated { request =>
-    request.username match {
-      case Some(username) => Ok(views.html.index(true))
+    request.uuid match {
+      case Some(uuid) => Ok(views.html.index(true))
       case None => Unauthorized(views.html.index(false))
     }
   }
@@ -42,7 +42,7 @@ object Application extends Controller {
       case Success(authenticationResponse) if authenticationResponse.authorized =>
         Ok(Json.toJson(authenticationResponse.role))
           .withSession(
-            "connected" -> "t",
+            "connected" -> authenticationResponse.uuid.toString,
             "role" -> authenticationResponse.role.toString)
 
       case Failure(failure) =>
@@ -55,10 +55,10 @@ object Application extends Controller {
   }
 
   def logout = Authenticated { request =>
-    request.username match {
+    request.uuid match {
       case None =>
         NotModified
-      case username =>
+      case uuid =>
         Ok("Correctly logged out").withNewSession
     }
   }
@@ -78,10 +78,10 @@ object Application extends Controller {
 
   def saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String],
                isActive: Boolean) = Authenticated.async { request =>
-    request.username match {
+    request.uuid match {
       case None =>
         Future { Unauthorized("Unauthorized") }
-      case username =>
+      case _ =>
         (userActor ? SaveUserRequest(uuid: String, login, password, role, objectString)).mapTo[Try[Int]] map {
           case Success(_) => Created
           case Failure(failure) => InternalServerError("saveUser: " + failure)
@@ -91,10 +91,10 @@ object Application extends Controller {
 
   def updateUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String],
                  isActive: Boolean) = Authenticated.async { request =>
-    request.username match {
+    request.uuid match {
       case None =>
         Future { Unauthorized("Unauthorized") }
-      case username =>
+      case _ =>
         (userActor ? UpdateUserRequest(uuid: String, login, password, role, objectString)).mapTo[Try[Int]] map {
           case Success(_) => Created
           case Failure(failure) => InternalServerError("saveUser: " + failure)
@@ -153,43 +153,42 @@ object Application extends Controller {
         Logger.error("Application.saveRelation: " + formWithErrors.errorsAsJson)
         Future { BadRequest(formWithErrors.errorsAsJson) }
       },
-      saveRelationsRequest => askActorToSaveRelations(saveRelationsRequest))
+      saveRelationsRequest => askActorToSaveRelations(SaveRelationsRequest(saveRelationsRequest)))
   }
 
-  def askActorToSaveRelations(saveRelationsRequest: List[RelationBetweenTwoTables]): Future[SimpleResult] = {
+  def askActorToSaveRelations(saveRelationsRequest: SaveRelationsRequest): Future[SimpleResult] = {
     (modelActor ? saveRelationsRequest).mapTo[Try[Unit]] map {
       case Success(_) => Created
-      case Failure(failure) => InternalServerError("saveModel: " + failure)
+      case Failure(failure) => InternalServerError("askActorToSaveRelations: " + failure)
     }
   }
 
   def getAllModelsFromTable(tableName: String) = Authenticated.async { request =>
-    val table = PostgresTable(tableName)
-    tableName match {
-      case "areas" => askActorAllModelsInTable(table)
-      case "brands" => askActorAllModelsInTable(table)
-      case "stores" => askActorAllModelsInTable(table)
-      case otherTable =>
-        if (isRequestedByClient(request))
-          Future { Unauthorized("Vous devez être administrateur pour accèder à cette ressource.") }
-        else 
-          otherTable match {
-            case "users" => askActorAllModelsInUsersTable
-            case "images" => askActorAllModelsInTable(table)
-            case "orders" => askActorAllModelsInTable(table)
-            case _ => Future { NotFound }
-          }
+    request.uuid match {
+      case None => 
+        Future { Unauthorized }
+      case Some(uuid) =>
+        val table = PostgresTable(tableName)
+        tableName match {
+          case "areas" => askActorAllModelsInTable(table, isClient = false, uuid)
+          case "brands" => askActorAllModelsInTable(table, isClient = false, uuid)
+          case "stores" => askActorAllModelsInTable(table, isClient = false, uuid)
+          case "users" => askActorAllModelsInUsersTable(isRequestedByClient(request))
+          case "images" => askActorAllModelsInTable(table, isRequestedByClient(request), uuid)
+          case "orders" => askActorAllModelsInTable(table, isRequestedByClient(request), uuid)
+          case _ => Future { NotFound }
+        }
     }
   }
 
-  def askActorAllModelsInTable(table: PostgresTable): Future[SimpleResult] = {
-    (modelActor ? FindObjectsRequest(table, None)).mapTo[Try[Seq[GeneralObjectWithRelations]]] map {
+  def askActorAllModelsInTable(table: PostgresTable, isClient: Boolean, clientUUID: UUID): Future[SimpleResult] = {
+    (modelActor ? FindObjectsRequest(table, None, isClient, clientUUID)).mapTo[Try[Seq[GeneralObjectWithRelations]]] map {
       case Success(objects) => Ok(Json.toJson(objects))
       case Failure(failure) => InternalServerError("callGetModelsActor: " + failure)
     }
   }
 
-  def askActorAllModelsInUsersTable: Future[SimpleResult] = {
+  def askActorAllModelsInUsersTable(isClient: Boolean): Future[SimpleResult] = {
     (modelActor ? "users").mapTo[Try[Seq[UserWithRelations]]] map {
       case Success(usersFound) =>
         Ok(Json.toJson(usersFound))

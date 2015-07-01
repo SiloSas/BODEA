@@ -13,14 +13,15 @@ import scala.language.{implicitConversions, postfixOps}
 import scala.slick.driver.PostgresDriver.simple._
 import scala.util.Try
 
-class AuthenticatedRequest[A](val username: Option[String], val role: Option[Int], request: Request[A])
+class AuthenticatedRequest[A](val uuid: Option[UUID], val role: Option[Int], request: Request[A])
   extends WrappedRequest[A](request)
 
 object Authenticated extends ActionBuilder[AuthenticatedRequest] {
   def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[SimpleResult]) = {
     request.session.get("connected") match {
-      case Some(userId) =>
-        block(new AuthenticatedRequest(Some(userId), Some(request.session.get("role").getOrElse("0").toInt), request))
+      case Some(uuid) =>
+        block(new AuthenticatedRequest(Some(UUID.fromString(uuid)),
+          Some(request.session.get("role").getOrElse("0").toInt), request))
       case None =>
         block(new AuthenticatedRequest(None, None, request))
     }

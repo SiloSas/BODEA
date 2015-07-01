@@ -209,7 +209,8 @@ class ModelActor extends Actor {
   def save(objectToSave: ObjectToSaveRequest): Try[Int] = Try {
     implicit val table = objectToSave.table.name
     val standardTableQuery = TableQuery[StandardTable]
-    (standardTableQuery returning standardTableQuery.map(_.id)) += GeneralObject(objectToSave.uuid, objectToSave.objectString)
+    (standardTableQuery returning standardTableQuery.map(_.id)) +=
+      GeneralObject(objectToSave.uuid, objectToSave.objectString)
   }
 
   def getAllObjects(objectsToGetRequest: FindObjectsRequest): Try[Seq[GeneralObjectWithRelations]] = Try {

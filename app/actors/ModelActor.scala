@@ -7,6 +7,7 @@ import actors.UserActor.{User, UserTable}
 import akka.actor._
 import anorm.SqlParser._
 import anorm._
+import play.api.Logger
 import play.api.Play.current
 import play.api.db.DB
 import services.Utilities._
@@ -199,7 +200,7 @@ class ModelActor extends Actor {
     }
   }
 
-  def saveRelations(saveRelationsRequest: SaveRelationsRequest): Try[Unit] = Try {
+  def saveRelations(saveRelationsRequest: SaveRelationsRequest): Try[Int] = Try {
      saveRelationsRequest.relationsBetweenTwoTables.collect {
        case relation: RelationBetweenTwoTables if relation.relationTable == "storebrand" =>
          (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))
@@ -211,10 +212,11 @@ class ModelActor extends Actor {
 
     saveRelationsRequest.relationsBetweenTwoTables.collect {
        case relation: RelationBetweenTwoTables if relation.relationTable == "userbrand" =>
+         Logger info "userbrand relation insert\nuuidA(user): " + relation.uuidA + "\nuuidB(brand): " + relation.uuidB
          (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))
     } map {
       userBrand
-       .map(userbrand => (userbrand.userId, userbrand.brandId))
+       .map(userIdBrandId => (userIdBrandId.userId, userIdBrandId.brandId))
        .insert
     }
 
@@ -244,6 +246,8 @@ class ModelActor extends Actor {
         .map(orderimage => (orderimage.orderId, orderimage.imageId))
         .insert
     }
+
+    0
   }
 
   def findOrders(isClient: Boolean, userUUID: UUID): Seq[GeneralObjectWithRelations] = isClient match {

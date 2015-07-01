@@ -153,10 +153,10 @@ object Application extends Controller {
         Logger.error("Application.saveRelation: " + formWithErrors.errorsAsJson)
         Future { BadRequest(formWithErrors.errorsAsJson) }
       },
-      saveRelationsRequest => askActorToSaveRelations(saveRelationsRequest))
+      saveRelationsRequest => askActorToSaveRelations(SaveRelationsRequest(saveRelationsRequest)))
   }
 
-  def askActorToSaveRelations(saveRelationsRequest: List[RelationBetweenTwoTables]): Future[SimpleResult] = {
+  def askActorToSaveRelations(saveRelationsRequest: SaveRelationsRequest): Future[SimpleResult] = {
     (modelActor ? saveRelationsRequest).mapTo[Try[Unit]] map {
       case Success(_) => Created
       case Failure(failure) => InternalServerError("askActorToSaveRelations: " + failure)

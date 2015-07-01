@@ -260,14 +260,20 @@ class ModelActor extends Actor {
       }
 
     case true =>
+      val brandIdsOfUser = userBrand
+        .filter(_.userId === UUID.fromString("2bcfb180-c24c-420f-af62-0ca26a2f85bd"))
+        .map(identity)
+
+      val orderIds = orderBrand outerJoin
+        brandIdsOfUser on (_.brandId === _.brandId)
+
       val query = for {
         ((((order, _), brand), _), image) <- orders outerJoin
           orderBrand on (_.uuid === _.brandId) leftJoin
           brands on (_._2.brandId === _.uuid) outerJoin
           orderImage on (_._1._1.uuid === _.imageId) leftJoin
           images on (_._2.imageId === _.uuid)
-      //      WHERE orders.orderid IN (SELECT orderid FROM storeorder WHERE storeid = 1);
-//          if order.id in (userBrand.filter(_.userId === userUUID) rightJoin)
+        if order.uuid in orderIds.map(_._1.orderId)
       } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
 
       query.list.groupBy(_._1).map { generalObjectsWithRelations =>
@@ -310,7 +316,6 @@ class ModelActor extends Actor {
         }
 
       case true =>
-        println(findUsersRequest.uuid)
         try {
           val query = for {
             ((((user, _), brand), _), store) <- users.filter(_.uuid === findUsersRequest.uuid) outerJoin
@@ -320,8 +325,6 @@ class ModelActor extends Actor {
               stores on (_._2.storeId === _.uuid)
               if user.uuid === findUsersRequest.uuid
           } yield (user, brand.uuid.?, brand.objectString.?, store.uuid.?, store.objectString.?)
-
-          println(query.list)
 
           query.list.groupBy(_._1).map { generalObjectsWithRelations =>
             (generalObjectsWithRelations._1,
@@ -371,28 +374,3 @@ class ModelActor extends Actor {
     }
   }
 }
-
-
-
-//  val userWithRelationsParser: RowParser[UserWithRelations] = {
-//    get[UUID]("uuid") ~
-//      get[String]("login") ~
-//      get[String]("password") ~
-//      get[Int]("role") ~
-//      get[Option[String]]("object") ~
-//      get[Option[UUID]]("uuid") ~
-//      get[Option[String]]("object") ~
-//      get[Option[UUID]]("uuid") ~
-//      get[Option[String]]("object") ~
-//      get[Option[UUID]]("uuid") ~
-//      get[Option[String]]("object") map {
-//      case uuid ~ login ~ password ~ role ~ userObject ~ storeUUID ~ storeObject ~ brandUUID ~ brandObject ~
-//        imageUUID ~ imageObject =>
-//        println(login)
-//        println((uuid, login, password , role , userObject , storeUUID , storeObject , brandUUID , brandObject ,
-//          imageUUID , imageObject))
-//        UserWithRelations(User(uuid, login, password, role, userObject),
-//          MaybeGeneralObject(storeUUID, storeObject), MaybeGeneralObject(brandUUID, brandObject),
-//          MaybeGeneralObject(imageUUID, imageObject))
-//    }
-//  }

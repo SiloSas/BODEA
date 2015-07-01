@@ -16,5 +16,8 @@ DELETE        /models/:uuid              controllers.Application.deleteModel(tab
 #RELATIONS
 POST          /relations                 controllers.Application.saveRelations
 
+#IMAGES
+POST          /upload                    controllers.Application.uploadImage
+
 #ASSETS
 GET           /assets/*file              controllers.Assets.at(path="/public", file)

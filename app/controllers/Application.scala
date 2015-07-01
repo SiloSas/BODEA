@@ -42,7 +42,7 @@ object Application extends Controller {
       case Success(authenticationResponse) if authenticationResponse.authorized =>
         Ok(Json.toJson(authenticationResponse.role))
           .withSession(
-            "connected" -> authenticationResponse.uuid.toString,
+            "connected" -> authenticationResponse.uuid.get.toString,
             "role" -> authenticationResponse.role.toString)
 
       case Failure(failure) =>
@@ -54,14 +54,7 @@ object Application extends Controller {
     }
   }
 
-  def logout = Authenticated { request =>
-    request.uuid match {
-      case None =>
-        NotModified
-      case uuid =>
-        Ok("Correctly logged out").withNewSession
-    }
-  }
+  def logout = Action { Ok("Correctly logged out").withNewSession }
 
   def uploadImage = Action(parse.multipartFormData) { request =>
     request.body.file("image").map { image =>
@@ -70,9 +63,7 @@ object Application extends Controller {
       image.ref.moveTo(new File("/public/pictures/"))
       Ok("File uploaded")
     }.getOrElse {
-      Redirect(routes.Application.index()).flashing(
-        "error" -> "Missing file"
-      )
+      Redirect(routes.Application.index()).flashing("error" -> "Missing file")
     }
   }
 
@@ -173,7 +164,7 @@ object Application extends Controller {
           case "areas" => askActorAllModelsInTable(table, isClient = false, uuid)
           case "brands" => askActorAllModelsInTable(table, isClient = false, uuid)
           case "stores" => askActorAllModelsInTable(table, isClient = false, uuid)
-          case "users" => askActorAllModelsInUsersTable(isRequestedByClient(request))
+          case "users" => askActorAllModelsInUsersTable(isRequestedByClient(request), uuid)
           case "images" => askActorAllModelsInTable(table, isRequestedByClient(request), uuid)
           case "orders" => askActorAllModelsInTable(table, isRequestedByClient(request), uuid)
           case _ => Future { NotFound }
@@ -188,8 +179,8 @@ object Application extends Controller {
     }
   }
 
-  def askActorAllModelsInUsersTable(isClient: Boolean): Future[SimpleResult] = {
-    (modelActor ? "users").mapTo[Try[Seq[UserWithRelations]]] map {
+  def askActorAllModelsInUsersTable(isClient: Boolean, uuid: UUID): Future[SimpleResult] = {
+    (modelActor ? FindUsersRequest(isClient, uuid)).mapTo[Try[Seq[UserWithRelations]]] map {
       case Success(usersFound) =>
         Ok(Json.toJson(usersFound))
       case Failure(failure) =>

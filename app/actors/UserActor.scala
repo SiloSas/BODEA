@@ -20,8 +20,14 @@ object Authenticated extends ActionBuilder[AuthenticatedRequest] {
   def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[SimpleResult]) = {
     request.session.get("connected") match {
       case Some(uuid) =>
-        block(new AuthenticatedRequest(
-          Some(UUID.fromString(uuid)), Some(request.session.get("role").getOrElse("0").toInt), request))
+        try {
+          block(new AuthenticatedRequest(
+            Some(UUID.fromString(uuid)), Some(request.session.get("role").getOrElse("0").toInt), request))
+        } catch {
+          case e:Exception =>
+            Logger error "UserActor.invokeBlock" + e.getMessage
+            block(new AuthenticatedRequest(None, None, request))
+        }
       case None =>
         block(new AuthenticatedRequest(None, None, request))
     }

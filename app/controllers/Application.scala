@@ -15,7 +15,8 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.concurrent.Akka
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.Json
+import play.api.libs.iteratee.Concurrent
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -56,12 +57,13 @@ object Application extends Controller {
 
   def logout = Action { Ok("Correctly logged out").withNewSession }
 
-  def uploadImage = Action(parse.multipartFormData) { request =>
-    println(request)
-    request.body.file("picture").map { image =>
-      println("image " + image)
-      println(image.contentType)
+//  def notificate(notification: String) = {
+//    val (chatOut, chatChannel) = Concurrent.broadcast[JsValue]
+//    Ok.feed(chatOut &>  EventSource()).as("text/event-stream")
+//  }
 
+  def uploadImage = Action(parse.multipartFormData) { request =>
+    request.body.file("picture").map { image =>
 
       image.contentType match {
         case Some(fileExtension) if fileExtension == "image/tiff" || fileExtension == "image/jpg" ||
@@ -70,6 +72,7 @@ object Application extends Controller {
 
           val filename = image.filename + UUID.randomUUID().toString
           image.ref.moveTo(new File("/home/simon/dev/bodea/app/public/pictures/" + filename), replace = true)
+
           Ok("File uploaded")
 
         case _ =>

@@ -46,7 +46,6 @@ object ModelActor {
     def id = column[Int]("storeid", O.PrimaryKey)
     def uuid = column[UUID]("uuid", O.DBType("UUID"))
     def objectString = column[String]("object")
-
     def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
   }  
   
@@ -54,7 +53,6 @@ object ModelActor {
     def id = column[Int]("brandid", O.PrimaryKey)
     def uuid = column[UUID]("uuid", O.DBType("UUID"))
     def objectString = column[String]("object")
-
     def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
   }
   
@@ -62,7 +60,6 @@ object ModelActor {
     def id = column[Int]("imageid", O.PrimaryKey)
     def uuid = column[UUID]("uuid", O.DBType("UUID"))
     def objectString = column[String]("object")
-
     def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
   }
 
@@ -70,7 +67,6 @@ object ModelActor {
     def id = column[Int]("orderid", O.PrimaryKey)
     def uuid = column[UUID]("uuid", O.DBType("UUID"))
     def objectString = column[String]("object")
-
     def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
   }
 
@@ -87,21 +83,13 @@ object ModelActor {
   class OrderBrandTable(tag: Tag) extends Table[(UUID, UUID)](tag, "orderbrand") {
     def orderId = column[UUID]("orderid")
     def brandId = column[UUID]("brandid")
-
     def * = (orderId, brandId)
-
-    //def aFK = foreignKey("orderid", orderId, orders)(a => a.id)
-    //def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
   }
 
   class StoreOrderTable(tag: Tag) extends Table[(UUID, UUID)](tag, "storeorder") {
     def storeId = column[UUID]("storeid")
     def orderId = column[UUID]("orderid")
-
     def * = (storeId, orderId)
-
-    //def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
-    //def bFK = foreignKey("orderid", orderId, orders)(b => b.id)
   }
 
   class StoreUserTable(tag: Tag) extends Table[(UUID, UUID)](tag, "storeuser") {
@@ -109,9 +97,6 @@ object ModelActor {
     def userId = column[UUID]("userid")
 
     def * = (storeId, userId)
-
-    //def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
-    //def bFK = foreignKey("userid", userId, users)(b => b.id)
   }
 
   class OrderImageTable(tag: Tag) extends Table[(UUID, UUID)](tag, "orderimage") {
@@ -119,29 +104,18 @@ object ModelActor {
     def imageId = column[UUID]("imageid")
 
     def * = (orderId, imageId)
-
-    //def aFK = foreignKey("orderid", orderId, orders)(a => a.id)
-    //def bFK = foreignKey("imageid", imageId, images)(b => b.id)
   }
 
   class UserImageTable(tag: Tag) extends Table[(UUID, UUID)](tag, "userimage") {
     def userId = column[UUID]("userid")
     def imageId = column[UUID]("imageid")
-
     def * = (userId, imageId)
-
-    //def aFK = foreignKey("userid", userId, users)(a => a.id)
-    //def bFK = foreignKey("imageid", imageId, images)(b => b.id)
   }
 
   class UserBrandTable(tag: Tag) extends Table[(UUID, UUID)](tag, "userbrand") {
     def userId = column[UUID]("userid")
     def brandId = column[UUID]("brandid")
-
     def * = (userId, brandId)
-
-    //def aFK = foreignKey("userid", userId, users)(a => a.id)
-    //def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
   }
 
   val stores = TableQuery[StoreTable]
@@ -242,6 +216,33 @@ class ModelActor extends Actor {
       userBrand
        .map(userbrand => (userbrand.userId, userbrand.brandId))
        .insert
+    }
+
+    saveRelationsRequest.relationsBetweenTwoTables.collect {
+       case relation: RelationBetweenTwoTables if relation.relationTable == "storeuser" =>
+         (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))
+    } map {
+      storeUser
+       .map(storeUser => (storeUser.storeId, storeUser.userId))
+       .insert
+    }
+
+    saveRelationsRequest.relationsBetweenTwoTables.collect {
+       case relation: RelationBetweenTwoTables if relation.relationTable == "orderbrand" =>
+         (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))
+    } map {
+      orderBrand
+        .map(orderbrand => (orderbrand.orderId, orderbrand.brandId))
+        .insert
+    }
+
+    saveRelationsRequest.relationsBetweenTwoTables.collect {
+       case relation: RelationBetweenTwoTables if relation.relationTable == "orderimage" =>
+         (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))
+    } map {
+      orderImage
+        .map(orderimage => (orderimage.orderId, orderimage.imageId))
+        .insert
     }
   }
 

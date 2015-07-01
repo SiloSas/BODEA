@@ -173,7 +173,9 @@ object Application extends Controller {
         Logger.error("Application.saveRelation: " + formWithErrors.errorsAsJson)
         Future { BadRequest(formWithErrors.errorsAsJson) }
       },
-      saveRelationsRequest => askActorToSaveRelations(SaveRelationsRequest(saveRelationsRequest)))
+      saveRelationsRequest => {
+        println(saveRelationsRequest)
+        askActorToSaveRelations(SaveRelationsRequest(saveRelationsRequest))})
   }
 
   def askActorToSaveRelations(saveRelationsRequest: SaveRelationsRequest): Future[SimpleResult] = {

@@ -14,10 +14,10 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
     var factory = {
         connect: function (user) {
             $http.get('/users/authenticate?login=' + user.login +'&password=' + user.password).
-                success(function (user) {
-                    if (user.role == 1) {
+                success(function (role) {
+                    if (role == 1) {
                         $rootScope.connected = 'admin';
-                    } else if(user.role == 2) {
+                    } else if(role == 2) {
                         $rootScope.connected = 'client';
                     }
             })

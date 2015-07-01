@@ -22,7 +22,10 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
             return deferred.promise;
         },
         refactorUser: function (user) {
+            console.log(factory.users);
+            console.log(user);
             for (var i = 0; i < factory.users.length; i++) {
+                console.log(factory.users[i])
                 if (user.user.uuid == factory.users[i].user.uuid) {
                     user = angular.copy(user.newUser);
                     factory.users[i] = user
@@ -45,7 +48,7 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
         factory.users.push(user);
         $http.post('users?uuid='+user.uuid+'&password='+user.user.password+
             '&login='+user.user.login+'&role='+user.user.role+'&objectString=' +
-            JSON.stringify(user.user.objectString) + 'isActive=' + user.user.isActive)
+            JSON.stringify(user.user.objectString) + '&isActive=' + user.user.isActive)
         }
     };
     return factory;

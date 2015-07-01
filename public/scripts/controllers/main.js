@@ -37,6 +37,7 @@ angular.module('bodeaApp')
             $scope.active = $location.path();
         });
         $scope.connect = function (user) {
+            console.log(user)
             ConnectionFactory.connect(user)
         };
         $scope.disconnect = function () {

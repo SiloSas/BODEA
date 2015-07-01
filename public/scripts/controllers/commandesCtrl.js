@@ -77,6 +77,20 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                 }
             }
         };
+
+        $scope.selectAllStores = function (stores, list) {
+            stores.map(function (item) {
+                var idx = false;
+                for (var i = 0; i < list.length; i++) {
+                    if (list[i].id == item.id) {
+                        idx = true
+                    }
+                }
+                if (idx == false) {
+                    list.push(item);
+                }
+            })
+        };
         $scope.copyCommande = function (order) {
             $timeout(function () {
                 $scope.$apply(function () {

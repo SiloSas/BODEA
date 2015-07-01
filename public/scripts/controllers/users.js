@@ -39,6 +39,19 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
             }
         }
     };
+    $scope.selectAllStores = function (stores, list) {
+        stores.map(function (item) {
+            var idx = false;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].id == item.id) {
+                    idx = true
+                }
+            }
+            if (idx == false) {
+                list.push(item);
+            }
+        })
+    };
     $scope.copyUser = function (user) {
         return angular.copy(user);
     };

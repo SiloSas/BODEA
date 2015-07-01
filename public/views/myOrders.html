@@ -97,6 +97,16 @@
                         <div>
                             <md-subheader class="md-no-sticky">Choisissez un magasin</md-subheader>
                             <md-divider></md-divider>
+                            <a class="md-button md-primary md-raised md-default-theme"
+                               ng-show="newSubOrder.stores.length < filtredStores.length"
+                               ng-click="selectAllStores(filtredStores, newSubOrder.stores)">
+                                Selectionner tout les magasins
+                            </a>
+                            <a class="md-button md-primary md-raised md-default-theme"
+                               ng-show="newSubOrder.stores.length == filtredStores.length"
+                               ng-click="newSubOrder.stores = []">
+                                désélectionner tout les magasins
+                            </a>
                             <div flex="50"
                                  class="fade"
                                  ng-repeat="store in stores">
@@ -287,6 +297,16 @@
                                     <div>
                                         <md-subheader class="md-no-sticky">Choisissez un magasin</md-subheader>
                                         <md-divider></md-divider>
+                                        <a class="md-button md-primary md-raised md-default-theme"
+                                           ng-show="newSubOrder.stores.length < filtredStores.length"
+                                           ng-click="selectAllStores(filtredStores, newSubOrder.stores)">
+                                            Selectionner tout les magasins
+                                        </a>
+                                        <a class="md-button md-primary md-raised md-default-theme"
+                                           ng-show="newSubOrder.stores.length == filtredStores.length"
+                                           ng-click="newSubOrder.stores = []">
+                                            désélectionner tout les magasins
+                                        </a>
                                         <div flex="50"
                                              class="fade"
                                              ng-repeat="store in stores">

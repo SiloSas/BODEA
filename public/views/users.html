@@ -100,6 +100,16 @@
         <div ng-show="newUser.brand">
             <md-subheader>Magasins</md-subheader>
             <md-divider></md-divider>
+            <a class="md-button md-primary md-raised md-default-theme"
+               ng-show="newUser.stores.length < filtredStores.length"
+               ng-click="selectAllStores(filtredStores, newUser.stores)">
+                Selectionner tout les magasins
+            </a>
+            <a class="md-button md-primary md-raised md-default-theme"
+               ng-show="newUser.stores.length == filtredStores.length"
+               ng-click="newUser.stores = []">
+                désélectionner tout les magasins
+            </a>
             <div ng-init="limit = 20">
                 <div flex="50"
                      class="fade"
@@ -237,6 +247,16 @@
                 </md-autocomplete>
                 <md-subheader>Magasins</md-subheader>
                 <md-divider></md-divider>
+                <a class="md-button md-primary md-raised md-default-theme"
+                   ng-show="newSubOrder.stores.length < filtredStores.length"
+                   ng-click="selectAllStores(filtredStores, newSubOrder.stores)">
+                    Selectionner tout les magasins
+                </a>
+                <a class="md-button md-primary md-raised md-default-theme"
+                   ng-show="newSubOrder.stores.length == filtredStores.length"
+                   ng-click="newSubOrder.stores = []">
+                    désélectionner tout les magasins
+                </a>
                 <div ng-init="limit = 20">
                     <div flex="50"
                      class="fade"

@@ -42,7 +42,7 @@ object UserActor {
   case class SaveUserRequest(uuid: String, login: String, password: String, role: Int, objectString: Option[String],
                              isActive: Boolean = true)
   case class UpdateUserRequest(uuid: String, login: String, password: String, role: Int,
-                               objectString: Option[String], isActive: Boolean = true)
+                               objectString: Option[String], isActive: Boolean)
   case class AuthenticationRequest[A](login: String, password: String)
   case class AuthenticationResponse(authorized: Boolean, role: Int, uuid: Option[UUID])
 

@@ -76,74 +76,74 @@ object ModelActor {
     def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
   }
 
-   class StoreBrandTable(tag: Tag) extends Table[(Int, Int)](tag, "storebrand") {
-    def storeId = column[Int]("storeid")
-    def brandId = column[Int]("brandid")
+   class StoreBrandTable(tag: Tag) extends Table[(UUID, UUID)](tag, "storebrand") {
+    def storeId = column[UUID]("storeid")
+    def brandId = column[UUID]("brandid")
 
     def * = (storeId, brandId)
 
-    def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
-    def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
+    //def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
+    //def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
   }
 
-  class OrderBrandTable(tag: Tag) extends Table[(Int, Int)](tag, "orderbrand") {
-    def orderId = column[Int]("orderid")
-    def brandId = column[Int]("brandid")
+  class OrderBrandTable(tag: Tag) extends Table[(UUID, UUID)](tag, "orderbrand") {
+    def orderId = column[UUID]("orderid")
+    def brandId = column[UUID]("brandid")
 
     def * = (orderId, brandId)
 
-    def aFK = foreignKey("orderid", orderId, orders)(a => a.id)
-    def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
+    //def aFK = foreignKey("orderid", orderId, orders)(a => a.id)
+    //def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
   }
 
-  class StoreOrderTable(tag: Tag) extends Table[(Int, Int)](tag, "storeorder") {
-    def storeId = column[Int]("storeid")
-    def orderId = column[Int]("orderid")
+  class StoreOrderTable(tag: Tag) extends Table[(UUID, UUID)](tag, "storeorder") {
+    def storeId = column[UUID]("storeid")
+    def orderId = column[UUID]("orderid")
 
     def * = (storeId, orderId)
 
-    def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
-    def bFK = foreignKey("orderid", orderId, orders)(b => b.id)
+    //def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
+    //def bFK = foreignKey("orderid", orderId, orders)(b => b.id)
   }
 
-  class StoreUserTable(tag: Tag) extends Table[(Int, Int)](tag, "storeuser") {
-    def storeId = column[Int]("storeid")
-    def userId = column[Int]("userid")
+  class StoreUserTable(tag: Tag) extends Table[(UUID, UUID)](tag, "storeuser") {
+    def storeId = column[UUID]("storeid")
+    def userId = column[UUID]("userid")
 
     def * = (storeId, userId)
 
-    def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
-    def bFK = foreignKey("userid", userId, users)(b => b.id)
+    //def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
+    //def bFK = foreignKey("userid", userId, users)(b => b.id)
   }
 
-  class OrderImageTable(tag: Tag) extends Table[(Int, Int)](tag, "orderimage") {
-    def orderId = column[Int]("orderid")
-    def imageId = column[Int]("imageid")
+  class OrderImageTable(tag: Tag) extends Table[(UUID, UUID)](tag, "orderimage") {
+    def orderId = column[UUID]("orderid")
+    def imageId = column[UUID]("imageid")
 
     def * = (orderId, imageId)
 
-    def aFK = foreignKey("orderid", orderId, orders)(a => a.id)
-    def bFK = foreignKey("imageid", imageId, images)(b => b.id)
+    //def aFK = foreignKey("orderid", orderId, orders)(a => a.id)
+    //def bFK = foreignKey("imageid", imageId, images)(b => b.id)
   }
 
-  class UserImageTable(tag: Tag) extends Table[(Int, Int)](tag, "userimage") {
-    def userId = column[Int]("userid")
-    def imageId = column[Int]("imageid")
+  class UserImageTable(tag: Tag) extends Table[(UUID, UUID)](tag, "userimage") {
+    def userId = column[UUID]("userid")
+    def imageId = column[UUID]("imageid")
 
     def * = (userId, imageId)
 
-    def aFK = foreignKey("userid", userId, users)(a => a.id)
-    def bFK = foreignKey("imageid", imageId, images)(b => b.id)
+    //def aFK = foreignKey("userid", userId, users)(a => a.id)
+    //def bFK = foreignKey("imageid", imageId, images)(b => b.id)
   }
 
-  class UserBrandTable(tag: Tag) extends Table[(Int, Int)](tag, "userbrand") {
-    def userId = column[Int]("userid")
-    def brandId = column[Int]("brandid")
+  class UserBrandTable(tag: Tag) extends Table[(UUID, UUID)](tag, "userbrand") {
+    def userId = column[UUID]("userid")
+    def brandId = column[UUID]("brandid")
 
     def * = (userId, brandId)
 
-    def aFK = foreignKey("userid", userId, users)(a => a.id)
-    def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
+    //def aFK = foreignKey("userid", userId, users)(a => a.id)
+    //def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
   }
 
   val stores = TableQuery[StoreTable]
@@ -187,7 +187,7 @@ class ModelActor extends Actor {
       sender ! amendObject(ObjectToAmendRequest(table, uuid, newObjectString))
 
     case saveRelationsRequest: SaveRelationsRequest =>
-      sender ! saveRelation(saveRelationsRequest)
+      sender ! saveRelations(saveRelationsRequest)
 
     case _ => sender ! Failure(throw new Exception("unknown request"))
   }
@@ -209,7 +209,8 @@ class ModelActor extends Actor {
   def save(objectToSave: ObjectToSaveRequest): Try[Int] = Try {
     implicit val table = objectToSave.table.name
     val standardTableQuery = TableQuery[StandardTable]
-    (standardTableQuery returning standardTableQuery.map(_.id)) += GeneralObject(objectToSave.uuid, objectToSave.objectString)
+    (standardTableQuery returning standardTableQuery.map(_.id)) +=
+      GeneralObject(objectToSave.uuid, objectToSave.objectString)
   }
 
   def getAllObjects(objectsToGetRequest: FindObjectsRequest): Try[Seq[GeneralObjectWithRelations]] = Try {
@@ -226,22 +227,24 @@ class ModelActor extends Actor {
     }
   }
 
-  def saveRelation(saveRelationsRequest: SaveRelationsRequest): Try[Int] = Try {
-//    saveRelationsRequest.collect( case )
-//    saveRelationRequest map { relation =>
-//      if
-//    }
-
-    0
+  def saveRelations(saveRelationsRequest: SaveRelationsRequest): Try[Unit] = Try {
+     saveRelationsRequest.relationsBetweenTwoTables.collect {
+       case relation: RelationBetweenTwoTables if relation.relationTable == "storebrand" =>
+         (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))
+     } map {
+       storeBrand
+         .map(storeBrand => (storeBrand.storeId, storeBrand.brandId))
+         .insert
+     }
   }
 
   def findOrders: Seq[GeneralObjectWithRelations] = {
     val query = for {
       ((((order, _), brand), _), image) <- orders outerJoin
-        orderBrand on (_.id === _.brandId) leftJoin
-        brands on (_._2.brandId === _.id) outerJoin
-        orderImage on (_._1._1.id === _.imageId) leftJoin
-        images on (_._2.imageId === _.id)
+        orderBrand on (_.uuid === _.brandId) leftJoin
+        brands on (_._2.brandId === _.uuid) outerJoin
+        orderImage on (_._1._1.uuid === _.imageId) leftJoin
+        images on (_._2.imageId === _.uuid)
 //      WHERE orders.orderid IN (SELECT orderid FROM storeorder WHERE storeid = 1);
 //        if order.id in (usersOrders.filter(_.login === "client").map(_);
     } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
@@ -263,10 +266,10 @@ class ModelActor extends Actor {
   def findUsers: Try[Seq[UserWithRelations]] = Try {
     val query = for {
       ((((user, _), brand), _), store) <- users outerJoin
-        userBrand on (_.id === _.brandId) leftJoin
-        brands on (_._2.brandId === _.id) outerJoin
-        storeUser on (_._1._1.id === _.storeId) leftJoin
-        stores on (_._2.storeId === _.id)
+        userBrand on (_.uuid === _.brandId) leftJoin
+        brands on (_._2.brandId === _.uuid) outerJoin
+        storeUser on (_._1._1.uuid === _.storeId) leftJoin
+        stores on (_._2.storeId === _.uuid)
     } yield (user, brand.uuid.?, brand.objectString.?, store.uuid.?, store.objectString.?)
 
     query.list.groupBy(_._1).map { generalObjectsWithRelations =>

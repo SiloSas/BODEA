@@ -71,12 +71,18 @@ class UserActor extends Actor {
   }
 
   def update(updateUserRequest: UpdateUserRequest): Try[Int] = Try {
-    users
-      .filter(_.uuid === UUID.fromString("2bcfb184-c24c-420f-af62-0ca26a2f85bd"))
-      .map(user => (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive))
-      .update(
-        (UUID.fromString(updateUserRequest.uuid), updateUserRequest.login, updateUserRequest.password,
-          updateUserRequest.role, updateUserRequest.objectString, updateUserRequest.isActive))
+    val query = for { user <- users if user.uuid ===  UUID.fromString(updateUserRequest.uuid) }
+      yield (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive)
+
+    query.update((UUID.fromString(updateUserRequest.uuid), updateUserRequest.login, updateUserRequest.password,
+    updateUserRequest.role, updateUserRequest.objectString, updateUserRequest.isActive))
+//
+//    users
+//      .filter(_.uuid === UUID.fromString("2bcfb184-c24c-420f-af62-0ca26a2f85bd"))
+//      .map(user => (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive))
+//      .update(
+//        (UUID.fromString(updateUserRequest.uuid), updateUserRequest.login, updateUserRequest.password,
+//          updateUserRequest.role, updateUserRequest.objectString, updateUserRequest.isActive))
   }
 
   def save(saveUserRequest: SaveUserRequest): Try[Int] = Try {

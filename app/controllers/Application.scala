@@ -42,7 +42,7 @@ object Application extends Controller {
       case Success(authenticationResponse) if authenticationResponse.authorized =>
         Ok(Json.toJson(authenticationResponse.role))
           .withSession(
-            "connected" -> "t",
+            "connected" -> authenticationResponse.uuid.toString,
             "role" -> authenticationResponse.role.toString)
 
       case Failure(failure) =>

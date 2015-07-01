@@ -41,8 +41,9 @@ object UserActor {
   case class User(uuid: UUID, login: String, role: Int, objectString: Option[String], isActive: Boolean = true)
   case class SaveUserRequest(uuid: String, login: String, password: String, role: Int, objectString: Option[String],
                              isActive: Boolean = true)
-  case class UpdateUserRequest(uuid: String, login: String, password: String, role: Int,
+  case class UpdateUserRequest(uuid: String, login: String, role: Int,
                                objectString: Option[String], isActive: Boolean)
+  case class UpdatePasswordRequest(uuid: UUID, password: String)
   case class AuthenticationRequest[A](login: String, password: String)
   case class AuthenticationResponse(authorized: Boolean, role: Int, uuid: Option[UUID])
 
@@ -64,11 +65,11 @@ class UserActor extends Actor {
 
   def receive = {
 
-    case SaveUserRequest(uuid, login, password, role, objectString, isActive) =>
-      save(SaveUserRequest(uuid, login, password, role, objectString, isActive))
+    case saveUserRequest: SaveUserRequest =>
+      sender ! save(saveUserRequest)
 
-    case UpdateUserRequest(uuid, login, password, role, objectString, isActive) =>
-      sender ! update(UpdateUserRequest(uuid, login, password, role, objectString, isActive))
+    case updateUserRequest: UpdateUserRequest =>
+      sender ! update(updateUserRequest)
 
     case AuthenticationRequest(login: String, password: String) =>
       sender ! verifyIdentity(login, password)
@@ -77,26 +78,28 @@ class UserActor extends Actor {
       Logger error "UserActor.receive: unknown request"
   }
 
+  def updatePassword(updatePasswordRequest: UpdatePasswordRequest): Try[Int] = Try {
+    val query = for { user <- users if user.uuid === updatePasswordRequest.uuid }
+      yield user.password
+
+    query.update(BCrypt.hashpw(updatePasswordRequest.password, BCrypt.gensalt()))
+  }
+
   def update(updateUserRequest: UpdateUserRequest): Try[Int] = Try {
     val query = for { user <- users if user.uuid ===  UUID.fromString(updateUserRequest.uuid) }
-      yield (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive)
+      yield (user.uuid, user.login, user.role, user.objectString, user.isActive)
 
-    query.update((UUID.fromString(updateUserRequest.uuid), updateUserRequest.login, updateUserRequest.password,
+    query.update((UUID.fromString(updateUserRequest.uuid), updateUserRequest.login,
     updateUserRequest.role, updateUserRequest.objectString, updateUserRequest.isActive))
   }
-//  (standardTableQuery returning standardTableQuery.map(_.id)) +=
-//    GeneralObject(objectToSave.uuid, objectToSave.objectString)
+
   def save(saveUserRequest: SaveUserRequest): Try[Int] = Try {
-    println("User creation begins")
-    val res = users
+    users
       .map(user => (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive))
       .insert(
         (UUID.fromString(saveUserRequest.uuid), saveUserRequest.login,
           BCrypt.hashpw(saveUserRequest.password, BCrypt.gensalt()), saveUserRequest.role,
           saveUserRequest.objectString, saveUserRequest.isActive))
-
-    println("User creation ends with res:\n" + res)
-    0
   }
 
   def verifyIdentity(login: String, password: String): Try[AuthenticationResponse] = Try {

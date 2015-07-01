@@ -97,7 +97,7 @@ object Application extends Controller {
       case None =>
         Future { Unauthorized("Unauthorized") }
       case _ =>
-        (userActor ? UpdateUserRequest(uuid: String, login, password, role, objectString, isActive)).mapTo[Try[Int]] map {
+        (userActor ? UpdateUserRequest(uuid: String, login, role, objectString, isActive)).mapTo[Try[Int]] map {
           case Success(_) => Created
           case Failure(failure) => InternalServerError("saveUser: " + failure)
         }

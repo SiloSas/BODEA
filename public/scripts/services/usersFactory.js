@@ -22,14 +22,15 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
             return deferred.promise;
         },
         refactorUser: function (user) {
-            console.log(user)
             for (var i = 0; i < factory.users.length; i++) {
                 if (user.user.uuid == factory.users[i].user.uuid) {
                     user = angular.copy(user.newUser);
                     factory.users[i] = user
                 }
             }
-        $http.post('models/' + user.user.uuid + '?table=users&objectString=' + JSON.stringify(user.user.objectString))
+        $http.put('users?uuid='+ user.user.uuid + '&login=' + user.user.login + '&password=' + user.user.password +
+            '&role=' + user.user.role + '&objectString='+ JSON.stringify(user.user.objectString) +
+            '&isActive=' + user.user.isActive);
         },
         deleteUser: function (user) {
             for (var i = 0; i < factory.users.length; i++) {
@@ -44,7 +45,7 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
         factory.users.push(user);
         $http.post('users?uuid='+user.uuid+'&password='+user.user.password+
             '&login='+user.user.login+'&role='+user.user.role+'&objectString=' +
-            JSON.stringify(user.user.objectString))
+            JSON.stringify(user.user.objectString) + 'isActive=' + user.user.isActive)
         }
     };
     return factory;

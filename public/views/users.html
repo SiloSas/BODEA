@@ -30,9 +30,9 @@
         <div class="column md-whiteframe-z1">
             Actif
             <i class="fa"
-               ng-class="{'fa-chevron-down': predicate != 'isActive' || (predicate == 'isActive' && reverse == false),
-              'fa-chevron-up': predicate == 'isActive' && reverse == true}"
-               ng-click="order('isActive')"></i>
+               ng-class="{'fa-chevron-down': predicate != 'user.isActive' || (predicate == 'user.isActive' && reverse == false),
+              'fa-chevron-up': predicate == 'user.isActive' && reverse == true}"
+               ng-click="order('user.isActive')"></i>
         </div>
     </div>
     <md-button class="md-primary md-raised column medium-4 marginLeft0 marginRight0"
@@ -162,7 +162,7 @@
             <h3 class="column medium-2">
                 <md-checkbox style="margin: 0 0 0 50%"
                              ng-change="user.newUser = copyUser(user); refactorUser(user)"
-                             ng-model="user.isActive" class="md-primary" aria-label="Actif">
+                             ng-model="user.user.isActive" class="md-primary" aria-label="Actif">
                 </md-checkbox>
             </h3>
             <h5><i class="column medium-2 pointer fa fa-pencil"

@@ -4,7 +4,7 @@ import java.io.File
 import java.util.UUID
 
 import actors.ModelActor._
-import actors.UserActor.{AuthenticationRequest, AuthenticationResponse, SaveUserRequest}
+import actors.UserActor.{UpdateUserRequest, AuthenticationRequest, AuthenticationResponse, SaveUserRequest}
 import actors._
 import akka.pattern.ask
 import akka.util.Timeout
@@ -95,7 +95,7 @@ object Application extends Controller {
       case None =>
         Future { Unauthorized("Unauthorized") }
       case username =>
-        (userActor ? SaveUserRequest(uuid: String, login, password, role, objectString)).mapTo[Try[Int]] map {
+        (userActor ? UpdateUserRequest(uuid: String, login, password, role, objectString)).mapTo[Try[Int]] map {
           case Success(_) => Created
           case Failure(failure) => InternalServerError("saveUser: " + failure)
         }

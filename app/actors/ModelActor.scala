@@ -226,8 +226,8 @@ class ModelActor extends Actor {
     }
   }
 
-  def saveRelation(saveRelationRequest: SaveRelationsRequest): Try[Int] = Try {
-//    val tableQuery = (saveRelationRequest.relation)
+  def saveRelation(saveRelationsRequest: SaveRelationsRequest): Try[Int] = Try {
+//    saveRelationsRequest.collect( case )
 //    saveRelationRequest map { relation =>
 //      if
 //    }

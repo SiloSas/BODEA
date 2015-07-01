@@ -326,29 +326,27 @@ class ModelActor extends Actor {
         }
 
       case true =>
-        try {
-          val query = for {
-            ((((user, _), brand), _), store) <- users.filter(_.uuid === findUsersRequest.uuid) outerJoin
-              userBrand on (_.uuid === _.userId ) leftJoin
-              brands on (_._2.brandId === _.uuid) outerJoin
-              storeUser on (_._1._1.uuid === _.storeId) leftJoin
-              stores on (_._2.storeId === _.uuid)
-              if user.uuid === findUsersRequest.uuid
-          } yield (user, brand.uuid.?, brand.objectString.?, store.uuid.?, store.objectString.?)
+        val query = for {
+          ((((user, _), brand), _), store) <- users.filter(_.uuid === findUsersRequest.uuid) outerJoin
+            userBrand on (_.uuid === _.userId ) leftJoin
+            brands on (_._2.brandId === _.uuid) outerJoin
+            storeUser on (_._1._1.uuid === _.storeId) leftJoin
+            stores on (_._2.storeId === _.uuid)
+            if user.uuid === findUsersRequest.uuid
+        } yield (user, brand.uuid.?, brand.objectString.?, store.uuid.?, store.objectString.?)
 
-          query.list.groupBy(_._1).map { generalObjectsWithRelations =>
-            (generalObjectsWithRelations._1,
-              generalObjectsWithRelations._2.foldLeft(Seq.empty[MaybeRelation]) { (res, generalObjectWithRelation) =>
-                res :+
-                  MaybeRelation("brands", MaybeGeneralObject(generalObjectWithRelation._2, generalObjectWithRelation._3)) :+
-                  MaybeRelation("images", MaybeGeneralObject(generalObjectWithRelation._4, generalObjectWithRelation._5))
-              }.distinct.filterNot(_.maybeGeneralObject.objectString == None))
-          }
-            .toSeq
-            .map { userWithRelation =>
-            UserWithRelations(userWithRelation._1, userWithRelation._2)
-          }
-        } catch { case e: Exception => Seq.empty }
+        query.list.groupBy(_._1).map { generalObjectsWithRelations =>
+          (generalObjectsWithRelations._1,
+            generalObjectsWithRelations._2.foldLeft(Seq.empty[MaybeRelation]) { (res, generalObjectWithRelation) =>
+              res :+
+                MaybeRelation("brands", MaybeGeneralObject(generalObjectWithRelation._2, generalObjectWithRelation._3)) :+
+                MaybeRelation("images", MaybeGeneralObject(generalObjectWithRelation._4, generalObjectWithRelation._5))
+            }.distinct.filterNot(_.maybeGeneralObject.objectString == None))
+        }
+          .toSeq
+          .map { userWithRelation =>
+          UserWithRelations(userWithRelation._1, userWithRelation._2)
+        }
     }
   }
 

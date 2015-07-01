@@ -10,6 +10,7 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
                     factory.stores = object.map(function (el) {
                         return JSON.parse(el.generalObject.objectString)
                     });
+                    console.log(object)
                     deferred.resolve(factory.stores);
                 });
             }
@@ -24,16 +25,13 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
                     }
                 }
             } else {
-                $http.get('models?table=stores').success(function (object) {
-                    factory.stores = object.map(function (el) {
-                        return JSON.parse(el.objectString)
-                    });
+                factory.getStores().then(function () {
                     for (var i = 0; i < factory.stores.length; i++) {
                         if (id === factory.stores[i].id) {
                             deferred.resolve(factory.stores[i])
                         }
                     }
-                });
+                })
             }
             return deferred.promise
         },
@@ -56,7 +54,17 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
             factory.stores.push(store);
             var stringStore = JSON.stringify(store);
             $http.post('models?table=stores&uuid=' + store.id + '&objectString=' + stringStore).success(function (data) {
-                console.log(data)
+                if (angular.isDefined(store.brand.id)) {
+                    console.log(store)
+                    $http.post('relations',
+                        [{
+                            relationTable: 'stores',
+                            uuidA: store.id,
+                            uuidB: store.brand.id
+                        }]).success(function(success) {
+                            console.log(success)
+                        });
+                }
             }).error(function (error) {
                 console.log(error)
             })

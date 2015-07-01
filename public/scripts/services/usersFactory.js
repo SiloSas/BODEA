@@ -1,4 +1,4 @@
-angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFactory) {
+angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFactory, StoresFactory) {
     var factory = {
         users: false,
         getUsers:  function () {
@@ -13,6 +13,21 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                         }
                         if (angular.isDefined(user.user.objectString)) {
                             user.user.objectString = JSON.parse(user.user.objectString);
+                            if (angular.isDefined(user.user.objectString.stores)) {
+                                user.stores = [];
+                                var stores = angular.copy(user.user.objectString.stores)
+                                var i = 0;
+                                function getStoreById (storeId) {
+                                    StoresFactory.getStoreById(storeId).then(function(store) {
+                                        user.stores.push(store);
+                                        if (i < stores.length) {
+                                            i++;
+                                            getStoreById(stores[i])
+                                        }
+                                    })
+                                }
+                                getStoreById(stores[i])
+                            }
                         }
                         return user;
                     });
@@ -22,18 +37,19 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
             return deferred.promise;
         },
         refactorUser: function (user) {
-            console.log(factory.users);
-            console.log(user);
+            if (angular.isDefined( user.newUser.user.password) == false) {
+                user.newUser.user.password = '';
+            }
             for (var i = 0; i < factory.users.length; i++) {
-                console.log(factory.users[i])
                 if (user.user.uuid == factory.users[i].user.uuid) {
                     user = angular.copy(user.newUser);
                     factory.users[i] = user
                 }
             }
-        $http.put('users?uuid='+ user.user.uuid + '&login=' + user.user.login + '&password=' + user.user.password +
-            '&role=' + user.user.role + '&objectString='+ JSON.stringify(user.user.objectString) +
-            '&isActive=' + user.user.isActive);
+            console.log(user)
+            $http.put('users?uuid='+ user.user.uuid + '&login=' + user.user.login + '&password=' + user.user.password +
+                '&role=' + user.user.role + '&objectString='+ JSON.stringify(user.user.objectString) +
+                '&isActive=' + user.user.isActive).error(function(error) {console.log(error)});
         },
         deleteUser: function (user) {
             for (var i = 0; i < factory.users.length; i++) {

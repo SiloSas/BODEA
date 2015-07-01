@@ -53,6 +53,9 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
 
     $scope.newUser = {user: {isActive: true}, stores: []};
     $scope.addUser = function () {
+        $scope.newUser.user.objectString.stores = $scope.newUser.stores.map(function(store) {
+            return store.id;
+        });
         console.log($scope.newUser);
         UsersFactory.postUser($scope.newUser);
         $scope.newUser = {user: {isActive: true}, stores: []};

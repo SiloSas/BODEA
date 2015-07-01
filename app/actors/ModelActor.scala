@@ -201,6 +201,7 @@ class ModelActor extends Actor {
   }
 
   def saveRelations(saveRelationsRequest: SaveRelationsRequest): Try[Int] = Try {
+    println(saveRelationsRequest)
      saveRelationsRequest.relationsBetweenTwoTables.collect {
        case relation: RelationBetweenTwoTables if relation.relationTable == "storebrand" =>
          (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))

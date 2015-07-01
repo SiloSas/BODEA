@@ -43,7 +43,7 @@ object UserActor {
                              isActive: Boolean = true)
   case class UpdateUserRequest(uuid: String, login: String, role: Int,
                                objectString: Option[String], isActive: Boolean)
-  case class UpdatePasswordRequest(uuid: UUID, password: String)
+  case class UpdateUserPasswordRequest(uuid: UUID, password: String)
   case class AuthenticationRequest[A](login: String, password: String)
   case class AuthenticationResponse(authorized: Boolean, role: Int, uuid: Option[UUID])
 
@@ -71,18 +71,14 @@ class UserActor extends Actor {
     case updateUserRequest: UpdateUserRequest =>
       sender ! update(updateUserRequest)
 
+    case updateUserPasswordRequest: UpdateUserPasswordRequest =>
+      sender ! updatePassword(updateUserPasswordRequest)
+
     case AuthenticationRequest(login: String, password: String) =>
       sender ! verifyIdentity(login, password)
 
     case _ =>
       Logger error "UserActor.receive: unknown request"
-  }
-
-  def updatePassword(updatePasswordRequest: UpdatePasswordRequest): Try[Int] = Try {
-    val query = for { user <- users if user.uuid === updatePasswordRequest.uuid }
-      yield user.password
-
-    query.update(BCrypt.hashpw(updatePasswordRequest.password, BCrypt.gensalt()))
   }
 
   def update(updateUserRequest: UpdateUserRequest): Try[Int] = Try {
@@ -91,6 +87,13 @@ class UserActor extends Actor {
 
     query.update((UUID.fromString(updateUserRequest.uuid), updateUserRequest.login,
     updateUserRequest.role, updateUserRequest.objectString, updateUserRequest.isActive))
+  }
+
+  def updatePassword(updateUserPasswordRequest: UpdateUserPasswordRequest): Try[Int] = Try {
+    val query = for { user <- users if user.uuid === updateUserPasswordRequest.uuid }
+      yield user.password
+
+    query.update(BCrypt.hashpw(updateUserPasswordRequest.password, BCrypt.gensalt()))
   }
 
   def save(saveUserRequest: SaveUserRequest): Try[Int] = Try {

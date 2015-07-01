@@ -27,6 +27,8 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                                     })
                                 }
                                 getStoreById(stores[i])
+                            } else {
+                                user.stores = [];
                             }
                         }
                         return user;
@@ -46,6 +48,7 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                     factory.users[i] = user
                 }
             }
+            console.log(user)
             $http.put('users?uuid='+ user.user.uuid + '&login=' + user.user.login + '&password=' + user.user.password +
                 '&role=' + user.user.role + '&objectString='+ JSON.stringify(user.user.objectString) +
                 '&isActive=' + user.user.isActive).success(function (success) {
@@ -63,15 +66,26 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
         $http.delete('models/' + user.user.uuid + '?table=users');
         },
         postUser: function (user) {
-        user.uuid = GuidFactory();
-        factory.users.push(user);
-        $http.post('users?uuid='+user.uuid+'&password='+user.user.password+
-            '&login='+user.user.login+'&role='+user.user.role+'&objectString=' +
-            JSON.stringify(user.user.objectString) + '&isActive=' + user.user.isActive).success(function (success) {
-            MessagesFactory.displayMessage('L\'utilisateur est bien enregistré')
-        }).error(function(error) {
-            MessagesFactory.displayMessage(error)
-        })
+            var deferred = $q.defer();
+            user.user.uuid = GuidFactory();
+            $http.post('users?uuid='+user.user.uuid+'&password='+user.user.password+
+                '&login='+user.user.login+'&role='+user.user.role+'&objectString=' +
+                JSON.stringify(user.user.objectString) + '&isActive=' + user.user.isActive).
+                success(function (success) {
+                    MessagesFactory.displayMessage('L\'utilisateur est bien enregistré');
+                    factory.users.push(user);
+                    deferred.resolve(success)
+            }).error(function(error) {
+                console.log(error)
+                if (error.indexOf('duplicate key') > -1) {
+                    error = 'cet utilisateur existe déjà'
+                } else {
+                    error = 'une erreur s\'est produite'
+                }
+                MessagesFactory.displayMessage(error);
+                deferred.reject(error)
+            });
+            return deferred.promise;
         }
     };
     return factory;

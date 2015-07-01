@@ -75,9 +75,7 @@ object Application extends Controller {
         case _ =>
           Unauthorized("Wrong content type")
       }
-    }.getOrElse {
-      BadRequest
-    }
+    }.getOrElse { BadRequest }
   }
 
   def saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String],
@@ -87,7 +85,7 @@ object Application extends Controller {
         Future { Unauthorized("Unauthorized") }
       case _ =>
         (userActor ? SaveUserRequest(uuid: String, login, password, role, objectString)).mapTo[Try[Int]] map {
-          case Success(_) => Created("OK")
+          case Success(newUUID) => Created(Json.toJson(newUUID))
           case Failure(failure) => InternalServerError("saveUser: " + failure)
         }
     }

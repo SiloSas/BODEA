@@ -84,14 +84,19 @@ class UserActor extends Actor {
     query.update((UUID.fromString(updateUserRequest.uuid), updateUserRequest.login, updateUserRequest.password,
     updateUserRequest.role, updateUserRequest.objectString, updateUserRequest.isActive))
   }
-
+//  (standardTableQuery returning standardTableQuery.map(_.id)) +=
+//    GeneralObject(objectToSave.uuid, objectToSave.objectString)
   def save(saveUserRequest: SaveUserRequest): Try[Int] = Try {
-    users
+    println("User creation begins")
+    val res = users
       .map(user => (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive))
       .insert(
         (UUID.fromString(saveUserRequest.uuid), saveUserRequest.login,
           BCrypt.hashpw(saveUserRequest.password, BCrypt.gensalt()), saveUserRequest.role,
           saveUserRequest.objectString, saveUserRequest.isActive))
+
+    println("User creation ends with res:\n" + res)
+    0
   }
 
   def verifyIdentity(login: String, password: String): Try[AuthenticationResponse] = Try {

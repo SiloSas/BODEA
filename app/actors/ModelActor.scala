@@ -234,6 +234,15 @@ class ModelActor extends Actor {
          .map(storeBrand => (storeBrand.storeId, storeBrand.brandId))
          .insert
      }
+
+    saveRelationsRequest.relationsBetweenTwoTables.collect {
+       case relation: RelationBetweenTwoTables if relation.relationTable == "userbrand" =>
+         (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))
+    } map {
+      userBrand
+       .map(userbrand => (userbrand.userId, userbrand.brandId))
+       .insert
+    }
   }
 
   def findOrders(isClient: Boolean, userUUID: UUID): Seq[GeneralObjectWithRelations] = isClient match {

@@ -61,12 +61,14 @@ object Application extends Controller {
     request.body.file("picture").map { image =>
       println("image " + image)
       println(image.contentType)
-      val filename = image.filename + UUID.randomUUID().toString
+
 
       image.contentType match {
         case Some(fileExtension) if fileExtension == "image/tiff" || fileExtension == "image/jpg" ||
-          fileExtension == "image/jpeg" ||
-          fileExtension == "image/png" || fileExtension == "image/svg" || fileExtension == "application/pdf" =>
+          fileExtension == "image/jpeg" || fileExtension == "image/png" || fileExtension == "image/svg" ||
+          fileExtension == "application/pdf" =>
+
+          val filename = image.filename + UUID.randomUUID().toString
           image.ref.moveTo(new File("/home/simon/dev/bodea/app/public/pictures/" + filename), replace = true)
           Ok("File uploaded")
 
@@ -85,7 +87,7 @@ object Application extends Controller {
         Future { Unauthorized("Unauthorized") }
       case _ =>
         (userActor ? SaveUserRequest(uuid: String, login, password, role, objectString)).mapTo[Try[Int]] map {
-          case Success(_) => Created
+          case Success(_) => Created("OK")
           case Failure(failure) => InternalServerError("saveUser: " + failure)
         }
     }

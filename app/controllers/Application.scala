@@ -24,7 +24,7 @@ import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
 object Application extends Controller {
-  implicit val timeout = Timeout(1000 seconds)
+  implicit val timeout = Timeout(5 seconds)
 
   val userActor = Akka.system.actorOf(UserActor.props, "UserActor")
   val modelActor = Akka.system.actorOf(ModelActor.props, "ModelActor")
@@ -57,13 +57,24 @@ object Application extends Controller {
   def logout = Action { Ok("Correctly logged out").withNewSession }
 
   def uploadImage = Action(parse.multipartFormData) { request =>
-    request.body.file("image").map { image =>
-      val filename = image.filename
-      val contentType = image.contentType
-      image.ref.moveTo(new File("/public/pictures/"))
-      Ok("File uploaded")
+    println(request)
+    request.body.file("picture").map { image =>
+      println("image " + image)
+      println(image.contentType)
+      val filename = image.filename + UUID.randomUUID().toString
+
+      image.contentType match {
+        case Some(fileExtension) if fileExtension == "image/tiff" || fileExtension == "image/jpg" ||
+          fileExtension == "image/jpeg" ||
+          fileExtension == "image/png" || fileExtension == "image/svg" || fileExtension == "application/pdf" =>
+          image.ref.moveTo(new File("/home/simon/dev/bodea/app/public/pictures/" + filename), replace = true)
+          Ok("File uploaded")
+
+        case _ =>
+          Unauthorized("Wrong content type")
+      }
     }.getOrElse {
-      Redirect(routes.Application.index()).flashing("error" -> "Missing file")
+      BadRequest
     }
   }
 

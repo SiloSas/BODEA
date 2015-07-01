@@ -157,7 +157,7 @@ object Application extends Controller {
   }
 
   def askActorToSaveRelations(saveRelationsRequest: List[RelationBetweenTwoTables]): Future[SimpleResult] = {
-    (modelActor ? saveRelationsRequest).mapTo[Try[Int]] map {
+    (modelActor ? saveRelationsRequest).mapTo[Try[Unit]] map {
       case Success(_) => Created
       case Failure(failure) => InternalServerError("saveModel: " + failure)
     }

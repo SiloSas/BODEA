@@ -7,7 +7,8 @@ CREATE TABLE users (
   role            INT NOT NULL,
   object          TEXT,
   isActive        BOOLEAN DEFAULT TRUE NOT NULL,
-  UNIQUE(login)
+  UNIQUE(login),
+  UNIQUE(uuid)
 );
 INSERT INTO users(uuid, login, password, role)
   VALUES ('2bcfb180-c24c-420f-af62-0ca26a2f85bd', 'admin', '$2a$10$l9Pp4kERl8gqM3XxaB1lOubuRNkysJVUO.x2EaUuoLj4jQHxcIey6', 1);
@@ -19,7 +20,8 @@ CREATE TABLE areas (
   areaId          SERIAL PRIMARY KEY,
   uuid            UUID NOT NULL,
   object          TEXT NOT NULL,
-  UNIQUE(object)
+  UNIQUE(object),
+  UNIQUE(uuid)
 );
 INSERT INTO areas(uuid, object)
     VALUES ('8c43ba20-e056-1c28-46e8-ef6f4f333bc9','{"value":"ain","name":"Ain","id":"8c43ba20-e056-1c28-46e8-ef6f4f333bc9"}');
@@ -195,73 +197,78 @@ INSERT INTO areas(uuid, object)
 CREATE TABLE brands (
   brandId         SERIAL PRIMARY KEY,
   uuid            UUID NOT NULL,
-  object          TEXT NOT NULL
+  object          TEXT NOT NULL,
+  UNIQUE(uuid)
 );
 
 CREATE TABLE stores (
   storeId          SERIAL PRIMARY KEY,
   uuid             UUID NOT NULL,
-  object           TEXT NOT NULL
+  object           TEXT NOT NULL,
+  UNIQUE(uuid)
 );
 
 CREATE TABLE images (
   imageId          SERIAL PRIMARY KEY,
   uuid             UUID NOT NULL,
-  object           TEXT NOT NULL
+  object           TEXT NOT NULL,
+  UNIQUE(uuid)
 );
 
 CREATE TABLE orders (
   orderId          SERIAL PRIMARY KEY,
   uuid             UUID NOT NULL,
-  object           TEXT NOT NULL
+  object           TEXT NOT NULL,
+  UNIQUE(uuid)
 );
 
 CREATE TABLE orderBrand (
-  orderId          INT REFERENCES orders (orderId),
-  brandId          INT REFERENCES brands (brandId),
+  orderId          UUID REFERENCES orders (uuid),
+  brandId          UUID REFERENCES brands (uuid),
   PRIMARY KEY (orderId, brandId)
 );
 
 CREATE TABLE storeUser (
-  storeId          INT REFERENCES stores (storeId),
-  userId           INT REFERENCES users (userId),
+  storeId          UUID REFERENCES stores (uuid),
+  userId           UUID REFERENCES users (uuid),
   PRIMARY KEY (storeId, userId)
 );
 
 CREATE TABLE storeBrand (
-  storeId          INT REFERENCES stores (storeId),
-  brandId          INT REFERENCES brands (brandId),
+  storeId          UUID REFERENCES stores (uuid),
+  brandId          UUID REFERENCES brands (uuid),
   PRIMARY KEY (storeId, brandId)
 );
 
 CREATE TABLE storeOrder (
-  storeId          INT REFERENCES stores (storeId),
-  orderId          INT REFERENCES orders (orderId)
+  storeId          UUID REFERENCES stores (uuid),
+  orderId          UUID REFERENCES orders (uuid)
 );
 
 CREATE TABLE storeArea (
-  storeId          INT REFERENCES stores (storeId),
-  areaId           INT REFERENCES areas (areaId),
+  storeId          UUID REFERENCES stores (uuid),
+  areaId           UUID REFERENCES areas (uuid),
   PRIMARY KEY (storeId, areaId)
 );
 
 CREATE TABLE userBrand (
-  userId           INT REFERENCES users (userId),
-  brandId          INT REFERENCES brands (brandId),
+  userId           UUID REFERENCES users (uuid),
+  brandId          UUID REFERENCES brands (uuid),
   PRIMARY KEY (userId, brandId)
 );
 
 CREATE TABLE userImage (
-  userId           INT REFERENCES users (userId),
-  imageId          INT REFERENCES images (imageId),
+  userId           UUID REFERENCES users (uuid),
+  imageId          UUID REFERENCES images (uuid),
   PRIMARY KEY (userId, imageId)
 );
 
 CREATE TABLE orderImage (
-  orderId          INT REFERENCES orders (orderId),
-  imageId          INT REFERENCES images (imageId),
+  orderId          UUID REFERENCES orders (uuid),
+  imageId          UUID REFERENCES images (uuid),
   PRIMARY KEY (orderId, imageId)
 );
+
 
 
 # --- !Downs

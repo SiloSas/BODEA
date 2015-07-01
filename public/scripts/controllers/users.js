@@ -51,11 +51,14 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         UsersFactory.deleteUser(user)
     };
 
-    $scope.newUser = {isActive: true, stores: []};
+    $scope.newUser = {user: {isActive: true}, stores: []};
     $scope.addUser = function () {
+        $scope.newUser.user.objectString.stores = $scope.newUser.stores.map(function(store) {
+            return store.id;
+        });
         console.log($scope.newUser);
         UsersFactory.postUser($scope.newUser);
-        $scope.newUser = {isActive: true, stores: []};
+        $scope.newUser = {user: {isActive: true}, stores: []};
     };
 
     $scope.addNewStore = function (store) {
@@ -69,7 +72,7 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
                     delete($scope.newUser.brand.flag);
                     $scope.newUser.brand = BrandFactory.postBrand($scope.newUser.brand)
                 }
-                store.brand = $scope.newUser.brand
+                store.brand = $scope.newUser.brand;
                 StoresFactory.postStore(store);
             })
         });

@@ -83,7 +83,8 @@ class UserActor extends Actor {
     users
       .map(user => (user.uuid, user.login, user.password, user.role, user.objectString, user.isActive))
       .insert(
-        (UUID.fromString(saveUserRequest.uuid), saveUserRequest.login, saveUserRequest.password, saveUserRequest.role,
+        (UUID.fromString(saveUserRequest.uuid), saveUserRequest.login,
+          BCrypt.hashpw(saveUserRequest.password, BCrypt.gensalt()), saveUserRequest.role,
           saveUserRequest.objectString, saveUserRequest.isActive))
   }
 
@@ -92,14 +93,14 @@ class UserActor extends Actor {
 
     users
       .filter(_.login === login)
-      .map(user => (user.login, user.password, user.role))
+      .map(user => (user.login, user.password, user.role, user.isActive))
       .list
       .headOption match {
         case None =>
           AuthenticationResponse(authorized = false, 0)
         case Some(user) =>
           val authorized = BCrypt.checkpw(password, user._2)
-          AuthenticationResponse(authorized = authorized, user._3)
+          AuthenticationResponse(authorized = authorized && user._4, user._3)
     }
   }
 }

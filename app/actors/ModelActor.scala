@@ -11,7 +11,7 @@ import play.api.Logger
 import play.api.Play.current
 import play.api.db.DB
 import services.Utilities._
-
+//import play.api.db.slick._
 import scala.language.postfixOps
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.model.ForeignKeyAction
@@ -192,16 +192,13 @@ class ModelActor extends Actor {
   }
 
   def getAllObjects(objectsToGetRequest: FindObjectsRequest): Try[Seq[GeneralObjectWithRelations]] = Try {
-    val tableName = objectsToGetRequest.table.name
-    DB.withConnection { implicit connection =>
-      tableName match {
-        case "orders" =>
-          findOrders(objectsToGetRequest.isClient, objectsToGetRequest.clientUUID)
-        case otherTable =>
-          implicit val table = otherTable
-          val standardTableQuery = TableQuery[StandardTable]
-          standardTableQuery.list map { x => GeneralObjectWithRelations(x, List.empty) }
-      }
+    objectsToGetRequest.table.name match {
+      case "orders" =>
+        findOrders(objectsToGetRequest.isClient, objectsToGetRequest.clientUUID)
+      case otherTable =>
+        implicit val table = otherTable
+        val standardTableQuery = TableQuery[StandardTable]
+        standardTableQuery.list map { x => GeneralObjectWithRelations(x, List.empty) }
     }
   }
 
@@ -284,35 +281,42 @@ class ModelActor extends Actor {
       Logger info "client requested orders"
       val brandIdsOfUser = userBrand
         .filter(_.userId === userUUID)
-        .map(identity)
+        .map(_.brandId)
 
-      val orderIds = orderBrand outerJoin
-        brandIdsOfUser on (_.brandId === _.brandId)
+      val orderIds = orderBrand outerJoin brandIdsOfUser on (_.brandId === _)
 
-      val query = for {
-        ((((order, _), brand), _), image) <- orders outerJoin
-          orderBrand on (_.uuid === _.orderId) leftJoin
-          brands on (_._2.brandId === _.uuid) outerJoin
-          orderImage on (_._1._1.uuid === _.imageId) leftJoin
-          images on (_._2.imageId === _.uuid)
-        if order.uuid in orderIds.map(_._1.orderId)
-      } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
+      play.api.db.slick.DB.withSession { implicit session =>
+        try {
+          val query = for {
+            ((((order, _), brand), _), image) <- orders outerJoin
+              orderBrand on (_.uuid === _.orderId) leftJoin
+              brands on (_._2.brandId === _.uuid) outerJoin
+              orderImage on (_._1._1.uuid === _.imageId) leftJoin
+              images on (_._2.imageId === _.uuid)
+            if order.uuid in orderIds.map(_._1.orderId)
+          } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
 
-      Logger info "query:\n" + query.list.toString
+          Logger info "query:\n" + query.list.toString
 
-      query.list.groupBy(_._1).map { generalObjectsWithRelations =>
-        (generalObjectsWithRelations._1,
-          generalObjectsWithRelations._2.foldLeft(Seq.empty[MaybeRelation]) { (res, generalObjectWithRelation) =>
-            res :+
-              MaybeRelation("brands", MaybeGeneralObject(generalObjectWithRelation._2, generalObjectWithRelation._3)) :+
-              MaybeRelation("images", MaybeGeneralObject(generalObjectWithRelation._4, generalObjectWithRelation._5))
-          }.distinct.filterNot(_.maybeGeneralObject.objectString == None))
+          query.list.groupBy(_._1).map { generalObjectsWithRelations =>
+            (generalObjectsWithRelations._1,
+              generalObjectsWithRelations._2.foldLeft(Seq.empty[MaybeRelation]) { (res, generalObjectWithRelation) =>
+                res :+
+                  MaybeRelation("brands", MaybeGeneralObject(generalObjectWithRelation._2, generalObjectWithRelation._3)) :+
+                  MaybeRelation("images", MaybeGeneralObject(generalObjectWithRelation._4, generalObjectWithRelation._5))
+              }.distinct.filterNot(_.maybeGeneralObject.objectString == None))
+          }
+            .toSeq
+            .map { generalObjectWithRelation =>
+            GeneralObjectWithRelations(generalObjectWithRelation._1, generalObjectWithRelation._2)
+          }
+        } catch {
+          case e: Exception =>
+            Logger error "Exception likely due to null value returned to slick, thus Seq.empty is returned.\n Failure:" +
+              e.getMessage
+            Seq.empty
+        }
       }
-        .toSeq
-        .map { generalObjectWithRelation =>
-        GeneralObjectWithRelations(generalObjectWithRelation._1, generalObjectWithRelation._2)
-      }
-
   }
 
   def findUsers(findUsersRequest: FindUsersRequest): Try[Seq[UserWithRelations]] = Try {

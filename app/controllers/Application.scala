@@ -101,7 +101,7 @@ object Application extends Controller {
               fileExtension == "image/jpeg" || fileExtension == "image/png" || fileExtension == "image/svg" ||
               fileExtension == "application/pdf" =>
 
-              val filename = image.filename + UUID.randomUUID().toString
+              val filename = UUID.randomUUID().toString + image.filename
               image.ref.moveTo(new File("/home/simon/dev/bodea/app/public/pictures/" + filename), replace = true)
 
               Ok(filename)

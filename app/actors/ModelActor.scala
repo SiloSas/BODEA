@@ -243,6 +243,7 @@ class ModelActor extends Actor {
 
   def findOrders(isClient: Boolean, userUUID: UUID): Seq[GeneralObjectWithRelations] = isClient match {
     case false =>
+      Logger info "admin requested orders"
       val query = for {
         ((((order, _), brand), _), image) <- orders outerJoin
           orderBrand on (_.uuid === _.brandId) leftJoin
@@ -250,6 +251,8 @@ class ModelActor extends Actor {
           orderImage on (_._1._1.uuid === _.imageId) leftJoin
           images on (_._2.imageId === _.uuid)
       } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
+
+      Logger info "query:\n" + query.list.toString
 
       query.list.groupBy(_._1).map { generalObjectsWithRelations =>
         (generalObjectsWithRelations._1,
@@ -265,8 +268,9 @@ class ModelActor extends Actor {
       }
 
     case true =>
+      Logger info "client requested orders"
       val brandIdsOfUser = userBrand
-        .filter(_.userId === UUID.fromString("2bcfb180-c24c-420f-af62-0ca26a2f85bd"))
+        .filter(_.userId === userUUID)
         .map(identity)
 
       val orderIds = orderBrand outerJoin
@@ -280,6 +284,8 @@ class ModelActor extends Actor {
           images on (_._2.imageId === _.uuid)
         if order.uuid in orderIds.map(_._1.orderId)
       } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
+
+      Logger info "query:\n" + query.list.toString
 
       query.list.groupBy(_._1).map { generalObjectsWithRelations =>
         (generalObjectsWithRelations._1,

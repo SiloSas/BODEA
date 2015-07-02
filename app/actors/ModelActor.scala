@@ -252,7 +252,7 @@ class ModelActor extends Actor {
       Logger info "admin requested orders"
       val query = for {
         ((((order, _), brand), _), image) <- orders outerJoin
-          orderBrand on (_.uuid === _.brandId) leftJoin
+          orderBrand on (_.uuid === _.orderId) leftJoin
           brands on (_._2.brandId === _.uuid) outerJoin
           orderImage on (_._1._1.uuid === _.imageId) leftJoin
           images on (_._2.imageId === _.uuid)
@@ -284,7 +284,7 @@ class ModelActor extends Actor {
 
       val query = for {
         ((((order, _), brand), _), image) <- orders outerJoin
-          orderBrand on (_.uuid === _.brandId) leftJoin
+          orderBrand on (_.uuid === _.orderId) leftJoin
           brands on (_._2.brandId === _.uuid) outerJoin
           orderImage on (_._1._1.uuid === _.imageId) leftJoin
           images on (_._2.imageId === _.uuid)
@@ -334,7 +334,7 @@ class ModelActor extends Actor {
 
       case true =>
         val query = for {
-          ((((user, _), brand), _), store) <- users outerJoin //.filter(_.uuid === findUsersRequest.uuid)
+          ((((user, _), brand), _), store) <- users outerJoin
             userBrand on (_.uuid === _.userId ) leftJoin
             brands on (_._2.brandId === _.uuid) outerJoin
             storeUser on (_._1._1.uuid === _.storeId) leftJoin

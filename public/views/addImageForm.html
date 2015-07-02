@@ -10,18 +10,9 @@
     <md-input-container>
         <label></label>
         <input type="file"
-               endtype="multipart/form-data"
                value="Charger une image"
-               ng-model="newImage.file" app-filereader required="">
+               app-filereader="newImage.file" required="">
     </md-input-container>
     <md-button class="md-primary" type="submit">Valider</md-button>
     <md-button  class="md-primary" ng-click="newImage={}; addImage = false">Annuler</md-button>
-</form>
-
-
-<form enctype="multipart/form-data" method="post" action="http://localhost:9000/upload">
-    <input type="file" name="picture">
-    <p>
-        <input type="submit">
-    </p>
 </form>

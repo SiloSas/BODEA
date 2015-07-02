@@ -109,7 +109,7 @@
                             </a>
                             <div flex="50"
                                  class="fade"
-                                 ng-repeat="store in stores">
+                                 ng-repeat="store in $root.user.stores">
                                 <md-checkbox ng-checked="exists(store, newSubOrder.stores)" ng-click="toggle(store, newSubOrder.stores)">
                                     {{ store.name }}
                                 </md-checkbox>
@@ -309,7 +309,7 @@
                                         </a>
                                         <div flex="50"
                                              class="fade"
-                                             ng-repeat="store in stores">
+                                             ng-repeat="store in $root.user.stores">
                                             <md-checkbox ng-checked="exists(store, newSubOrder.stores)" ng-click="toggle(store, newSubOrder.stores)">
                                                 {{ store.name }}
                                             </md-checkbox>

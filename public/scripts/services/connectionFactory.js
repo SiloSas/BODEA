@@ -1,4 +1,6 @@
-angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $rootScope, $cookies, $location, MessagesFactory) {
+angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $rootScope, $cookies, $location,
+                                                                  MessagesFactory, OrdersFactory, UserFactory,
+                                                                  UsersFactory, StoresFactory) {
     $rootScope.connected = false;
     var sessionCoockie = $cookies.get('PLAY_SESSION');
     if (angular.isDefined(sessionCoockie)) {
@@ -28,6 +30,10 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
             $http.post('/users/logout').
                 success(function () {
                     $rootScope.connected = false;
+                    UserFactory.passToFalse();
+                    UsersFactory.passToFalse();
+                    OrdersFactory.passToFalse();
+                    StoresFactory.passToFalse();
                     $location.path('/')
             })
         }

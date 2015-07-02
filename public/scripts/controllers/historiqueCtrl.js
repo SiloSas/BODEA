@@ -29,7 +29,10 @@ angular.module('bodeaApp').controller('HistoriqueCtrl', function ($scope, Orders
             var dataValue = 0;
             var filtredOrders = $filter('filter')($scope.orders, $scope.filterChart, $scope.filterType);
             if ($scope.filterType == 'brand') {
-                $scope.stores = $filter('filter')($scope.stores, $scope.filterChart, 'brand')
+                StoresFactory.getStores().then(function (stores) {
+                    $scope.stores = stores;
+                    $scope.stores = $filter('filter')($scope.stores, $scope.filterChart, 'brand')
+                })
             } else {
                 StoresFactory.getStores().then(function (stores) {
                     $scope.stores = stores;

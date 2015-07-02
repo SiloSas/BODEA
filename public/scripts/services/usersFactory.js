@@ -12,6 +12,13 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                         if (user.user.objectString == "undefined") {
                             delete(user.user.objectString);
                         }
+                        if (user.relations.length > 0) {
+                            user.relations.map(function(relation) {
+                                if (relation.relationName == 'brands') {
+                                    user.brand = JSON.parse(relation.maybeGeneralObject.objectString)
+                                }
+                            })
+                        }
                         if (angular.isDefined(user.user.objectString)) {
                             user.user.objectString = JSON.parse(user.user.objectString);
                             if (angular.isDefined(user.user.objectString.stores)) {
@@ -52,11 +59,11 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
             console.log(user)
             if (angular.isDefined(user.brand)) {
                 $http.post('relations',
-                    [{
+                    {relations : [{
                         relationTable: 'userbrand',
                         uuidA: user.user.uuid,
                         uuidB: user.brand.id
-                    }]).success(function(success) {
+                    }]}).success(function(success) {
                         console.log(success)
                     }).error(function(error) {
                         console.log(error)
@@ -66,11 +73,11 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                 user.stores.map(function (store) {
                     console.log(store);
                     $http.post('relations',
-                        [{
-                            relationTable: 'userstore',
-                            uuidA: user.user.uuid,
-                            uuidB: store.id
-                        }]).success(function(success) {
+                        {relations :[{
+                            relationTable: 'storeuser',
+                            uuidA: store.id,
+                            uuidB: user.user.uuid
+                        }]}).success(function(success) {
                             console.log(success)
                         }).error(function(error) {
                             console.log(error)
@@ -103,12 +110,13 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                 JSON.stringify(user.user.objectString) + '&isActive=' + user.user.isActive).
                 success(function (success) {
                     if (angular.isDefined(user.brand)) {
+                        console.log(user.brand.id, user.user.uuid);
                         $http.post('relations',
-                            [{
+                            {relations :[{
                                 relationTable: 'userbrand',
                                 uuidA: user.user.uuid,
                                 uuidB: user.brand.id
-                            }]).success(function(success) {
+                            }]}).success(function(success) {
                                 console.log(success)
                             }).error(function(error) {
                                 console.log(error)
@@ -116,13 +124,13 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                     }
                     if (angular.isDefined(user.stores)) {
                         user.stores.map(function (store) {
-                            console.log(store);
+                            console.log(store.id, user.user.uuid);
                             $http.post('relations',
-                                [{
-                                    relationTable: 'userstore',
-                                    uuidA: user.user.uuid,
-                                    uuidB: store.id
-                                }]).success(function(success) {
+                                {relations :[{
+                                    relationTable: 'storeuser',
+                                    uuidA: store.id,
+                                    uuidB: user.user.uuid
+                                }]}).success(function(success) {
                                     console.log(success)
                                 }).error(function(error) {
                                     console.log(error)

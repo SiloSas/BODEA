@@ -50,6 +50,28 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                     factory.orders[i] = angular.copy(order);
                     $http.post('models/' + order.uuid + '?table=orders&objectString=' + JSON.stringify(order)).success(function (data, statut) {
                         MessagesFactory.displayMessage('Votre commande est bien mise à jours')
+                        $http.post('relations',
+                            {relations : [{
+                                relationTable: 'orderbrand',
+                                uuidA: order.uuid,
+                                uuidB: order.brand.id
+                            }]}).success(function(success) {
+                                console.log(success)
+                            }).error(function(error) {
+                                console.log(error)
+                            });
+                        if (angular.isDefined(order.image)) {
+                            $http.post('relations',
+                                {relations : [{
+                                    relationTable: 'orderimage',
+                                    uuidA: order.uuid,
+                                    uuidB: order.image.uuid
+                                }]}).success(function(success) {
+                                    console.log(success)
+                                }).error(function(error) {
+                                    console.log(error)
+                                });
+                        }
                     }).error(function (error) {
                         MessagesFactory.displayMessage(error)
                     })
@@ -61,6 +83,29 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
             factory.orders.push(order);
             $http.post('models?table=orders&uuid=' + order.uuid + '&objectString=' + JSON.stringify(order)).
                 success(function (data) {
+                    console.log(order)
+                    $http.post('relations',
+                        {relations : [{
+                            relationTable: 'orderbrand',
+                            uuidA: order.uuid,
+                            uuidB: order.brand.id
+                        }]}).success(function(success) {
+                            console.log(success)
+                        }).error(function(error) {
+                            console.log(error)
+                        });
+                    if (angular.isDefined(order.image)) {
+                        $http.post('relations',
+                            {relations : [{
+                                relationTable: 'orderimage',
+                                uuidA: order.uuid,
+                                uuidB: order.image.uuid
+                            }]}).success(function(success) {
+                                console.log(success)
+                            }).error(function(error) {
+                                console.log(error)
+                            });
+                    }
                     MessagesFactory.displayMessage('Votre command est bien enregistré')
             }).error(function (error) {
                     MessagesFactory.displayMessage(error)

@@ -243,12 +243,6 @@ class ModelActor extends Actor {
 
   def findOrders(isClient: Boolean, userUUID: UUID): Seq[GeneralObjectWithRelations] = isClient match {
     case false =>
-//      ((((user, _), brand), _), store) <- users outerJoin
-//  userBrand on (_.uuid === _.userId) leftJoin
-//  brands on (_._2.brandId === _.uuid) outerJoin
-//  storeUser on (_._1._1.uuid === _.storeId) leftJoin
-//  stores on (_._2.storeId === _.uuid)
-//  } yield (user, brand.uuid.?, brand.objectString.?, store.uuid.?, store.objectString.?)
       Logger info "admin requested orders"
       val query = for {
         ((((order, _), brand), _), image) <- orders outerJoin

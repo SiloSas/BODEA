@@ -57,7 +57,7 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
                 if (angular.isDefined(store.brand.id)) {
                     $http.post('relations',
                         [{
-                            relationTable: 'stores',
+                            relationTable: 'storebrand',
                             uuidA: store.id,
                             uuidB: store.brand.id
                         }]).success(function(success) {

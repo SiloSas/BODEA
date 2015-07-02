@@ -62,22 +62,35 @@ object Application extends Controller {
   val (chatOut, chatChannel) = Concurrent.broadcast[JsValue]
 
 //client sends notif + brandId => send mail to admins +
-  //amdin sends notif + brandId => send mails to clients related to brandId
+  //admin sends notif + brandId => send mails to clients related to brandId
   //table notifications
 
-  def notifySubscribers(notification: String, brandUUID: String) = Authenticated { request =>
+  def notifySubscribers(notification: String, brandUUIDString: String, notificationUUIDString: String) = Authenticated.async { request =>
     request.uuid match {
       case None =>
-        Unauthorized
+        Future { Unauthorized }
       case _ =>
-        Try { UUID.fromString(brandUUID) } match {
-          case Success(uuid) =>
-//            askActorToSaveModel("notifications")
-            chatChannel.push(Json.parse(notification))
-            sendNotificationMail(notification, uuid)
-            Ok
-          case _ =>
-            BadRequest("Wrong UUID type")
+        Try { UUID.fromString(brandUUIDString) } match {
+          case Success(brandUUID) =>
+            Try { UUID.fromString(notificationUUIDString) } match {
+              case Success(notificationUUID) =>
+                (modelActor ? ObjectToSaveRequest(PostgresTable("notifications"), notificationUUID, notification))
+                  .mapTo[Try[Int]] map {
+                  case Success(_) =>
+                    chatChannel.push(Json.parse(notification))
+                    sendNotificationMail(notification, notificationUUID)
+                    Ok
+                  case Failure(failure) =>
+                    Logger error "notifySubscribers" + failure
+                    InternalServerError
+                }
+          case Failure(failure) =>
+            Logger error "notifySubscribers" + failure
+            Future { BadRequest("Wrong brand UUID or notification UUID") }
+          }
+          case Failure(failure) =>
+            Logger error "notifySubscribers" + failure
+            Future { BadRequest("Wrong brand UUID or notification UUID") }
         }
     }
   }

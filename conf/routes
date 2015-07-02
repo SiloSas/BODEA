@@ -22,7 +22,7 @@ POST          /relations                 controllers.Application.saveRelations
 POST          /upload                    controllers.Application.uploadImage
 
 #NOTIFICATIONS
-POST          /notifications             controllers.Application.notifySubscribers(notification: String, brandUUID: String)
+POST          /notifications             controllers.Application.notifySubscribers(notification: String, brandUUID: String, notificationUUID: String)
 GET           /notifications             controllers.Application.subscribeToSSENotifications
 
 #ASSETS

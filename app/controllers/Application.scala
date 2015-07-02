@@ -221,19 +221,19 @@ object Application extends Controller {
       case Some(uuid) =>
         val table = PostgresTable(tableName)
         tableName match {
-          case "areas" => askActorAllModelsInTable(table, isClient = false, uuid)
-          case "brands" => askActorAllModelsInTable(table, isClient = false, uuid)
-          case "stores" => askActorAllModelsInTable(table, isClient = false, uuid)
+          case "areas" => askActorAllModelsInTable(FindObjectsRequest(table, isClient = false, uuid))
+          case "brands" => askActorAllModelsInTable(FindObjectsRequest(table, isClient = false, uuid))
+          case "stores" => askActorAllModelsInTable(FindObjectsRequest(table, isClient = false, uuid))
           case "users" => askActorAllModelsInUsersTable(isRequestedByClient(request), uuid)
-          case "images" => askActorAllModelsInTable(table, isRequestedByClient(request), uuid)
-          case "orders" => askActorAllModelsInTable(table, isRequestedByClient(request), uuid)
+          case "images" => askActorAllModelsInTable(FindObjectsRequest(table, isRequestedByClient(request), uuid))
+          case "orders" => askActorAllModelsInTable(FindObjectsRequest(table, isRequestedByClient(request), uuid))
           case _ => Future { NotFound }
         }
     }
   }
 
-  def askActorAllModelsInTable(table: PostgresTable, isClient: Boolean, clientUUID: UUID): Future[SimpleResult] = {
-    (modelActor ? FindObjectsRequest(table, None, isClient, clientUUID)).mapTo[Try[Seq[GeneralObjectWithRelations]]] map {
+  def askActorAllModelsInTable(findObjectsRequest: FindObjectsRequest): Future[SimpleResult] = {
+    (modelActor ? findObjectsRequest).mapTo[Try[Seq[GeneralObjectWithRelations]]] map {
       case Success(objects) => Ok(Json.toJson(objects))
       case Failure(failure) => InternalServerError("callGetModelsActor: " + failure)
     }

@@ -25,8 +25,7 @@ object ModelActor {
   case class RelationBetweenTwoTables(relationTable: String, uuidA: String, uuidB: String)
   case class SaveRelationsRequest(relationsBetweenTwoTables: List[RelationBetweenTwoTables])
   case class ObjectToGetRequest(table: PostgresTable, uuid: UUID)
-  case class FindObjectsRequest(table: PostgresTable, userId: Option[Int], isClient: Boolean,
-                                clientUUID: UUID)
+  case class FindObjectsRequest(table: PostgresTable, isClient: Boolean, clientUUID: UUID)
   case class ObjectToDeleteRequest(table: PostgresTable, uuid: UUID)
   case class ObjectToAmendRequest(table: PostgresTable, uuid: UUID, newObject: String)
   case class GeneralObject(uuid: UUID, objectString: String)  extends ModelReturnType

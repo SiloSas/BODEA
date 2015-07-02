@@ -1,4 +1,4 @@
-angular.module('bodeaApp').controller('ImagesCtrl', function ($scope, ImagesFactory) {
+angular.module('bodeaApp').controller('ImagesCtrl', function ($scope, ImagesFactory, UserFactory, $rootScope) {
     ImagesFactory.getImages().then(function (images) {
         $scope.images = images;
     });
@@ -6,6 +6,9 @@ angular.module('bodeaApp').controller('ImagesCtrl', function ($scope, ImagesFact
     $scope.remove = function (image) {
         ImagesFactory.deleteImage(image);
     };
+    UserFactory.getUser().then(function (user) {
+        $rootScope.user = user;
+    });
 
     $scope.newImage = {};
     $scope.addNewImage = function () {

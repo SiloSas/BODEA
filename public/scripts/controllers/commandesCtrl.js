@@ -31,7 +31,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
     // other color intentions will be inherited
     // from default
 }).controller('CommandesCtrl', function ($scope, $timeout, OrdersFactory, BrandFactory, StoresFactory, $log,
-                                         $filter, AreaFactory, $mdToast) {
+                                         $filter, AreaFactory, $mdToast, ImagesFactory) {
         $scope.orders = [];
         $scope.selectedStore = '';
         OrdersFactory.getOrders().then(function (orders) {
@@ -49,6 +49,18 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
 
         $scope.changeOrderState = function (order) {
             //post refactor order
+        };
+        ImagesFactory.getImages().then(function (images) {
+            $scope.images = images;
+        });
+
+        $scope.loadImg = function (id) {
+            var imagesLength = $scope.images.length;
+            for (var i = 0; i < imagesLength; i++) {
+                if ($scope.images[i].uuid == id) {
+                    return $scope.images[i];
+                }
+            }
         };
         $scope.limit = 20;
         $scope.getStoreById = function (id) {
@@ -194,7 +206,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                     })
                     .join(' ');
             };
-            //if (angular.isDefined($scope.newOrder.image)) {
+            if (angular.isDefined($scope.newOrder.image)) {
                 if ($scope.newOrder.subOrders.length > 0) {
                     if (angular.isDefined($scope.newOrder.brand.flag)) {
                         delete($scope.newOrder.brand.flag);
@@ -222,14 +234,14 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                             .hideDelay(3000)
                     );
                 }
-            /*} else {
+            } else {
                 $mdToast.show(
                     $mdToast.simple()
                         .content('Veuillez ajouter une image')
                         .position($scope.getToastPosition())
                         .hideDelay(3000)
                 );
-            }*/
+            }
         };
 
         $scope.addImg = function () {

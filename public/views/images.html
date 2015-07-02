@@ -25,14 +25,14 @@
     <md-button class="md-primary md-raised column medium-4 marginLeft0 marginRight0" ng-click="addImage = true">ajouter une image</md-button>
 </div>
 <div ng-show="addImage" class="ng-whiteframe-z1">
-    <add-image-form></add-image-form>
+    <add-image-form ng-init="newImage.brand = $root.user.brand"></add-image-form>
 </div>
-<md-list class="column" ng-repeat="image in images">
+<md-list class="column" ng-repeat="image in images |filter: $root.user.brand.id">
     <md-divider class="marginBottom10"></md-divider>
     <md-list-item ng-show="!refactor" class="center">
         <h3 class="column medium-2">{{image.theme}}</h3>
         <h3 class="column medium-2">{{image.name}}</h3>
-        <img ng-src="assets/{{image.url}}" class="column medium-4">
+        <img ng-src="assets/pictures/{{image.url}}" class="column medium-4">
         <h5 class="column medium-2"><i class="pointer fa fa-pencil"
                ng-click="copyImage(image); refactor = true"></i></h5>
         <h5 class="column medium-2"><i class="pointer fa fa-trash"  ng-click="confirmRemove = !confirmRemove"></i></h5>
@@ -62,7 +62,7 @@
                 <label></label>
                 <input type="file"
                        value="Charger une image"
-                       ng-model="image.newImage.url" app-filereader>
+                       app-filereader="image.newImage.file">
             </md-input-container>
             <md-button class="md-primary" type="submit">Valider</md-button>
             <md-button class="md-primary" ng-click="image.newImage={}; refactor = false">Annuler</md-button>

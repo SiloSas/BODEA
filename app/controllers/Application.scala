@@ -102,7 +102,7 @@ object Application extends Controller {
               fileExtension == "application/pdf" =>
 
               val filename = image.filename + UUID.randomUUID().toString
-              image.ref.moveTo(new File("/home/simon/dev/bodea/app/public/pictures/" + filename), replace = true)
+              image.ref.moveTo(new File("assets/pictures/" + filename), replace = true)
 
               Ok("File uploaded")
 

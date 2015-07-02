@@ -7,6 +7,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                 deferred.resolve(factory.orders)
             } else {
                 $http.get('models?table=orders').success(function (object) {
+                    console.log(object)
                     factory.orders = object.map(function (el) {
                         return JSON.parse(el.generalObject.objectString)
                     });
@@ -122,6 +123,9 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
             }).error(function (error) {
                 console.log(error)
             })
+        },
+        passToFalse : function () {
+            factory.orders = false;
         }
     };
     return factory;

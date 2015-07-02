@@ -83,6 +83,9 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
             }).error(function (error) {
                 console.log(error)
             })
+        },
+        passToFalse : function () {
+            factory.stores = false;
         }
     };
     return factory;

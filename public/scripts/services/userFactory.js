@@ -23,6 +23,9 @@ angular.module('bodeaApp').factory('UserFactory', function ($q, $http, UsersFact
        refactorUser: function (user) {
            factory.user = user.newUser;
            UsersFactory.refactorUser(user)
+       },
+       passToFalse : function () {
+           factory.user = false;
        }
    };
    return factory;

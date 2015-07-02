@@ -6,8 +6,11 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
             if (factory.images != false) {
                 deferred.resolve(factory.images)
             } else {
-                factory.images = [{id: 1, name: 'test', theme: 'theme1', date:'10/03/15', url: 'images/caroussel1.gif'}];
-                deferred.resolve(factory.images)
+                $http.get('models?table=images').success(function (images) {
+                    console.log(images)
+                    factory.images = images;
+                    deferred.resolve(factory.images)
+                })
             }
             return deferred.promise;
         },
@@ -35,8 +38,15 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
         },
         postImage: function (image) {
             image.uuid = GuidFactory();
-            factory.images.push(image);
-            $http.post('/upload', image.file).success(function (success) {
+            //factory.images.push(image);
+            console.log(image.file)
+            var fd = new FormData();
+            fd.append('picture', image.file);
+            $http.post('/upload', fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            }).success(function (success) {
+                console.log(success)
                 MessagesFactory.displayMessage('Votre image est bien enregistré')
             }).error(function (error) {
                 MessagesFactory.displayMessage(error)

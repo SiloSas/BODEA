@@ -152,6 +152,9 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                 deferred.reject(error)
             });
             return deferred.promise;
+        },
+        passToFalse : function () {
+            factory.users = false;
         }
     };
     return factory;

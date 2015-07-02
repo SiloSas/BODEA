@@ -258,7 +258,7 @@ class ModelActor extends Actor {
         ((((order, _), brand), _), image) <- orders outerJoin
           orderBrand on (_.uuid === _.orderId) leftJoin
           brands on (_._2.brandId === _.uuid) outerJoin
-          orderImage on (_._1._1.uuid === _.imageId) leftJoin
+          orderImage on (_._1._1.uuid === _.orderId) leftJoin
           images on (_._2.imageId === _.uuid)
       } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
 
@@ -291,7 +291,7 @@ class ModelActor extends Actor {
             ((((order, _), brand), _), image) <- orders outerJoin
               orderBrand on (_.uuid === _.orderId) leftJoin
               brands on (_._2.brandId === _.uuid) outerJoin
-              orderImage on (_._1._1.uuid === _.imageId) leftJoin
+              orderImage on (_._1._1.uuid === _.orderId) leftJoin
               images on (_._2.imageId === _.uuid)
             if order.uuid in orderIds.map(_._1.orderId)
           } yield (order, brand.uuid.?, brand.objectString.?, image.uuid.?, image.objectString.?)
@@ -326,7 +326,7 @@ class ModelActor extends Actor {
           ((((user, _), brand), _), store) <- users outerJoin
             userBrand on (_.uuid === _.userId) leftJoin
             brands on (_._2.brandId === _.uuid) outerJoin
-            storeUser on (_._1._1.uuid === _.storeId) leftJoin
+            storeUser on (_._1._1.uuid === _.userId) leftJoin
             stores on (_._2.storeId === _.uuid)
         } yield (user, brand.uuid.?, brand.objectString.?, store.uuid.?, store.objectString.?)
 
@@ -348,7 +348,7 @@ class ModelActor extends Actor {
           ((((user, _), brand), _), store) <- users outerJoin
             userBrand on (_.uuid === _.userId ) leftJoin
             brands on (_._2.brandId === _.uuid) outerJoin
-            storeUser on (_._1._1.uuid === _.storeId) leftJoin
+            storeUser on (_._1._1.uuid === _.userId) leftJoin
             stores on (_._2.storeId === _.uuid)
             if user.uuid === findUsersRequest.uuid
         } yield (user, brand.uuid.?, brand.objectString.?, store.uuid.?, store.objectString.?)

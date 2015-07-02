@@ -66,9 +66,9 @@ object Application extends Controller {
       case None =>
         Unauthorized
       case Some(uuid) =>
-        chatChannel.push(Json.toJson("I heard " + notification))
+        chatChannel.push(Json.toJson(notification))
         sendNotificationMail(notification)
-        Ok.feed(chatOut &> EventSource()).as("text/event-stream")
+        Ok
     }
   }
 

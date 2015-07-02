@@ -333,7 +333,7 @@ class ModelActor extends Actor {
             brands on (_._2.brandId === _.uuid) outerJoin
             storeUser on (_._1._1.uuid === _.storeId) leftJoin
             stores on (_._2.storeId === _.uuid)
-            if user.uuid === findUsersRequest.uuid
+//            if user.uuid === findUsersRequest.uuid
         } yield (user, brand.uuid.?, brand.objectString.?, store.uuid.?, store.objectString.?)
 
         query.list.groupBy(_._1).map { generalObjectsWithRelations =>

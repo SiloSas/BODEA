@@ -283,7 +283,7 @@ class ModelActor extends Actor {
         .filter(_.userId === userUUID)
         .map(_.brandId)
 
-      val orderIds = orderBrand outerJoin brandIdsOfUser on (_.brandId === _)
+      val orderIds = orderBrand rightJoin brandIdsOfUser on (_.brandId === _)
 
       play.api.db.slick.DB.withSession { implicit session =>
         try {

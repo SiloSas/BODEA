@@ -65,9 +65,11 @@ object Application extends Controller {
     request.uuid match {
       case None =>
         Unauthorized
-      case Some(uuid) =>
+      case _ =>
         chatChannel.push(Json.toJson(notification))
+        println("ok")
         sendNotificationMail(notification)
+        println("ok2")
         Ok
     }
   }
@@ -76,7 +78,7 @@ object Application extends Controller {
     request.uuid match {
       case None =>
         Unauthorized
-      case Some(uuid) =>
+      case _ =>
         Ok.feed(chatOut &> EventSource()).as("text/event-stream")
     }
   }

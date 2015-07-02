@@ -1,6 +1,6 @@
 angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $rootScope, $cookies, $location,
                                                                   MessagesFactory, OrdersFactory, UserFactory,
-                                                                  UsersFactory, StoresFactory) {
+                                                                  UsersFactory, StoresFactory, NotificationsFactory) {
     $rootScope.connected = false;
     var sessionCoockie = $cookies.get('PLAY_SESSION');
     if (angular.isDefined(sessionCoockie)) {
@@ -10,6 +10,8 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
         } else if (sessionType == 2) {
             $rootScope.connected = 'client';
         }
+        NotificationsFactory.subscribe();
+        NotificationsFactory.postNotification('sacoche')
     } else {
         $location.path('/')
     }
@@ -22,6 +24,7 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
                     } else if(role == 2) {
                         $rootScope.connected = 'client';
                     }
+                    NotificationsFactory.subscribe()
             }).error(function (error) {
                     MessagesFactory.displayMessage(error)
                 })

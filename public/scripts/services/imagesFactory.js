@@ -8,9 +8,30 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
             } else {
                 $http.get('models?table=images').success(function (images) {
                     console.log(images)
-                    factory.images = images;
+                    factory.images = images.map(function (image) {
+                        return JSON.parse(image.generalObject.objectString)
+                    });
                     deferred.resolve(factory.images)
                 })
+            }
+            return deferred.promise;
+        },
+        getImageById: function (id) {
+            var deferred = $q.defer()
+            if (factory.images == false) {
+                factory.getImages().then(function (images) {
+                    for (var i = 0; i < images.length; i++) {
+                        if (images[i].uuid == id) {
+                            deferred.resolve(images[i]);
+                        }
+                    }
+                })
+            } else {
+                for (var i = 0; i < factory.images.length; i++) {
+                    if (factory.images[i].uuid == id) {
+                        deferred.resolve(factory.images[i]);
+                    }
+                }
             }
             return deferred.promise;
         },
@@ -25,15 +46,41 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
             }
         },
         refactorImage: function (image) {
-            console.log(image)
-            var imagesLength = factory.images.length;
-            for (var i = 0; i < imagesLength; i++) {
-                if (factory.images[i].id == image.id) {
-                    factory.images[i] = image.newImage;
-                    delete factory.images[i].newImage;
-                    return;
-                    //refactor image
-                }
+            if (angular.isDefined(image.newImage.file)) {
+                var fd = new FormData();
+                fd.append('picture', image.newImage.file);
+                $http.post('/upload', fd, {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}
+                }).success(function (success) {
+                    image.newImage.url = success;
+                    delete(image.newImage.file);
+                    $http.post('models/' + image.newImage.uuid + '?table=images&objectString=' + JSON.stringify(image.newImage)).
+                        success(function () {
+                            var imagesLength = factory.images.length;
+                            for (var i = 0; i < imagesLength; i++) {
+                                if (factory.images[i].uuid == image.newImage.uuid) {
+                                    factory.images[i] = image.newImage;
+                                    delete factory.images[i].newImage;
+                                }
+                            }
+                            MessagesFactory.displayMessage('Votre image est bien enregistré')
+                        });
+                }).error(function (error) {
+                    MessagesFactory.displayMessage(error)
+                })
+            } else {
+                $http.post('models/' + image.newImage.uuid + '?table=images&objectString=' + JSON.stringify(image.newImage)).
+                    success(function () {
+                        var imagesLength = factory.images.length;
+                        for (var i = 0; i < imagesLength; i++) {
+                            if (factory.images[i].uuid == image.newImage.uuid) {
+                                factory.images[i] = image.newImage;
+                                delete factory.images[i].newImage;
+                            }
+                        }
+                        MessagesFactory.displayMessage('Votre image est bien enregistré')
+                    });
             }
         },
         postImage: function (image) {
@@ -50,9 +97,9 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
                 $http.post('models?table=images&uuid=' + image.uuid + '&objectString=' + JSON.stringify(image)).
                     success(function() {
                         factory.images.push(image);
-                    })
-                console.log(success)
-                MessagesFactory.displayMessage('Votre image est bien enregistré')
+                        console.log(success)
+                        MessagesFactory.displayMessage('Votre image est bien enregistré')
+                    });
             }).error(function (error) {
                 MessagesFactory.displayMessage(error)
             })

@@ -1,4 +1,5 @@
-angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFactory, StoresFactory, MessagesFactory) {
+angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFactory, StoresFactory,
+                                                              MessagesFactory, ImagesFactory) {
     var factory = {
         orders: false,
         getOrders: function () {
@@ -9,7 +10,20 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                 $http.get('models?table=orders').success(function (object) {
                     console.log(object)
                     factory.orders = object.map(function (el) {
-                        return JSON.parse(el.generalObject.objectString)
+                        var order =  JSON.parse(el.generalObject.objectString)
+                        function getImage(id) {
+                            ImagesFactory.getImageById(id).then(function (image) {
+                                order.image = image;
+                            });
+                        }
+
+                        for (var i = 0; i < el.relations.length; i++) {
+                            if (el.relations[i].relationName == 'images') {
+                                getImage(el.relations[i].maybeGeneralObject.uuid);
+                            }
+                        }
+
+                        return order;
                     });
                     factory.orders = factory.orders.map(function (order) {
                         order.subOrders.map(function (subOrder) {

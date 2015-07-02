@@ -1,5 +1,5 @@
 angular.module('bodeaApp').controller('HistoriqueCtrl', function ($scope, OrdersFactory, $filter, BrandFactory,
-                                                                  StoresFactory) {
+                                                                  StoresFactory, UserFactory, $rootScope) {
     $scope.weeks = 8;
     $scope.labels = [];
     $scope.filterChart = '';
@@ -9,6 +9,9 @@ angular.module('bodeaApp').controller('HistoriqueCtrl', function ($scope, Orders
     $scope.data = [
         []
     ];
+    UserFactory.getUser().then(function (user) {
+        $rootScope.user = user;
+    });
     var endDate = new Date();
     var WEEKINMS = 604800000;
     var startDate = endDate - WEEKINMS;
@@ -26,7 +29,10 @@ angular.module('bodeaApp').controller('HistoriqueCtrl', function ($scope, Orders
             var dataValue = 0;
             var filtredOrders = $filter('filter')($scope.orders, $scope.filterChart, $scope.filterType);
             if ($scope.filterType == 'brand') {
-                $scope.stores = $filter('filter')($scope.stores, $scope.filterChart, 'brand')
+                StoresFactory.getStores().then(function (stores) {
+                    $scope.stores = stores;
+                    $scope.stores = $filter('filter')($scope.stores, $scope.filterChart, 'brand')
+                })
             } else {
                 StoresFactory.getStores().then(function (stores) {
                     $scope.stores = stores;

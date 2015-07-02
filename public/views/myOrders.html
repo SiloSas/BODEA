@@ -48,16 +48,13 @@
                 <md-divider></md-divider>
                 <md-list-item>
                     <div class="column large-12 padding0">
-                        <input type="file"
-                               class="md-button md-primary md-default-theme"
-                               ng-model="newOrder.image.url" app-filereader>
-                        <md-select placeholder="selectionner une image" ng-change="newOrder.image = loadImg(newOrder.image.id)"
-                                   ng-model="newOrder.image.id">
-                            <md-option ng-repeat="image in images" value="{{image.id}}">{{image.name}}</md-option>
+                        <md-select placeholder="selectionner une image" ng-change="newOrder.image = loadImg(newOrder.image.uuid)"
+                                   ng-model="newOrder.image.uuid">
+                            <md-option ng-repeat="image in images" value="{{image.uuid}}">{{image.name}} ({{image.theme}})</md-option>
                         </md-select>
                         <div class="column large-12 md-whiteframe-z1 padding10" ng-if="newOrder.image.url">
                             <i class="float-right fa fa-times pointer" ng-click="newOrder.image = {}"></i>
-                            <img ng-src="{{newOrder.image.url}}" class="width100p">
+                            <img ng-src="assets/pictures/{{newOrder.image.url}}" class="width100p">
                         </div>
                     </div>
                 </md-list-item>
@@ -199,7 +196,7 @@
                                 <a class="md-primary md-button margin10 md-default-theme" href="{{order.image.url}}" download="{{order.image.name}}">Telecharger {{order.image.name}}</a>
                                 <div class="column large-12 md-whiteframe-z1 padding10" ng-if="showImage">
                                     <i class="float-right fa fa-times pointer" ng-click="$parent.showImage = false"></i>
-                                    <img ng-src="{{order.image.url}}" class="width100p">
+                                    <img ng-src="assets/pictures/{{order.image.url}}" class="width100p">
                                 </div>
                             </div>
                         </md-list-item>

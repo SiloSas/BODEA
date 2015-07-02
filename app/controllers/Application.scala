@@ -93,7 +93,7 @@ object Application extends Controller {
     request.uuid match {
       case None =>
         Unauthorized("Unauthorized")
-      case Some(uuid) =>
+      case _ =>
         request.body.file("picture").map { image =>
 
           image.contentType match {
@@ -104,7 +104,7 @@ object Application extends Controller {
               val filename = image.filename + UUID.randomUUID().toString
               image.ref.moveTo(new File("assets/pictures/" + filename), replace = true)
 
-              Ok("File uploaded")
+              Ok(filename)
 
             case _ =>
               Unauthorized("Wrong content type")

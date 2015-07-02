@@ -71,9 +71,6 @@ class UserActor extends Actor {
     case updateUserRequest: UpdateUserRequest =>
       sender ! update(updateUserRequest)
 
-    case updateUserPasswordRequest: UpdateUserPasswordRequest =>
-      sender ! updatePassword(updateUserPasswordRequest)
-
     case AuthenticationRequest(login: String, password: String) =>
       sender ! verifyIdentity(login, password)
 
@@ -120,4 +117,6 @@ class UserActor extends Actor {
           AuthenticationResponse(authorized = authorized && user._4, user._3, Some(user._1))
     }
   }
+
+  def delete(uuid: UUID): Try[Int] = Try { users.filter(_.uuid === uuid).delete }
 }

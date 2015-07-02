@@ -14,6 +14,7 @@ import services.Utilities._
 
 import scala.language.postfixOps
 import scala.slick.driver.PostgresDriver.simple._
+import scala.slick.model.ForeignKeyAction
 import scala.util.{Failure, Try}
 
 
@@ -68,6 +69,7 @@ object ModelActor {
     def uuid = column[UUID]("uuid", O.DBType("UUID"))
     def objectString = column[String]("object")
     def * = (uuid, objectString) <> (GeneralObject.tupled, GeneralObject.unapply)
+    def aFK = foreignKey("orderid", uuid, orderBrand)(_.orderId, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
   }
 
    class StoreBrandTable(tag: Tag) extends Table[(UUID, UUID)](tag, "storebrand") {
@@ -75,47 +77,58 @@ object ModelActor {
     def brandId = column[UUID]("brandid")
 
     def * = (storeId, brandId)
-
-    //def aFK = foreignKey("storeid", storeId, stores)(a => a.id)
-    //def bFK = foreignKey("brandid", brandId, brands)(b => b.id)
+    def pk = primaryKey("pk_a", (storeId, brandId))
+    def aFK = foreignKey("storeid", storeId, stores)(_.uuid, onDelete=ForeignKeyAction.Cascade)
+    def bFK = foreignKey("brandid", brandId, brands)(_.uuid, onDelete=ForeignKeyAction.Cascade)
   }
 
   class OrderBrandTable(tag: Tag) extends Table[(UUID, UUID)](tag, "orderbrand") {
     def orderId = column[UUID]("orderid")
     def brandId = column[UUID]("brandid")
     def * = (orderId, brandId)
+    def pk = primaryKey("pk_a", (orderId, brandId))
+    def aFK = foreignKey("orderId", orderId, orders)(_.uuid, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
+    def bFK = foreignKey("brandId", brandId, brands)(_.uuid, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
   }
 
   class StoreOrderTable(tag: Tag) extends Table[(UUID, UUID)](tag, "storeorder") {
     def storeId = column[UUID]("storeid")
     def orderId = column[UUID]("orderid")
     def * = (storeId, orderId)
+    def aFK = foreignKey("storeid", storeId, stores)(_.uuid, onDelete=ForeignKeyAction.Cascade)
+    def bFK = foreignKey("orderid", orderId, orders)(_.uuid, onDelete=ForeignKeyAction.Cascade)
   }
 
   class StoreUserTable(tag: Tag) extends Table[(UUID, UUID)](tag, "storeuser") {
     def storeId = column[UUID]("storeid")
     def userId = column[UUID]("userid")
-
     def * = (storeId, userId)
+    def aFK = foreignKey("storeid", storeId, stores)(_.uuid, onDelete=ForeignKeyAction.Cascade)
+    def bFK = foreignKey("userid", userId, users)(_.uuid, onDelete=ForeignKeyAction.Cascade)
   }
 
   class OrderImageTable(tag: Tag) extends Table[(UUID, UUID)](tag, "orderimage") {
     def orderId = column[UUID]("orderid")
     def imageId = column[UUID]("imageid")
-
     def * = (orderId, imageId)
+    def aFK = foreignKey("orderid", orderId, orders)(_.uuid, onDelete=ForeignKeyAction.Cascade)
+    def bFK = foreignKey("imageid", imageId, images)(_.uuid, onDelete=ForeignKeyAction.Cascade)
   }
 
   class UserImageTable(tag: Tag) extends Table[(UUID, UUID)](tag, "userimage") {
     def userId = column[UUID]("userid")
     def imageId = column[UUID]("imageid")
     def * = (userId, imageId)
+    def aFK = foreignKey("userId", userId, users)(_.uuid, onDelete=ForeignKeyAction.Cascade)
+    def bFK = foreignKey("imageid", imageId, images)(_.uuid, onDelete=ForeignKeyAction.Cascade)
   }
 
   class UserBrandTable(tag: Tag) extends Table[(UUID, UUID)](tag, "userbrand") {
     def userId = column[UUID]("userid")
     def brandId = column[UUID]("brandid")
     def * = (userId, brandId)
+    def aFK = foreignKey("userId", userId, users)(_.uuid, onDelete=ForeignKeyAction.Cascade)
+    def bFK = foreignKey("brandid", brandId, brands)(_.uuid, onDelete=ForeignKeyAction.Cascade)
   }
 
   val stores = TableQuery[StoreTable]
@@ -362,12 +375,9 @@ class ModelActor extends Actor {
   }
 
   def deleteObject(objectToDelete: ObjectToDeleteRequest): Try[Int] = Try {
-    val table = objectToDelete.table.name
-    DB.withConnection { implicit connection =>
-      SQL(s"""DELETE FROM $table WHERE UUID = {UUID}""")
-        .on('UUID -> objectToDelete.uuid)
-        .executeUpdate()
-    }
+    implicit val table = objectToDelete.table.name
+    val standardTableQuery = TableQuery[StandardTable]
+    standardTableQuery.filter(_.uuid === objectToDelete.uuid).delete
   }
 
   def amendObject(objectToAmend: ObjectToAmendRequest): Try[Int] = Try {

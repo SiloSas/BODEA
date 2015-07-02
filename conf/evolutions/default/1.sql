@@ -223,52 +223,52 @@ CREATE TABLE orders (
 );
 
 CREATE TABLE orderBrand (
-  orderId          UUID REFERENCES orders (uuid),
-  brandId          UUID REFERENCES brands (uuid),
+  orderId          UUID REFERENCES orders (uuid) ON DELETE CASCADE,
+  brandId          UUID REFERENCES brands (uuid) ON DELETE CASCADE,
   PRIMARY KEY (orderId, brandId)
 );
 
 CREATE TABLE storeUser (
-  storeId          UUID REFERENCES stores (uuid),
-  userId           UUID REFERENCES users (uuid),
+  storeId          UUID REFERENCES stores (uuid) ON DELETE CASCADE,
+  userId           UUID REFERENCES users (uuid) ON DELETE CASCADE,
   PRIMARY KEY (storeId, userId)
 );
 
 CREATE TABLE storeBrand (
-  storeId          UUID REFERENCES stores (uuid),
-  brandId          UUID REFERENCES brands (uuid),
+  storeId          UUID REFERENCES stores (uuid) ON DELETE CASCADE,
+  brandId          UUID REFERENCES brands (uuid) ON DELETE CASCADE,
   PRIMARY KEY (storeId, brandId)
 );
 
 CREATE TABLE storeOrder (
-  storeId          UUID REFERENCES stores (uuid),
-  orderId          UUID REFERENCES orders (uuid)
+  storeId          UUID REFERENCES stores (uuid) ON DELETE CASCADE,
+  orderId          UUID REFERENCES orders (uuid) ON DELETE CASCADE,
+  PRIMARY KEY (storeId, orderId)
 );
 
 CREATE TABLE storeArea (
-  storeId          UUID REFERENCES stores (uuid),
-  areaId           UUID REFERENCES areas (uuid),
+  storeId          UUID REFERENCES stores (uuid) ON DELETE CASCADE,
+  areaId           UUID REFERENCES areas (uuid) ON DELETE CASCADE,
   PRIMARY KEY (storeId, areaId)
 );
 
 CREATE TABLE userBrand (
-  userId           UUID REFERENCES users (uuid),
-  brandId          UUID REFERENCES brands (uuid),
+  userId           UUID REFERENCES users (uuid) ON DELETE CASCADE,
+  brandId          UUID REFERENCES brands (uuid) ON DELETE CASCADE,
   PRIMARY KEY (userId, brandId)
 );
 
 CREATE TABLE userImage (
-  userId           UUID REFERENCES users (uuid),
-  imageId          UUID REFERENCES images (uuid),
+  userId           UUID REFERENCES users (uuid) ON DELETE CASCADE,
+  imageId          UUID REFERENCES images (uuid) ON DELETE CASCADE,
   PRIMARY KEY (userId, imageId)
 );
 
 CREATE TABLE orderImage (
-  orderId          UUID REFERENCES orders (uuid),
-  imageId          UUID REFERENCES images (uuid),
+  orderId          UUID REFERENCES orders (uuid) ON DELETE CASCADE,
+  imageId          UUID REFERENCES images (uuid) ON DELETE CASCADE,
   PRIMARY KEY (orderId, imageId)
 );
-
 
 
 # --- !Downs

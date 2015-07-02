@@ -61,14 +61,24 @@ object Application extends Controller {
 
   val (chatOut, chatChannel) = Concurrent.broadcast[JsValue]
 
-  def notifySubscribers(notification: String) = Authenticated { request =>
+//client sends notif + brandId => send mail to admins +
+  //amdin sends notif + brandId => send mails to clients related to brandId
+  //table notifications
+
+  def notifySubscribers(notification: String, brandUUID: String) = Authenticated { request =>
     request.uuid match {
       case None =>
         Unauthorized
-      case Some(uuid) =>
-        chatChannel.push(Json.toJson(notification))
-        sendNotificationMail(notification)
-        Ok
+      case _ =>
+        Try { UUID.fromString(brandUUID) } match {
+          case Success(uuid) =>
+//            askActorToSaveModel("notifications")
+            chatChannel.push(Json.parse(notification))
+            sendNotificationMail(notification, uuid)
+            Ok
+          case _ =>
+            BadRequest("Wrong UUID type")
+        }
     }
   }
 
@@ -81,7 +91,7 @@ object Application extends Controller {
     }
   }
 
-  def sendNotificationMail(subject: String): Unit = {
+  def sendNotificationMail(subject: String, brandUUID: UUID): Unit = {
     val mail = use[MailerPlugin].email
     mail.setSubject("BO DEA notification")
     mail.addRecipient("simongarnier07@hotmail.fr")
@@ -224,6 +234,7 @@ object Application extends Controller {
           case "areas" => askActorAllModelsInTable(FindObjectsRequest(table, isClient = false, uuid))
           case "brands" => askActorAllModelsInTable(FindObjectsRequest(table, isClient = false, uuid))
           case "stores" => askActorAllModelsInTable(FindObjectsRequest(table, isClient = false, uuid))
+          case "notifications" => askActorAllModelsInTable(FindObjectsRequest(table, isClient = false, uuid))
           case "users" => askActorAllModelsInUsersTable(isRequestedByClient(request), uuid)
           case "images" => askActorAllModelsInTable(FindObjectsRequest(table, isRequestedByClient(request), uuid))
           case "orders" => askActorAllModelsInTable(FindObjectsRequest(table, isRequestedByClient(request), uuid))

@@ -222,6 +222,13 @@ CREATE TABLE orders (
   UNIQUE(uuid)
 );
 
+CREATE TABLE notifications (
+  notificationId   SERIAL PRIMARY KEY,
+  uuid             UUID NOT NULL,
+  object           TEXT NOT NULL,
+  UNIQUE(uuid)
+);
+
 CREATE TABLE orderBrand (
   orderId          UUID REFERENCES orders (uuid) ON DELETE CASCADE,
   brandId          UUID REFERENCES brands (uuid) ON DELETE CASCADE,
@@ -273,4 +280,4 @@ CREATE TABLE orderImage (
 
 # --- !Downs
 DROP TABLE IF EXISTS orderBrand, orderOrder, orderStore, storeUser, storeBrand, storeOrder, storeArea, userBrand,
-userImage, orderImage, users, areas, brands, stores, images, orders;
+userImage, orderImage, users, areas, brands, stores, images, orders, notifications;

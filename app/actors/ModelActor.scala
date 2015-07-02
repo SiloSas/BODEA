@@ -11,7 +11,6 @@ import play.api.Logger
 import play.api.Play.current
 import play.api.db.DB
 import services.Utilities._
-//import play.api.db.slick._
 import scala.language.postfixOps
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.model.ForeignKeyAction

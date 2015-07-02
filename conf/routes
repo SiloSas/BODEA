@@ -22,7 +22,8 @@ POST          /relations                 controllers.Application.saveRelations
 POST          /upload                    controllers.Application.uploadImage
 
 #NOTIFICATIONS
-POST          /notifications             controllers.Application.notificate(notification: String)
+POST          /notifications             controllers.Application.notifySubscribers(notification: String)
+GET           /notifications             controllers.Application.subscribeToSSENotifications
 
 #ASSETS
 GET           /assets/*file              controllers.Assets.at(path="/public", file)

@@ -2,12 +2,13 @@ package controllers
 
 import java.io.File
 import java.util.UUID
-
+import com.typesafe.plugin._
 import actors.ModelActor._
 import actors.UserActor._
 import actors._
 import akka.pattern.ask
 import akka.util.Timeout
+import com.typesafe.plugin.MailerPlugin
 import json.JsonHelper._
 import play.api.Logger
 import play.api.Play.current
@@ -58,30 +59,58 @@ object Application extends Controller {
 
   def logout = Action { Ok("Correctly logged out").withNewSession }
 
-  def notificate(notification: String) = Action {
-    val (chatOut, chatChannel) = Concurrent.broadcast[JsValue]
-    chatChannel.push(Json.toJson("I heard " + notification))
+  val (chatOut, chatChannel) = Concurrent.broadcast[JsValue]
 
-    Ok.feed(chatOut &> EventSource()).as("text/event-stream")
+  def notifySubscribers(notification: String) = Authenticated { request =>
+    request.uuid match {
+      case None =>
+        Unauthorized
+      case Some(uuid) =>
+        chatChannel.push(Json.toJson("I heard " + notification))
+        sendNotificationMail(notification)
+        Ok.feed(chatOut &> EventSource()).as("text/event-stream")
+    }
   }
 
-  def uploadImage = Action(parse.multipartFormData) { request =>
-    request.body.file("picture").map { image =>
+  def subscribeToSSENotifications = Authenticated { request =>
+    request.uuid match {
+      case None =>
+        Unauthorized
+      case Some(uuid) =>
+        Ok.feed(chatOut &> EventSource()).as("text/event-stream")
+    }
+  }
 
-      image.contentType match {
-        case Some(fileExtension) if fileExtension == "image/tiff" || fileExtension == "image/jpg" ||
-          fileExtension == "image/jpeg" || fileExtension == "image/png" || fileExtension == "image/svg" ||
-          fileExtension == "application/pdf" =>
+  def sendNotificationMail(subject: String): Unit = {
+    val mail = use[MailerPlugin].email
+    mail.setSubject("BO DEA notification")
+    mail.addRecipient("simongarnier07@hotmail.fr")
+    mail.addFrom("BO DEA")
+    mail.send(subject)
+  }
 
-          val filename = image.filename + UUID.randomUUID().toString
-          image.ref.moveTo(new File("/home/simon/dev/bodea/app/public/pictures/" + filename), replace = true)
+  def uploadImage = Authenticated(parse.multipartFormData) { request =>
+    request.uuid match {
+      case None =>
+        Unauthorized("Unauthorized")
+      case Some(uuid) =>
+        request.body.file("picture").map { image =>
 
-          Ok("File uploaded")
+          image.contentType match {
+            case Some(fileExtension) if fileExtension == "image/tiff" || fileExtension == "image/jpg" ||
+              fileExtension == "image/jpeg" || fileExtension == "image/png" || fileExtension == "image/svg" ||
+              fileExtension == "application/pdf" =>
 
-        case _ =>
-          Unauthorized("Wrong content type")
-      }
-    }.getOrElse { BadRequest }
+              val filename = image.filename + UUID.randomUUID().toString
+              image.ref.moveTo(new File("/home/simon/dev/bodea/app/public/pictures/" + filename), replace = true)
+
+              Ok("File uploaded")
+
+            case _ =>
+              Unauthorized("Wrong content type")
+          }
+        }.getOrElse { BadRequest }
+    }
   }
 
   def saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String],

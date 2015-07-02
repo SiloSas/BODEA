@@ -1,7 +1,7 @@
 logs
 project/project
 target
-.idea/**
-/app/public/node_modules/**
+.idea/
+/app/public/node_modules/
 
     

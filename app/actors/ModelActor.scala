@@ -165,13 +165,6 @@ class ModelActor extends Actor {
     case _ => sender ! Failure(throw new Exception("unknown request"))
   }
 
-  private val objectParser: RowParser[GeneralObject] = {
-    get[UUID]("uuid") ~
-      get[String]("object") map {
-      case uuid ~ objectString => GeneralObject(uuid, objectString)
-    }
-  }
-
   private val maybeObjectParser: RowParser[MaybeGeneralObject] = {
     get[Option[UUID]]("uuid") ~
       get[Option[String]]("object") map {
@@ -201,7 +194,6 @@ class ModelActor extends Actor {
   }
 
   def saveRelations(saveRelationsRequest: SaveRelationsRequest): Try[Int] = Try {
-    println(saveRelationsRequest)
      saveRelationsRequest.relationsBetweenTwoTables.collect {
        case relation: RelationBetweenTwoTables if relation.relationTable == "storebrand" =>
          (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))
@@ -213,7 +205,6 @@ class ModelActor extends Actor {
 
     saveRelationsRequest.relationsBetweenTwoTables.collect {
        case relation: RelationBetweenTwoTables if relation.relationTable == "userbrand" =>
-         Logger info "userbrand relation insert\nuuidA(user): " + relation.uuidA + "\nuuidB(brand): " + relation.uuidB
          (UUID.fromString(relation.uuidA), UUID.fromString(relation.uuidB))
     } map {
       userBrand

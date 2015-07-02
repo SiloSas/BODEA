@@ -86,7 +86,7 @@ object Application extends Controller {
     request.uuid match {
       case None =>
         Unauthorized
-      case Some(uuid) =>
+      case _ =>
         Ok.feed(chatOut &> EventSource()).as("text/event-stream")
     }
   }

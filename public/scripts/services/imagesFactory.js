@@ -16,6 +16,25 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
             }
             return deferred.promise;
         },
+        getImageById: function (id) {
+            var deferred = $q.defer()
+            if (factory.images == false) {
+                factory.getImages().then(function (images) {
+                    for (var i = 0; i < images.length; i++) {
+                        if (images[i].uuid == id) {
+                            deferred.resolve(images[i]);
+                        }
+                    }
+                })
+            } else {
+                for (var i = 0; i < factory.images.length; i++) {
+                    if (factory.images[i].uuid == id) {
+                        deferred.resolve(factory.images[i]);
+                    }
+                }
+            }
+            return deferred.promise;
+        },
         deleteImage: function (id) {
             var imagesLength = factory.images.length;
             for (var i = 0; i < imagesLength; i++) {

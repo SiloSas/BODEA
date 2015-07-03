@@ -74,6 +74,9 @@ class UserActor extends Actor {
     case AuthenticationRequest(login: String, password: String) =>
       sender ! verifyIdentity(login, password)
 
+    case updateUserPasswordRequest: UpdateUserPasswordRequest =>
+      sender ! updatePassword(updateUserPasswordRequest)
+
     case _ =>
       Logger error "UserActor.receive: unknown request"
   }

@@ -20,8 +20,11 @@
                             Settings
                         </md-tooltip>
                     </md-button>
-                    <md-button class="fa fa-envelope md-fab md-mini md-primary" aria-label="notifications" ng-href="#/">
-                        1
+                    <md-button class="fa fa-envelope md-fab md-mini"
+                               ng-class="{'md-primary': notifications.length == 0,
+                               'md-warn': notifications.length > 0}"
+                               aria-label="notifications" ng-href="#/">
+                        {{notifications.length}}
                         <md-tooltip>
                             Notifications
                         </md-tooltip>

@@ -1,5 +1,28 @@
 angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFactory, StoresFactory,
-                                                              MessagesFactory, ImagesFactory) {
+                                                              MessagesFactory, ImagesFactory, NotificationsFactory) {
+    function postNotifiation(order) {
+        var notification;
+        switch (parseInt(order.state)) {
+            case 1:
+                notification = 'La commande ' + order.id + ' pour ' + order.brand.name + ' a été passée';
+                NotificationsFactory.postNotification(notification, order.brand.id);
+                console.log(order)
+                break;
+
+            case 2:
+                notification = 'La commande ' + order.id + ' a été validée par l\'administrateur';
+                NotificationsFactory.postNotification(notification, order.brand.id)
+                break;
+
+            case 4:
+                notification = 'La commande ' + order.id + ' est en cours de livraison';
+                console.log(notification)
+                NotificationsFactory.postNotification(notification, order.brand.id)
+                break;
+        }
+        console.log(order.state)
+    }
+
     var factory = {
         orders: false,
         getOrders: function () {
@@ -57,6 +80,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
             return deferred.promise
         },
         refactorOrder: function (order) {
+            var orderState = angular.copy(order.state);
             for (var i = 0; i < factory.orders.length; i++) {
                 if (factory.orders[i].uuid == order.uuid) {
                     order = angular.copy(order.newOrder);
@@ -64,7 +88,10 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                     delete(order.newOrder);
                     factory.orders[i] = angular.copy(order);
                     $http.post('models/' + order.uuid + '?table=orders&objectString=' + JSON.stringify(order)).success(function (data, statut) {
-                        MessagesFactory.displayMessage('Votre commande est bien mise à jours')
+                        MessagesFactory.displayMessage('Votre commande a bien été mise à jour');
+                        if (order.state > orderState) {
+                            postNotifiation(order);
+                        }
                         $http.post('relations',
                             {relations : [{
                                 relationTable: 'orderbrand',
@@ -98,7 +125,9 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
             factory.orders.push(order);
             $http.post('models?table=orders&uuid=' + order.uuid + '&objectString=' + JSON.stringify(order)).
                 success(function (data) {
-                    console.log(order)
+                    if (order.state > 0) {
+                        postNotifiation(order);
+                    }
                     $http.post('relations',
                         {relations : [{
                             relationTable: 'orderbrand',

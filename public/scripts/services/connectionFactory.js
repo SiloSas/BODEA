@@ -10,8 +10,8 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
         } else if (sessionType == 2) {
             $rootScope.connected = 'client';
         }
+        NotificationsFactory.getNotifications();
         NotificationsFactory.subscribe();
-        NotificationsFactory.postNotification('sacoche')
     } else {
         $location.path('/')
     }
@@ -24,6 +24,7 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
                     } else if(role == 2) {
                         $rootScope.connected = 'client';
                     }
+                    NotificationsFactory.getNotifications();
                     NotificationsFactory.subscribe()
             }).error(function (error) {
                     MessagesFactory.displayMessage(error)

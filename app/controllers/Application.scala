@@ -108,14 +108,19 @@ object Application extends Controller {
     }
   }
 
-  def sendNotificationMail(subject: String, brandUUID: UUID, isClient: Boolean): Unit = {
+  def sendNotificationMail(content: String, brandUUID: UUID, isClient: Boolean): Unit = {
     val mail = use[MailerPlugin].email
     mail.setSubject("BO DEA notification")
-    mail.addFrom("BO DEA")
+    mail.addFrom("ticketappfrance@gmail.com")
     play.api.db.slick.DB.withSession { implicit session =>
       isClient match {
         case true =>
-          Logger info "mails will be send to " + users.filter(_.role === 1).map(_.login).list
+          val loginList = users.filter(_.role === 1).map(_.login).list
+          Logger info "mails will be send to " + loginList
+          loginList.foreach { login =>
+            mail.addRecipient(login)
+            mail.send(content)
+          }
 
         case false =>
           val userLoginList = userBrand
@@ -123,15 +128,23 @@ object Application extends Controller {
             users.map(_.login)
 
           userLoginList.map { login =>
-            Logger info "mails will be send to " + users.filter(_.role === 2).map(_.login).list
-            //          mail.addRecipient(login)
-            //          mail.send(subject)
+            val loginList = users.filter(_.role === 2).map(_.login).list
+            Logger info "mails will be send to " + loginList
+            loginList.foreach { login =>
+              mail.addRecipient(login)
+              mail.send(content)
+            }
           }
       }
     }
   }
 
   def sendNewPasswordByEMailAndUpdateDatabase(login: String) = Action.async {
+    val mail = use[MailerPlugin].email
+    mail.setSubject("BODEA Notification")
+    mail.addRecipient(login)
+    mail.addFrom("ticketappfrance@gmail.com")
+    mail.send("Hello World")
     val newPassword = UUID.randomUUID().toString
     (userActor ? UpdateUserPasswordRequest(login, newPassword)).mapTo[Try[Int]] map {
       case Success(_) =>
@@ -139,10 +152,11 @@ object Application extends Controller {
 //          val login = users.filter(_.login === login).map(_.login).list.head
           val mail = use[MailerPlugin].email
           mail.setSubject("BO DEA Demande de changement de mot de passe")
-          mail.addFrom("BO DEA")
           mail.addRecipient(login)
-          mail.send(s"""Voici votre nouveau mot de passe : $newPassword""" + "\nVous pouvez le modifier à tout moment" +
-            "ici: http://www.claude.wtf/#/settings")
+          mail.addFrom("BODEA@gmail.com")
+          mail.send(
+            s"""Voici votre nouveau mot de passe : $newPassword \\n
+               |Vous pouvez le modifier à tout moment ici: http://www.claude.wtf/#/settings""".stripMargin)
           Ok
         }
 

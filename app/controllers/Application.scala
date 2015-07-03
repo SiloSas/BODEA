@@ -225,14 +225,16 @@ object Application extends Controller {
         case "orders" => askActorToSaveModel(tableName, objectString, uuid)
         case _ =>
           if (isRequestedByClient(request))
-            Future { Unauthorized("Vous devez être administrateur pour accèder à cette ressource.") }
+            if (tableName == "images")
+              askActorToSaveModel(tableName, objectString, uuid)
+            else
+              Future { Unauthorized("Vous devez être administrateur pour accèder à cette ressource.") }
           else
             tableName match {
               case "areas" => askActorToSaveModel(tableName, objectString, uuid)
               case "brands" => askActorToSaveModel(tableName, objectString, uuid)
               case "stores" => askActorToSaveModel(tableName, objectString, uuid)
               case "users" => askActorToSaveModel(tableName, objectString, uuid)
-              case "images" => askActorToSaveModel(tableName, objectString, uuid)
               case _ => Future { NotFound }
             }
       }

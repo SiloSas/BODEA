@@ -107,7 +107,6 @@ object Application extends Controller {
     play.api.db.slick.DB.withSession { implicit session =>
       isClient match {
         case true =>
-          users.filter(_.role === 1).map(_.login)
           Logger info "mails will be send to " + users.filter(_.role === 1).map(_.login).list
 
         case false =>
@@ -116,7 +115,7 @@ object Application extends Controller {
             users.map(_.login)
 
           userLoginList.map { login =>
-            Logger info "mails will be send to " + users.filter(_.role === 1).map(_.login).list
+            Logger info "mails will be send to " + users.filter(_.role === 2).map(_.login).list
             //          mail.addRecipient(login)
             //          mail.send(subject)
           }

@@ -45,7 +45,12 @@ object UserActor {
                                objectString: Option[String], isActive: Boolean)
   case class UpdateUserPasswordRequest(uuid: UUID, password: String)
   case class AuthenticationRequest[A](login: String, password: String)
-  case class AuthenticationResponse(authorized: Boolean, role: Int, uuid: Option[UUID])
+  
+  val authorizedStatus = 0
+  val wrongCredentialStatus = 1
+  val inactiveAccountStatus = 2
+  val defaultErrorStatus = 3
+  case class AuthenticationResponse(authorized: Int, role: Int, uuid: Option[UUID])
 
   class UserTable(tag: Tag) extends Table[User](tag, "users") {
     def id = column[Int]("userid", O.PrimaryKey)
@@ -114,10 +119,15 @@ class UserActor extends Actor {
       .list
       .headOption match {
         case None =>
-          AuthenticationResponse(authorized = false, 0, None)
+          AuthenticationResponse(defaultErrorStatus, 0, None)
         case Some(user) =>
-          val authorized = BCrypt.checkpw(password, user._2)
-          AuthenticationResponse(authorized = authorized && user._4, user._3, Some(user._1))
+          if (!user._4)
+            AuthenticationResponse(authorized = inactiveAccountStatus, user._3, Some(user._1))
+          else
+            BCrypt.checkpw(password, user._2) match {
+              case true => AuthenticationResponse(authorizedStatus, user._3, Some(user._1))
+              case false => AuthenticationResponse(wrongCredentialStatus, user._3, Some(user._1))
+            }
     }
   }
 

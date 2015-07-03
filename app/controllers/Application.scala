@@ -42,11 +42,18 @@ object Application extends Controller {
   def authenticate(login: String, password: String) = Action.async {
     (userActor ? AuthenticationRequest(login, password)).mapTo[Try[AuthenticationResponse]] map {
 
-      case Success(authenticationResponse) if authenticationResponse.authorized =>
-        Ok(Json.toJson(authenticationResponse.role))
-          .withSession(
-            "connected" -> authenticationResponse.uuid.get.toString,
-            "role" -> authenticationResponse.role.toString)
+      case Success(authenticationResponse) =>
+        if (authenticationResponse.authorized == authorizedStatus)
+          Ok(Json.toJson(authenticationResponse.role))
+            .withSession(
+              "connected" -> authenticationResponse.uuid.get.toString,
+              "role" -> authenticationResponse.role.toString)
+        else if (authenticationResponse.authorized == wrongCredentialStatus)
+          Unauthorized("Login ou mot de passe incorrect")
+        else if (authenticationResponse.authorized == inactiveAccountStatus)
+          Unauthorized("Ce compte a été desactivé, veuillez-contacter l'administrateur")
+        else
+          Unauthorized("Désolé, une erreur s'est produite sur le serveur")
 
       case Failure(failure) =>
         Logger error "Application.authenticate: " + failure.getMessage

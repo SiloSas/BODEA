@@ -20,7 +20,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
-
+import scala.slick.driver.PostgresDriver.simple._
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -61,10 +61,6 @@ object Application extends Controller {
 
   val (chatOut, chatChannel) = Concurrent.broadcast[JsValue]
 
-//client sends notif + brandId => send mail to admins +
-  //admin sends notif + brandId => send mails to clients related to brandId
-  //table notifications
-
   def notifySubscribers(notification: String, brandUUIDString: String, notificationUUIDString: String) = Authenticated.async { request =>
     request.uuid match {
       case None =>
@@ -78,7 +74,7 @@ object Application extends Controller {
                   .mapTo[Try[Int]] map {
                   case Success(_) =>
                     chatChannel.push(Json.parse(notification))
-                    sendNotificationMail(notification, notificationUUID)
+                    sendNotificationMail(notification, notificationUUID, isRequestedByClient(request))
                     Ok
                   case Failure(failure) =>
                     Logger error "notifySubscribers" + failure
@@ -104,12 +100,28 @@ object Application extends Controller {
     }
   }
 
-  def sendNotificationMail(subject: String, brandUUID: UUID): Unit = {
+  def sendNotificationMail(subject: String, brandUUID: UUID, isClient: Boolean): Unit = {
     val mail = use[MailerPlugin].email
     mail.setSubject("BO DEA notification")
-    mail.addRecipient("simongarnier07@hotmail.fr")
     mail.addFrom("BO DEA")
-    mail.send(subject)
+    play.api.db.slick.DB.withSession { implicit session =>
+      isClient match {
+        case true =>
+          users.filter(_.role === 1).map(_.login)
+          Logger info "mails will be send to " + users.filter(_.role === 1).map(_.login).list
+
+        case false =>
+          val userLoginList = userBrand
+            .filter(_.brandId === brandUUID) rightJoin
+            users.map(_.login)
+
+          userLoginList.map { login =>
+            Logger info "mails will be send to " + users.filter(_.role === 1).map(_.login).list
+            //          mail.addRecipient(login)
+            //          mail.send(subject)
+          }
+      }
+    }
   }
 
   def uploadImage = Authenticated(parse.multipartFormData) { request =>

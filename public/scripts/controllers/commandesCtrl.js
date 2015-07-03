@@ -120,13 +120,8 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                         delete(store.area.flag);
                         AreaFactory.postArea(store.area)
                     }
-                    if (angular.isDefined($scope.newOrder.brand.flag)) {
-                        delete($scope.newOrder.brand.flag);
-                        $scope.newOrder.brand = BrandFactory.postBrand($scope.newOrder.brand)
-                    }
                     store.brand = $scope.newOrder.brand;
                     StoresFactory.postStore(store);
-                    $scope.stores.push(store)
                 })
             });
         };
@@ -319,6 +314,10 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                     $scope.newOrder.id = item.name.substring(0, 2).toUpperCase() + (parseInt(lastId.replace(/[^0-9.]/g, '')) + 1);
                 } else {
                     $scope.newOrder.id = item.name.substring(0, 2).toUpperCase() + '1';
+                }
+                if (angular.isDefined($scope.newOrder.brand.flag)) {
+                    delete($scope.newOrder.brand.flag);
+                    $scope.newOrder.brand = BrandFactory.postBrand($scope.newOrder.brand)
                 }
             }
             $log.info('Item changed to ' + JSON.stringify(item));

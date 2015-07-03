@@ -9,12 +9,15 @@
  */
 angular.module('bodeaApp')
   .controller('MainCtrl', function ($scope, $timeout, $mdSidenav, $mdUtil, $log, $location,
-                                    ConnectionFactory, $rootScope, NotificationsFactory) {
+                                    ConnectionFactory, $rootScope, NotificationsFactory, UserFactory) {
         $scope.toggleLeft = buildToggler('left');
         /**
          * Build handler to open/close a SideNav; when animation finishes
          * report completion in console
          */
+        UserFactory.getUser().then(function (user) {
+           $scope.user = user;
+        });
 
         $rootScope.filter = '';
         function buildToggler(navID) {
@@ -36,15 +39,19 @@ angular.module('bodeaApp')
         $scope.active = $location.path();
         $scope.$on('$locationChangeSuccess', function () {
             $scope.active = $location.path();
+            if ($scope.active == '/') {
+                NotificationsFactory.passIsReadedToTrue();
+            }
         });
         $scope.connect = function (user) {
-            console.log(user)
             ConnectionFactory.connect(user)
         };
         $scope.disconnect = function () {
             ConnectionFactory.disconnect()
-        }
-        $scope.postNotification = function (notification) {
-            NotificationsFactory.postNotification(notification)
-        }
+        };
+        $scope.postNotification = function (notification, brandUUID) {
+            NotificationsFactory.postNotification(notification, brandUUID)
+        };
+        $scope.notifications = NotificationsFactory.notifications;
+        $scope.notificationBase = NotificationsFactory.notificationBase;
     });

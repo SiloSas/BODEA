@@ -88,7 +88,7 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
             $http.put('users?uuid='+ user.user.uuid + '&login=' + user.user.login +
                 '&role=' + user.user.role + '&objectString='+ JSON.stringify(user.user.objectString) +
                 '&isActive=' + user.user.isActive).success(function (success) {
-                MessagesFactory.displayMessage('L\'utilisateur a bien été mis à jours')
+                MessagesFactory.displayMessage('L\'utilisateur a bien été mis à jour')
             }).error(function(error) {
                 MessagesFactory.displayMessage(error)
             });
@@ -144,9 +144,9 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
             }).error(function(error) {
                 console.log(error)
                 if (error.indexOf('duplicate key') > -1) {
-                    error = 'cet utilisateur existe déjà'
+                    error = 'Cet utilisateur existe déjà'
                 } else {
-                    error = 'une erreur s\'est produite'
+                    error = 'Une erreur s\'est produite'
                 }
                 MessagesFactory.displayMessage(error);
                 deferred.reject(error)

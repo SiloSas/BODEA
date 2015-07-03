@@ -201,7 +201,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                     })
                     .join(' ');
             };
-            if (angular.isDefined($scope.newOrder.image)) {
+            if (angular.isDefined($scope.newOrder.image) || $scope.newOrder.state == 0) {
                 if ($scope.newOrder.subOrders.length > 0) {
                     if (angular.isDefined($scope.newOrder.brand.flag)) {
                         delete($scope.newOrder.brand.flag);
@@ -209,10 +209,15 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                     }
                     if (angular.isDefined($scope.newOrder.id) === false) {
                         console.log($scope.newOrder.brand)
-                        var brandOrders = $filter('filter')($scope.orders, $scope.newOrder.brand.name, 'brand');
+                        var brandOrders = $filter('filter')($scope.orders, $scope.newOrder.brand.id, 'brand');
                         if (brandOrders.length > 0) {
-                            var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
-                            $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + (parseInt(lastId.replace(/[^0-9.]/g, '')) + 1);
+                            var lastId = 0;
+                            for (var i = 0; i < brandOrders.length; i++) {
+                                if (parseInt(brandOrders[i].id.replace(/[^0-9.]/g, '')) > lastId) {
+                                    lastId = parseInt(brandOrders[i].id.replace(/[^0-9.]/g, ''));
+                                }
+                            }
+                            $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + (lastId + 1);
                         } else {
                             $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + '1';
                         }
@@ -310,8 +315,13 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             if (angular.isDefined(item)) {
                 var brandOrders = $filter('filter')($scope.orders, item.name, 'brand');
                 if (brandOrders.length > 0) {
-                    var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
-                    $scope.newOrder.id = item.name.substring(0, 2).toUpperCase() + (parseInt(lastId.replace(/[^0-9.]/g, '')) + 1);
+                    var lastId = 0;
+                    for (var i = 0; i < brandOrders.length; i++) {
+                        if (parseInt(brandOrders[i].id.replace(/[^0-9.]/g, '')) > lastId) {
+                            lastId = parseInt(brandOrders[i].id.replace(/[^0-9.]/g, ''));
+                        }
+                    }
+                    $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + (lastId + 1);
                 } else {
                     $scope.newOrder.id = item.name.substring(0, 2).toUpperCase() + '1';
                 }

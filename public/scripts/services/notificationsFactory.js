@@ -14,18 +14,13 @@ angular.module('bodeaApp').factory('NotificationsFactory', function ($http, Guid
             new EventSource("/notifications").onmessage = function (event) {
                 factory.notificationLength = factory.notificationLength+1;
                 console.log(event.data);
-                factory.notifications.push(JSON.parse(event.data))
+                factory.notifications.push(JSON.parse(event.data));
             };
         },
         passIsReadedToTrue: function () {
-            function passIsReadedToTrue () {
-                if (factory.notifications.length > 0) {
-                    factory.notificationBase.push(angular.copy(factory.notifications[0]));
-                    factory.notifications.splice(0, 1);
-                    passIsReadedToTrue();
-                }
-            }
-            passIsReadedToTrue();
+            factory.notificationBase = factory.notificationBase.concat(angular.copy(factory.notifications));
+            factory.notifications.splice(0, factory.notifications.length);
+            return;
         },
         postNotification: function (notification, brandUUID) {
             factory.notificationLength = factory.notificationLength+1;
@@ -39,6 +34,10 @@ angular.module('bodeaApp').factory('NotificationsFactory', function ($http, Guid
                 JSON.stringify(newNotification) + '&brandUUID=' + brandUUID +
                 '&notificationUUID=' + newNotification.uuid).success(function (success) {
             })
+        },
+        passToFalse: function () {
+            factory.notificationBase = [];
+            factory.notifications = [];
         }
     };
     return factory;

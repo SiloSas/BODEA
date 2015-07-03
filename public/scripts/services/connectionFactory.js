@@ -27,7 +27,7 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
                     NotificationsFactory.getNotifications();
                     NotificationsFactory.subscribe()
             }).error(function (error) {
-                    MessagesFactory.displayMessage(error)
+                    MessagesFactory.displayMessage('Login ou mot de passe invalide')
                 })
         },
         disconnect: function () {
@@ -38,6 +38,7 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
                     UsersFactory.passToFalse();
                     OrdersFactory.passToFalse();
                     StoresFactory.passToFalse();
+                    NotificationsFactory.passToFalse();
                     $location.path('/')
             })
         }

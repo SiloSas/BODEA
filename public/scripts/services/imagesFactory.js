@@ -7,7 +7,7 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
                 deferred.resolve(factory.images)
             } else {
                 $http.get('models?table=images').success(function (images) {
-                    console.log(images)
+                    factory.images = [];
                     factory.images = images.map(function (image) {
                         return JSON.parse(image.generalObject.objectString)
                     });

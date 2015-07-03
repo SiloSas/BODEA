@@ -1,4 +1,4 @@
-<div class="column large-12 table-title-container">
+<div class="column large-12 table-title-container ">
     <div class="column medium-2 table-title">
         <div class="column md-whiteframe-z1 float-left">
             Nom
@@ -106,14 +106,14 @@
                 Selectionner tout les magasins
             </a>
             <a class="md-button md-primary md-raised md-default-theme"
-               ng-show="newUser.stores.length == filtredStores.length"
+               ng-show="newUser.stores.length == filtredStores.length && filtredStores.length > 0"
                ng-click="newUser.stores = []">
                 désélectionner tout les magasins
             </a>
             <div ng-init="limit = 20">
                 <div flex="50"
                      class="fade"
-                     ng-repeat="store in filtredStores =(stores | filter: newUser.brand.name) | limitTo: limit">
+                     ng-repeat="store in filtredStores =(stores | filter: newUser.brand.id) | limitTo: limit">
                     <md-checkbox ng-checked="exists(store, newUser.stores)" ng-click="toggle(store, newUser.stores)">
                         {{ store.name }}
                     </md-checkbox>
@@ -150,7 +150,8 @@
             </div>
         </div>
         <md-divider></md-divider>
-        <md-button ng-show="newUser.user.login && newUser.user.password && newUser.user.role"
+        <md-button ng-show="newUser.user.login && newUser.user.password &&
+        (newUser.user.role == 1 || (newUser.user.role == 2 && newUser.brand))"
                    class="md-primary md-raised" ng-click="addUser()">Valider</md-button>
         <md-button class="md-warn md-raised" ng-click="$parent.createUser = false">Annuler</md-button>
     </div>
@@ -181,7 +182,7 @@
         </div>
         <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
             <div class="float-left padding10">
-                Etes-vous sur de vouloir suprimer ce utilisateur ?
+                Etes-vous sur de vouloir suprimer cet utilisateur ?
                 <md-button class="md-primary md-raised" ng-click="$parent.confirmRemove = false; remove(user)">
                     Oui
                 </md-button>
@@ -262,7 +263,7 @@
                     <div ng-init="limit = 20">
                         <div flex="50"
                          class="fade"
-                         ng-repeat="store in filtredStores =(stores | filter: user.newUser.brand.name) | limitTo: limit">
+                         ng-repeat="store in filtredStores =(stores | filter: user.newUser.brand.id) | limitTo: limit">
                             <md-checkbox ng-checked="exists(store, user.newUser.stores)" ng-click="toggle(store, user.newUser.stores)">
                                 {{ store.name }}
                             </md-checkbox>

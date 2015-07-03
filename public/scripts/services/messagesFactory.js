@@ -18,7 +18,7 @@ angular.module('bodeaApp').factory('MessagesFactory', function ($mdToast) {
                 $mdToast.simple()
                     .content(message)
                     .position(getToastPosition())
-                    .hideDelay(3000)
+                    .hideDelay(5000)
             );
         }
     };

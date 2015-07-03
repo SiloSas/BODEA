@@ -6,8 +6,8 @@ GET           /users/authenticate        controllers.Application.authenticate(lo
 POST          /users/logout              controllers.Application.logout
 POST          /users                     controllers.Application.saveUser(uuid: String, login: String, password: String, role: Int, objectString: Option[String], isActive: Boolean)
 PUT           /users                     controllers.Application.updateUser(uuid: String, login: String, role: Int, objectString: Option[String], isActive: Boolean)
-PUT           /users/password            controllers.Application.updateUserPassword(password: String)
-POST          /users/forgottenpassword   controllers.Application.sendNewPasswordByEMailAndUpdateDatabase
+PUT           /users/password            controllers.Application.updateUserPassword(login: String, password: String)
+POST          /users/forgottenpassword   controllers.Application.sendNewPasswordByEMailAndUpdateDatabase(login: String)
 
 #MODELS
 GET           /models                    controllers.Application.getAllModelsFromTable(table: String)

@@ -131,28 +131,23 @@ object Application extends Controller {
     }
   }
 
-  def sendNewPasswordByEMailAndUpdateDatabase = Authenticated.async { request =>
-    request.uuid match {
-      case None =>
-        Future { Unauthorized }
-      case Some(uuid) =>
-        val newPassword = UUID.randomUUID().toString
-        (userActor ? UpdateUserPasswordRequest(uuid, newPassword)).mapTo[Try[Int]] map {
-          case Success(_) =>
-            play.api.db.slick.DB.withSession { implicit session =>
-              val login = users.filter(_.uuid === uuid).map(_.login).list.head
-              val mail = use[MailerPlugin].email
-              mail.setSubject("BO DEA Demande de changement de mot de passe")
-              mail.addFrom("BO DEA")
-              mail.addRecipient(login)
-              mail.send(s"""Voici votre nouveau mot de passe : $newPassword""" + "\nVous pouvez le modifier à tout moment" +
-                "ici: http://www.claude.wtf/#/settings")
-              Ok
-            }
-
-          case Failure(failure) =>
-            InternalServerError("Application.sendNewPasswordByEMailAndUpdateDatabase: " + failure)
+  def sendNewPasswordByEMailAndUpdateDatabase(login: String) = Action.async {
+    val newPassword = UUID.randomUUID().toString
+    (userActor ? UpdateUserPasswordRequest(login, newPassword)).mapTo[Try[Int]] map {
+      case Success(_) =>
+        play.api.db.slick.DB.withSession { implicit session =>
+//          val login = users.filter(_.login === login).map(_.login).list.head
+          val mail = use[MailerPlugin].email
+          mail.setSubject("BO DEA Demande de changement de mot de passe")
+          mail.addFrom("BO DEA")
+          mail.addRecipient(login)
+          mail.send(s"""Voici votre nouveau mot de passe : $newPassword""" + "\nVous pouvez le modifier à tout moment" +
+            "ici: http://www.claude.wtf/#/settings")
+          Ok
         }
+
+      case Failure(failure) =>
+        InternalServerError("Application.sendNewPasswordByEMailAndUpdateDatabase: " + failure)
     }
   }
 
@@ -206,12 +201,12 @@ object Application extends Controller {
     }
   }
   
-  def updateUserPassword(password: String) = Authenticated.async { request =>
+  def updateUserPassword(login: String, newPassword: String) = Authenticated.async { request =>
     request.uuid match {
       case None =>
         Future { Unauthorized("Unauthorized") }
       case uuid =>
-        (userActor ? UpdateUserPasswordRequest(uuid.get, password)).mapTo[Try[Int]] map {
+        (userActor ? UpdateUserPasswordRequest(login, newPassword)).mapTo[Try[Int]] map {
           case Success(_) => Ok
           case Failure(failure) => InternalServerError("saveUser: " + failure)
         }

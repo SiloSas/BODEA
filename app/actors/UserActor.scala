@@ -43,7 +43,7 @@ object UserActor {
                              isActive: Boolean = true)
   case class UpdateUserRequest(uuid: String, login: String, role: Int,
                                objectString: Option[String], isActive: Boolean)
-  case class UpdateUserPasswordRequest(uuid: UUID, password: String)
+  case class UpdateUserPasswordRequest(login: String, newPassword: String)
   case class AuthenticationRequest[A](login: String, password: String)
   
   val authorizedStatus = 0
@@ -95,10 +95,10 @@ class UserActor extends Actor {
   }
 
   def updatePassword(updateUserPasswordRequest: UpdateUserPasswordRequest): Try[Int] = Try {
-    val query = for { user <- users if user.uuid === updateUserPasswordRequest.uuid }
+    val query = for { user <- users if user.login === updateUserPasswordRequest.login }
       yield user.password
 
-    query.update(BCrypt.hashpw(updateUserPasswordRequest.password, BCrypt.gensalt()))
+    query.update(BCrypt.hashpw(updateUserPasswordRequest.newPassword, BCrypt.gensalt()))
   }
 
   def save(saveUserRequest: SaveUserRequest): Try[Int] = Try {

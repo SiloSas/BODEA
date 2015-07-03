@@ -158,7 +158,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                                 console.log(error)
                             });
                     }
-                    MessagesFactory.displayMessage('Votre command est bien enregistré')
+                    MessagesFactory.displayMessage('Votre commande est bien enregistrée')
             }).error(function (error) {
                     MessagesFactory.displayMessage(error)
             })

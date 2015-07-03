@@ -2,6 +2,7 @@ angular.module('bodeaApp').factory('NotificationsFactory', function ($http, Guid
     var factory =  {
         notifications: [],
         notificationBase: [],
+        eventSource: false,
         getNotifications: function () {
             $http.get('models?table=notifications').success(function (notifications) {
                 console.log(notifications);
@@ -11,7 +12,8 @@ angular.module('bodeaApp').factory('NotificationsFactory', function ($http, Guid
             });
         },
         subscribe: function () {
-            new EventSource("/notifications").onmessage = function (event) {
+            factory.eventSource = new EventSource("/notifications");
+            factory.eventSource.onmessage = function (event) {
                 factory.notificationLength = factory.notificationLength+1;
                 console.log(event.data);
                 factory.notifications.push(JSON.parse(event.data));
@@ -20,7 +22,6 @@ angular.module('bodeaApp').factory('NotificationsFactory', function ($http, Guid
         passIsReadedToTrue: function () {
             factory.notificationBase = factory.notificationBase.concat(angular.copy(factory.notifications));
             factory.notifications.splice(0, factory.notifications.length);
-            return;
         },
         postNotification: function (notification, brandUUID) {
             factory.notificationLength = factory.notificationLength+1;
@@ -36,8 +37,9 @@ angular.module('bodeaApp').factory('NotificationsFactory', function ($http, Guid
             })
         },
         passToFalse: function () {
-            factory.notificationBase = [];
-            factory.notifications = [];
+            factory.notificationBase.splice(0, factory.notificationBase.length);
+            factory.notifications.splice(0, factory.notifications.length);
+            factory.eventSource.close()
         }
     };
     return factory;

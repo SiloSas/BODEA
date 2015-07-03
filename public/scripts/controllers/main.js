@@ -15,8 +15,20 @@ angular.module('bodeaApp')
          * Build handler to open/close a SideNav; when animation finishes
          * report completion in console
          */
-        UserFactory.getUser().then(function (user) {
-           $scope.user = user;
+        function initUser () {
+            UserFactory.getUser().then(function (user) {
+                $scope.user = user;
+            });
+            $scope.notifications = NotificationsFactory.notifications;
+            $scope.notificationBase = NotificationsFactory.notificationBase;
+        }
+
+        initUser();
+
+        $rootScope.$watch('connected', function (newVal) {
+            if (newVal != false) {
+                initUser();
+            }
         });
 
         $rootScope.filter = '';
@@ -52,6 +64,4 @@ angular.module('bodeaApp')
         $scope.postNotification = function (notification, brandUUID) {
             NotificationsFactory.postNotification(notification, brandUUID)
         };
-        $scope.notifications = NotificationsFactory.notifications;
-        $scope.notificationBase = NotificationsFactory.notificationBase;
     });

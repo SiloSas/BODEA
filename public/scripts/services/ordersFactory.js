@@ -6,7 +6,6 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
             case 1:
                 notification = 'La commande ' + order.id + ' pour ' + order.brand.name + ' a été passée';
                 NotificationsFactory.postNotification(notification, order.brand.id);
-                console.log(order)
                 break;
 
             case 2:
@@ -16,7 +15,6 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
 
             case 4:
                 notification = 'La commande ' + order.id + ' est en cours de livraison';
-                console.log(notification)
                 NotificationsFactory.postNotification(notification, order.brand.id)
                 break;
         }
@@ -28,7 +26,17 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
         getOrders: function () {
             var deferred = $q.defer();
             if (factory.orders != false) {
+                factory.orders = factory.orders.map(function (order) {
+                    function getImage(id) {
+                        ImagesFactory.getImageById(id).then(function (image) {
+                            order.image = image;
+                        });
+                    }
+                    getImage(order.image.uuid);
+                    return order
+                });
                 deferred.resolve(factory.orders)
+                console.log(factory.orders)
             } else {
                 $http.get('models?table=orders').success(function (object) {
                     console.log(object)
@@ -150,7 +158,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                                 console.log(error)
                             });
                     }
-                    MessagesFactory.displayMessage('Votre command est bien enregistré')
+                    MessagesFactory.displayMessage('Votre commande est bien enregistrée')
             }).error(function (error) {
                     MessagesFactory.displayMessage(error)
             })

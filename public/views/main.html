@@ -3,14 +3,14 @@
                layout layout-align="center center" ng-if="$root.connected == false">
     <form name="connection" ng-submit="connect(user)">
         <md-input-container>
-            <label>Email or username</label>
+            <label>Email</label>
             <input required name="login" type="text" ng-model="user.login">
             <div ng-messages="connection.login.$error">
                 <div ng-message="required">This is required.</div>
             </div>
         </md-input-container>
         <md-input-container>
-            <label>Password</label>
+            <label>Mot de passe</label>
             <input required name="password" type="password" ng-model="user.password">
             <div ng-messages="connection.password.$error">
                 <div ng-message="required">This is required.</div>
@@ -19,7 +19,7 @@
         <md-button class="md-raised md-primary" type="submit">Connect</md-button>
     </form>
 </md-whiteframe>
-<md-list>
+<md-list ng-if="$root.connected != false">
     <md-subheader>Notifications</md-subheader>
     <md-list-item ng-repeat="notification in notifications | filter: user.brand.id">
         <md-divider></md-divider>

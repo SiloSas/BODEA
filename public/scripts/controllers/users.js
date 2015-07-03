@@ -120,6 +120,10 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
     }
     function selectedBrandChange(item) {
         $log.info('Item changed to ' + JSON.stringify(item));
+        if (angular.isDefined($scope.newUser.brand.flag)) {
+            delete($scope.newUser.brand.flag);
+            $scope.newUser.brand = BrandFactory.postBrand($scope.newUser.brand)
+        }
         //$scope.stores[index].area = item;
     }
     function createFilterFor(query) {

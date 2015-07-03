@@ -49,7 +49,13 @@ angular.module('bodeaApp').controller('HistoriqueCtrl', function ($scope, Orders
         }
     };
     OrdersFactory.getOrders().then(function (orders) {
-        $scope.orders = orders;
+        $scope.orders = orders.filter(function (order) {
+            if (order.state == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        });
         $scope.initChart()
     });
     BrandFactory.getBrands().then(function (brands) {

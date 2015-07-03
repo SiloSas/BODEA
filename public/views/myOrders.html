@@ -48,9 +48,12 @@
                 <md-divider></md-divider>
                 <md-list-item>
                     <div class="column large-12 padding0">
+                        <a class="md-button md-primary md-default-theme md-raised"
+                           ng-click="addNewImage = !addNewImage">Ajouter une nouvelle image</a>
+                        <add-image-form ng-init="newImage.brand = newOrder.brand" ng-if="addNewImage"></add-image-form>
                         <md-select placeholder="selectionner une image" ng-change="newOrder.image = loadImg(newOrder.image.uuid)"
                                    ng-model="newOrder.image.uuid">
-                            <md-option ng-repeat="image in images" value="{{image.uuid}}">{{image.name}} ({{image.theme}})</md-option>
+                            <md-option ng-repeat="image in images | filter: $root.user.brand.id" value="{{image.uuid}}">{{image.name}} ({{image.theme}})</md-option>
                         </md-select>
                         <div class="column large-12 md-whiteframe-z1 padding10" ng-if="newOrder.image.url">
                             <i class="float-right fa fa-times pointer" ng-click="newOrder.image = {}"></i>
@@ -80,6 +83,7 @@
                     <label>Nombre de bâches</label>
                     <input type="number"
                            step="any"
+                           ng-change="ordersTotalCalculs(newOrder)"
                            ng-model="subOrder.numberItems">
                 </md-input-container>
             </md-list>
@@ -161,8 +165,9 @@
                                 'md-accent md-hue-3': order.state == 5}"></md-button>
                         <md-checkbox
                                 ng-show="order.state == 0"
-                                ng-change="order.newOrder = order; refactorCommande(order)"
-                                ng-model="order.state"
+                                ng-init="copyCommande(order)"
+                                ng-change="refactorCommande(order)"
+                                ng-model="order.newOrder.state"
                                 aria-label="Brouillon"
                                 ng-true-value="0"
                                 ng-false-value="1"
@@ -247,13 +252,14 @@
                                     <input type="file"
                                            class="md-button md-primary md-default-theme"
                                            ng-model="order.newOrder.image.url" app-filereader>
-                                    <md-select placeholder="selectionner une image" ng-change="order.newOrder.image = loadImg(order.newOrder.image.id)"
-                                               ng-model="order.newOrder.image.id">
-                                        <md-option ng-repeat="image in images" value="{{image.id}}">{{image.name}}</md-option>
+                                    <md-select placeholder="selectionner une image" ng-change="order.newOrder.image = loadImg(order.newOrder.image.uuid)"
+                                               ng-model="order.newOrder.image.uuid">
+                                        <md-option ng-repeat="image in images | filter: $root.user.brand.id"
+                                                   value="{{image.uuid}}">{{image.name}}</md-option>
                                     </md-select>
                                     <div class="column large-12 md-whiteframe-z1 padding10" ng-if="order.newOrder.image.url">
                                         <i class="float-right fa fa-times pointer" ng-click="order.newOrder.image = {}"></i>
-                                        <img ng-src="{{order.newOrder.image.url}}" class="width100p">
+                                        <img ng-src="assets/pictures/{{order.newOrder.image.url}}" class="width100p">
                                     </div>
                                 </div>
                             </md-list-item>

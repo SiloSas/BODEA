@@ -48,7 +48,7 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
         },
         refactorUser: function (user) {
             if (angular.isDefined( user.newUser.user.password)) {
-                $http.put('/users/password?password='  + user.newUser.user.password)
+                $http.put('/users/password?login='+ user.user.login +'&password='  + user.newUser.user.password)
             }
             for (var i = 0; i < factory.users.length; i++) {
                 if (user.user.uuid == factory.users[i].user.uuid) {

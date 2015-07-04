@@ -7,7 +7,6 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
                 deferred.resolve(factory.stores)
             } else {
                 $http.get('models?table=stores').success(function (object) {
-                    console.log(object);
                     factory.stores = object.map(function (el) {
                         return JSON.parse(el.generalObject.objectString)
                     });
@@ -61,9 +60,7 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
                             uuidA: store.id,
                             uuidB: store.brand.id
                         }]).success(function(success) {
-                            console.log(success)
                         }).error(function(error) {
-                            console.log(error)
                         });
                 }
             }).success(function (data) {
@@ -79,9 +76,7 @@ angular.module('bodeaApp').factory('StoresFactory', function ($q, $http, GuidFac
                 }
             }
             $http.delete('models/' + store.id + '?table=stores').success(function (data) {
-                console.log(data)
             }).error(function (error) {
-                console.log(error)
             })
         },
         passToFalse : function () {

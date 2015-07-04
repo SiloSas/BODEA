@@ -70,7 +70,6 @@ angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactor
         });
         UsersFactory.postUser($scope.newUser).then(function () {
             $scope.newUser = {user: {isActive: true, objectString: {}}, stores: []};
-            console.log('yo')
             $scope.createUser = false
 
         });

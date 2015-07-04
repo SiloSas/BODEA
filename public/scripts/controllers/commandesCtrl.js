@@ -127,7 +127,6 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
         };
 
         $scope.refactorCommande = function (order) {
-            console.log(order);
             OrdersFactory.refactorOrder(order)
         };
 
@@ -166,7 +165,6 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             }
         }
         $scope.ordersTotalCalculs = function (array) {
-            console.log(array)
             ordersTotalCalculs(array)
         };
 
@@ -208,7 +206,6 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                         BrandFactory.postBrand($scope.newOrder.brand)
                     }
                     if (angular.isDefined($scope.newOrder.id) === false) {
-                        console.log($scope.newOrder.brand)
                         var brandOrders = $filter('filter')($scope.orders, $scope.newOrder.brand.id, 'brand');
                         if (brandOrders.length > 0) {
                             var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;

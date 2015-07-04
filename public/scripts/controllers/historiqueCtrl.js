@@ -45,7 +45,6 @@ angular.module('bodeaApp').controller('HistoriqueCtrl', function ($scope, Orders
                 }
             }
             $scope.data[0].push(angular.copy(dataValue));
-            console.log($scope.data)
         }
     };
     OrdersFactory.getOrders().then(function (orders) {

@@ -85,7 +85,6 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
         },
         postImage: function (image) {
             image.uuid = GuidFactory();
-            console.log(image.file)
             var fd = new FormData();
             fd.append('picture', image.file);
             $http.post('/upload', fd, {
@@ -97,7 +96,6 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
                 $http.post('models?table=images&uuid=' + image.uuid + '&objectString=' + JSON.stringify(image)).
                     success(function() {
                         factory.images.push(image);
-                        console.log(success)
                         MessagesFactory.displayMessage('Votre image est bien enregistré')
                     });
             }).error(function (error) {

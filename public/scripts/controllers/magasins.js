@@ -37,8 +37,6 @@ angular.module('bodeaApp').controller('MagasinsCtrl', function ($scope, $timeout
             BrandFactory.postBrand($scope.newStore.brand)
         }
         if (angular.isDefined($scope.newStore.area.flag)) {
-            console.log($scope.newStore)
-            //delete($scope.newStore.area.flag);
             AreaFactory.postArea($scope.newStore.area)
         }
         StoresFactory.postStore($scope.newStore);

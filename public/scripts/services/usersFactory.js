@@ -7,7 +7,6 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                 deferred.resolve(factory.users)
             } else {
                 $http.get('models?table=users').success(function (users) {
-                    console.log(users)
                     factory.users = users.map(function(user) {
                         if (user.user.objectString == "undefined") {
                             delete(user.user.objectString);
@@ -56,7 +55,6 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                     factory.users[i] = user
                 }
             }
-            console.log(user)
             if (angular.isDefined(user.brand)) {
                 $http.post('relations',
                     {relations : [{
@@ -64,23 +62,18 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                         uuidA: user.user.uuid,
                         uuidB: user.brand.id
                     }]}).success(function(success) {
-                        console.log(success)
                     }).error(function(error) {
-                        console.log(error)
                     });
             }
             if (angular.isDefined(user.stores)) {
                 user.stores.map(function (store) {
-                    console.log(store);
                     $http.post('relations',
                         {relations :[{
                             relationTable: 'storeuser',
                             uuidA: store.id,
                             uuidB: user.user.uuid
                         }]}).success(function(success) {
-                            console.log(success)
                         }).error(function(error) {
-                            console.log(error)
                         });
                 });
 
@@ -102,7 +95,6 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
         $http.delete('models/' + user.user.uuid + '?table=users');
         },
         postUser: function (user) {
-            console.log(user)
             var deferred = $q.defer();
             user.user.uuid = GuidFactory();
             $http.post('users?uuid='+user.user.uuid+'&password='+user.user.password+
@@ -113,36 +105,29 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                     factory.users.push(user);
                     deferred.resolve(success)
                     if (angular.isDefined(user.brand) && user.brand != null) {
-                        console.log(user.brand.id, user.user.uuid);
                         $http.post('relations',
                             {relations :[{
                                 relationTable: 'userbrand',
                                 uuidA: user.user.uuid,
                                 uuidB: user.brand.id
                             }]}).success(function(success) {
-                                console.log(success)
                             }).error(function(error) {
-                                console.log(error)
                             });
                     }
                     if (angular.isDefined(user.stores)) {
                         user.stores.map(function (store) {
-                            console.log(store.id, user.user.uuid);
                             $http.post('relations',
                                 {relations :[{
                                     relationTable: 'storeuser',
                                     uuidA: store.id,
                                     uuidB: user.user.uuid
                                 }]}).success(function(success) {
-                                    console.log(success)
                                 }).error(function(error) {
-                                    console.log(error)
                                 });
                         });
 
                     }
             }).error(function(error) {
-                console.log(error)
                 if (error.indexOf('duplicate key') > -1) {
                     error = 'Cet utilisateur existe déjà'
                 } else {

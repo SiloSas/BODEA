@@ -25,7 +25,6 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                 NotificationsFactory.postNotification(notification, order.brand.id);
                 break;
         }
-        console.log(order.state)
     }
 
     var factory = {
@@ -42,11 +41,9 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                     getImage(order.image.uuid);
                     return order
                 });
-                deferred.resolve(factory.orders)
-                console.log(factory.orders)
+                deferred.resolve(factory.orders);
             } else {
                 $http.get('models?table=orders').success(function (object) {
-                    console.log(object)
                     factory.orders = object.map(function (el) {
                         var order =  JSON.parse(el.generalObject.objectString)
                         function getImage(id) {
@@ -113,9 +110,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                                 uuidA: order.uuid,
                                 uuidB: order.brand.id
                             }]}).success(function(success) {
-                                console.log(success)
                             }).error(function(error) {
-                                console.log(error)
                             });
                         if (angular.isDefined(order.image)) {
                             $http.post('relations',
@@ -124,9 +119,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                                     uuidA: order.uuid,
                                     uuidB: order.image.uuid
                                 }]}).success(function(success) {
-                                    console.log(success)
                                 }).error(function(error) {
-                                    console.log(error)
                                 });
                         }
                     }).error(function (error) {
@@ -149,9 +142,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                             uuidA: order.uuid,
                             uuidB: order.brand.id
                         }]}).success(function(success) {
-                            console.log(success)
                         }).error(function(error) {
-                            console.log(error)
                         });
                     if (angular.isDefined(order.image)) {
                         $http.post('relations',
@@ -160,9 +151,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                                 uuidA: order.uuid,
                                 uuidB: order.image.uuid
                             }]}).success(function(success) {
-                                console.log(success)
                             }).error(function(error) {
-                                console.log(error)
                             });
                     }
                     MessagesFactory.displayMessage('Votre commande est bien enregistrée')
@@ -177,9 +166,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                 }
             }
             $http.delete('models/' + order.uuid + '?table=orders').success(function (data) {
-                console.log(data)
             }).error(function (error) {
-                console.log(error)
             })
         },
         passToFalse : function () {

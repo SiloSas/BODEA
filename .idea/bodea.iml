@@ -133,6 +133,7 @@
     <orderEntry type="library" name="SBT: org.apache.commons:commons-email:1.2:jar" level="project" />
     <orderEntry type="library" name="SBT: org.ow2.spec.ee:ow2-atinject-1.0-spec:1.0.10:jar" level="project" />
     <orderEntry type="library" name="bodea node_modules" level="project" />
+    <orderEntry type="library" name="sass-stdlib" level="application" />
   </component>
 </module>
 

@@ -5,7 +5,6 @@ angular.module('bodeaApp').factory('NotificationsFactory', function ($http, Guid
         eventSource: false,
         getNotifications: function () {
             $http.get('models?table=notifications').success(function (notifications) {
-                console.log(notifications);
                 notifications.map(function (notification) {
                     factory.notificationBase.push(JSON.parse(notification.generalObject.objectString));
                 });
@@ -15,7 +14,6 @@ angular.module('bodeaApp').factory('NotificationsFactory', function ($http, Guid
             factory.eventSource = new EventSource("/notifications");
             factory.eventSource.onmessage = function (event) {
                 factory.notificationLength = factory.notificationLength+1;
-                console.log(event.data);
                 factory.notifications.push(JSON.parse(event.data));
             };
         },

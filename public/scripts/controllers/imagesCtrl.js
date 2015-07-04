@@ -12,7 +12,6 @@ angular.module('bodeaApp').controller('ImagesCtrl', function ($scope, ImagesFact
 
     $scope.newImage = {};
     $scope.addNewImage = function () {
-        console.log($scope.newImage);
         ImagesFactory.postImage($scope.newImage);
         $scope.newImage = {};
     };

@@ -211,15 +211,10 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
                         console.log($scope.newOrder.brand)
                         var brandOrders = $filter('filter')($scope.orders, $scope.newOrder.brand.id, 'brand');
                         if (brandOrders.length > 0) {
-                            var lastId = 0;
-                            for (var i = 0; i < brandOrders.length; i++) {
-                                if (parseInt(brandOrders[i].id.replace(/[^0-9.]/g, '')) > lastId) {
-                                    lastId = parseInt(brandOrders[i].id.replace(/[^0-9.]/g, ''));
-                                }
-                            }
-                            $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + (lastId + 1);
+                            var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
+                            $scope.newOrder.id = lastId + 1;
                         } else {
-                            $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + '1';
+                            $scope.newOrder.id = 1;
                         }
                     }
                     $scope.newOrder.date = new Date();
@@ -286,6 +281,32 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             OrdersFactory.deleteOrder(order)
         };
 
+        $scope.exportToCsv = function (order) {
+            var orderToExport = [];
+            for (var i = 0; i < order.subOrders.length; i++) {
+                var row = {};
+                row.brand = order.brand.name;
+                row.storeName = order.subOrders[i].store.name;
+                row.deliveryAddress = order.subOrders[i].store.deliveryAddress;
+                row.billingAddress = order.subOrders[i].store.billingAddress;
+                row.numberItems = order.subOrders[i].numberItems;
+                row.price = order.subOrders[i].price + ' €';
+                row.weight = order.subOrders[i].weight + ' Kg';
+                orderToExport.push(row);
+            }
+            var totalRow = {};
+            totalRow.brand = 'totaux de la commande de ' + order.brand.name;
+            totalRow.storeLength = order.subOrders.length + ' magasins';
+            totalRow.BlancCase = '';
+            totalRow.BlancCase1 = '';
+            totalRow.numberItems = order.numberItems + ' Baches';
+            totalRow.price = order.price + ' €';
+            totalRow.weight = order.weight + 'Kg';
+            orderToExport.push(totalRow);
+            return orderToExport;
+
+        };
+
         $scope.querySearchBrand   = querySearchBrand;
         $scope.selectedBrandChange = selectedBrandChange;
         $scope.searchTextChange   = searchTextChange;
@@ -315,15 +336,10 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             if (angular.isDefined(item)) {
                 var brandOrders = $filter('filter')($scope.orders, item.name, 'brand');
                 if (brandOrders.length > 0) {
-                    var lastId = 0;
-                    for (var i = 0; i < brandOrders.length; i++) {
-                        if (parseInt(brandOrders[i].id.replace(/[^0-9.]/g, '')) > lastId) {
-                            lastId = parseInt(brandOrders[i].id.replace(/[^0-9.]/g, ''));
-                        }
-                    }
-                    $scope.newOrder.id = $scope.newOrder.brand.name.substring(0, 2).toUpperCase() + (lastId + 1);
+                    var lastId = $filter('orderBy')(brandOrders, 'id', true)[0].id;
+                    $scope.newOrder.id = lastId + 1;
                 } else {
-                    $scope.newOrder.id = item.name.substring(0, 2).toUpperCase() + '1';
+                    $scope.newOrder.id = 1;
                 }
                 if (angular.isDefined($scope.newOrder.brand.flag)) {
                     delete($scope.newOrder.brand.flag);

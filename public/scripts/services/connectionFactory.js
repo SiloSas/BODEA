@@ -41,6 +41,13 @@ angular.module('bodeaApp').factory('ConnectionFactory', function ($q, $http, $ro
                     NotificationsFactory.passToFalse();
                     $location.path('/')
             })
+        },
+        forgottenpassword: function (login) {
+            $http.post('users/forgottenpassword?login=' + login).success(function () {
+                MessagesFactory.displayMessage('Un email vous a été envoyé')
+            }).error(function (error) {
+                MessagesFactory.displayMessage('Une erreur s\'est produite')
+            })
         }
     };
     return factory;

@@ -2,20 +2,27 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
                                                               MessagesFactory, ImagesFactory, NotificationsFactory) {
     function postNotifiation(order) {
         var notification;
+        var firsLetters = order.brand.name[0].toUpperCase() + order.brand.name[1].toUpperCase();
         switch (parseInt(order.state)) {
             case 1:
-                notification = 'La commande ' + order.id + ' pour ' + order.brand.name + ' a été passée';
+                notification = 'La commande ' + firsLetters + order.id +
+                    ' pour ' + order.brand.name + ' a été passée';
                 NotificationsFactory.postNotification(notification, order.brand.id);
                 break;
 
             case 2:
-                notification = 'La commande ' + order.id + ' a été validée par l\'administrateur';
-                NotificationsFactory.postNotification(notification, order.brand.id)
+                notification = 'La commande ' + firsLetters + order.id + ' a été validée par l\'administrateur';
+                NotificationsFactory.postNotification(notification, order.brand.id);
+                break;
+
+            case 3:
+                notification = 'La commande ' + firsLetters + order.id + ' est en cours de traitement';
+                NotificationsFactory.postNotification(notification, order.brand.id);
                 break;
 
             case 4:
-                notification = 'La commande ' + order.id + ' est en cours de livraison';
-                NotificationsFactory.postNotification(notification, order.brand.id)
+                notification = 'La commande ' + firsLetters + order.id + ' est en cours de livraison';
+                NotificationsFactory.postNotification(notification, order.brand.id);
                 break;
         }
         console.log(order.state)

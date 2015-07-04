@@ -109,7 +109,10 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                 '&login='+user.user.login+'&role='+user.user.role+'&objectString=' +
                 JSON.stringify(user.user.objectString) + '&isActive=' + user.user.isActive).
                 success(function (success) {
-                    if (angular.isDefined(user.brand)) {
+                    MessagesFactory.displayMessage('L\'utilisateur est bien enregistré');
+                    factory.users.push(user);
+                    deferred.resolve(success)
+                    if (angular.isDefined(user.brand) && user.brand != null) {
                         console.log(user.brand.id, user.user.uuid);
                         $http.post('relations',
                             {relations :[{
@@ -138,9 +141,6 @@ angular.module('bodeaApp').factory('UsersFactory', function ($q, $http, GuidFact
                         });
 
                     }
-                    MessagesFactory.displayMessage('L\'utilisateur est bien enregistré');
-                    factory.users.push(user);
-                    deferred.resolve(success)
             }).error(function(error) {
                 console.log(error)
                 if (error.indexOf('duplicate key') > -1) {

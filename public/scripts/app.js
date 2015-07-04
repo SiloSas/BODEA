@@ -20,7 +20,8 @@ angular
     'ngTouch',
     'mm.foundation',
     'ngMaterial',
-    'chart.js'
+    'chart.js',
+    'ngCsv'
   ])
   .config(function ($routeProvider) {
     $routeProvider

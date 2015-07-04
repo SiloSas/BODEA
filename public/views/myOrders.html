@@ -151,7 +151,7 @@
             <md-divider class="column large-12" ng-if="!$first"></md-divider>
             <div class="padding10 float-left width100p">
                 <div class="width100p float-left center" ng-show="!refactor">
-                    <h5 class="column medium-2">{{order.id}}</h5>
+                    <h5 class="column medium-2" style="text-transform: uppercase;">{{order.brand.name | limitTo: 2}}{{order.id}}</h5>
                     <h5 class="column medium-2 pointer">
                         <p class="margin0" ng-repeat="subOrder in order.subOrders"
                               ng-click="$root.filter = subOrder.store.name">{{subOrder.store.name}}</p>

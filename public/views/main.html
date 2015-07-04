@@ -1,7 +1,7 @@
 
 <md-whiteframe class="md-whiteframe-z1 column large-6 medium-8 large-offset-3 medium-offset-2"
                layout layout-align="center center" ng-if="$root.connected == false">
-    <form name="connection" ng-submit="connect(user)">
+    <form name="connection" ng-submit="connect(user)" class="width100p float-left">
         <md-input-container>
             <label>Email</label>
             <input required name="login" type="text" ng-model="user.login">
@@ -16,7 +16,15 @@
                 <div ng-message="required">This is required.</div>
             </div>
         </md-input-container>
-        <md-button class="md-raised md-primary" type="submit">Connect</md-button>
+        <md-button class="md-raised md-primary float-left" type="submit">Connect</md-button>
+        <div class="float-left">
+            <a ng-show="user.login"
+               class="md-button md-default-theme"
+               ng-click="forgottenpassword(user.login)">Mot de passe oublié</a>
+            <a class="md-button md-default-theme"  ng-show="!user.login" ng-disabled="true">Mot de passe oublié
+                <md-tooltip>Entrez un email</md-tooltip>
+            </a>
+        </div>
     </form>
 </md-whiteframe>
 <md-list ng-if="$root.connected != false">
@@ -26,8 +34,9 @@
         {{notification.date | date:'MM/dd/yyyy'}} : {{notification.notification}}
     </md-list-item>
     <md-list-item ng-repeat="notification in filterNotificationBase = (notificationBase | filter: user.brand.id)
-     | orderBy: '-date'">
+     | orderBy: '-date' | limitTo: limit">
         <md-divider></md-divider>
         {{notification.date | date:'MM/dd/yyyy'}} : {{notification.notification}}
     </md-list-item>
+    <md-button ng-click="limit = limit + 12" ng-show="filterNotificationBase.length > limit">Voir plus</md-button>
 </md-list>

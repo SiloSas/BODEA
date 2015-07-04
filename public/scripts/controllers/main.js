@@ -15,6 +15,7 @@ angular.module('bodeaApp')
          * Build handler to open/close a SideNav; when animation finishes
          * report completion in console
          */
+        $scope.limit = 20;
         function initUser () {
             UserFactory.getUser().then(function (user) {
                 $scope.user = user;
@@ -55,6 +56,9 @@ angular.module('bodeaApp')
                 NotificationsFactory.passIsReadedToTrue();
             }
         });
+        $scope.forgottenpassword = function (login) {
+            ConnectionFactory.forgottenpassword(login)
+        };
         $scope.connect = function (user) {
             ConnectionFactory.connect(user)
         };

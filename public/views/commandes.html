@@ -230,7 +230,7 @@
     <md-divider class="column large-12" ng-if="!$first"></md-divider>
     <div class="padding10 float-left width100p">
         <div class="width100p float-left center" ng-show="!refactor">
-            <h5 class="column medium-2">{{order.id}}</h5>
+            <h5 class="column medium-2" style="text-transform: uppercase;">{{order.brand.name | limitTo: 2}}{{order.id}}</h5>
             <h5 class="column medium-2 pointer"
                 ng-click="$root.filter = order.brand.name">{{order.brand.name}}</h5>
             <h5 class="column medium-2">{{order.date | date:'MM/dd/yyyy'}}</h5>
@@ -240,9 +240,17 @@
                         ng-class="{'md-accent': order.state == 1, 'md-accent md-hue-1': order.state == 2,
                         'md-accent md-hue-2': order.state == 3, 'md-primary': order.state == 4,
                         'md-accent md-hue-3': order.state == 5}"></md-button></div>
-            <h5><i class="column medium-2 pointer fa fa-pencil"
+            <h5><i class="column medium-1 pointer fa fa-pencil"
                ng-click="copyCommande(order); refactor = true"></i></h5>
-            <h5><i class="column medium-2 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove"></i></h5>
+            <h5><i class="column medium-1 pointer fa fa-trash" ng-click="confirmRemove = !confirmRemove">
+                </i>
+            </h5>
+            <h5>
+                <i class="fa fa-download column medium-1 pointer" ng-csv="exportToCsv(order)"
+                   csv-header="['Enseigne', 'Magasin', 'Adresse de livraison',
+                'Adresse de facturation', 'Nombre de bâches', 'Prix', 'Poids']"
+                   filename="Commande - {{order.id}} - {{order.brand.name}}.csv"></i>
+            </h5>
         </div>
         <div ng-if="confirmRemove" class="float-right md-whiteframe-z1">
            <div class="float-left padding10">
@@ -260,7 +268,9 @@
                 <i class="md-warn relative fa fa-times-circle"
                    style="  font-size: 30px;right: -15px;float: right;top: -22px;"
                    ng-click="$parent.refactor = false"></i>
-                <md-subheader>Modifer la commande {{order.id}} - {{order.brand.name}}</md-subheader>
+                <md-subheader>Modifer la commande
+                    <span style="text-transform: uppercase;">{{order.brand.name | limitTo: 2}}{{order.id}} </span>
+                    - {{order.brand.name}}</md-subheader>
                 <md-divider></md-divider>
                 <md-input-container class="column large-4">
                     <label>Numéro de la commande</label>
@@ -282,12 +292,12 @@
                         <input type="number" step="any" ng-model="order.price">
                     </md-input-container>
                     <md-input-container class="column large-4">
-                        <label>Nombre Total de bache</label>
+                        <label>Nombre Total de bâches</label>
                         <input type="number" step="any" ng-model="order.numberItems" disabled>
                     </md-input-container>
                     </md-input-container>
                     <md-input-container>
-                        <label>Poid total</label>
+                        <label>poids total</label>
                         <input type="number" step="any" ng-model="order.weight" disabled>
                     </md-input-container>
                 </md-list>

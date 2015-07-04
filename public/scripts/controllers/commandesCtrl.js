@@ -299,9 +299,9 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             totalRow.storeLength = order.subOrders.length + ' magasins';
             totalRow.BlancCase = '';
             totalRow.BlancCase1 = '';
-            totalRow.numberItems = order.numberItems + ' Baches';
+            totalRow.numberItems = order.numberItems + ' Bâches';
             totalRow.price = order.price + ' €';
-            totalRow.weight = order.weight + 'Kg';
+            totalRow.weight = order.weight + ' Kg';
             orderToExport.push(totalRow);
             return orderToExport;
 

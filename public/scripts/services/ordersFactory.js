@@ -172,7 +172,7 @@ angular.module('bodeaApp').factory('OrdersFactory', function ($q, $http, GuidFac
         },
         deleteOrder: function (order) {
             for (var i = 0; i < factory.orders.length; i++) {
-                if (order.id == factory.orders[i].id) {
+                if (order.uuid == factory.orders[i].uuid) {
                     factory.orders.splice(i, 1)
                 }
             }

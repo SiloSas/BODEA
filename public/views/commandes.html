@@ -320,7 +320,7 @@
                     <md-list-item>
                         <div class="column large-12 padding0">
                             <a class="md-primary md-button margin10 md-default-theme" ng-click="showImage = !showImage">Voir {{order.image.name}}</a>
-                            <a class="md-primary md-button margin10 md-default-theme" href="{{order.image.url}}" download="{{order.image.name}}">Telecharger {{order.image.name}}</a>
+                            <a class="md-primary md-button margin10 md-default-theme" href="assets/pictures/{{order.image.url}}" download="{{order.image.name}}">Telecharger {{order.image.name}}</a>
                             <div class="column large-12 md-whiteframe-z1 padding10" ng-if="showImage">
                                 <i class="float-right fa fa-times pointer" ng-click="$parent.showImage = false"></i>
                                 <img ng-src="assets/pictures/{{order.image.url}}" class="width100p">

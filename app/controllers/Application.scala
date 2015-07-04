@@ -140,11 +140,6 @@ object Application extends Controller {
   }
 
   def sendNewPasswordByEMailAndUpdateDatabase(login: String) = Action.async {
-    val mail = use[MailerPlugin].email
-    mail.setSubject("BODEA Notification")
-    mail.addRecipient(login)
-    mail.addFrom("ticketappfrance@gmail.com")
-    mail.send("Hello World")
     val newPassword = UUID.randomUUID().toString
     (userActor ? UpdateUserPasswordRequest(login, newPassword)).mapTo[Try[Int]] map {
       case Success(_) =>
@@ -155,8 +150,8 @@ object Application extends Controller {
           mail.addRecipient(login)
           mail.addFrom("BODEA@gmail.com")
           mail.send(
-            s"""Voici votre nouveau mot de passe : $newPassword \\n
-               |Vous pouvez le modifier à tout moment ici: http://www.claude.wtf/#/settings""".stripMargin)
+            s"Voici votre nouveau mot de passe : $newPassword" +
+               "\nVous pouvez le modifier à tout moment ici: http://www.bodea.com/#/settings".stripMargin)
           Ok
         }
 

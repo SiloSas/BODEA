@@ -1,5 +1,8 @@
 angular.module('bodeaApp').controller('ImagesCtrl', function ($scope, ImagesFactory, UserFactory, $rootScope) {
-    ImagesFactory.getImages().then(function (images) {
+
+  $scope.images = [];
+
+  ImagesFactory.getImages().then(function (images) {
         $scope.images = images;
     });
 
@@ -13,7 +16,7 @@ angular.module('bodeaApp').controller('ImagesCtrl', function ($scope, ImagesFact
     $scope.newImage = {};
     $scope.addNewImage = function () {
         ImagesFactory.postImage($scope.newImage);
-        $scope.newImage = {};
+      $scope.newImage = {};
     };
 
     $scope.refactorImage = function (image) {

@@ -21,6 +21,7 @@ POST          /relations                 controllers.Application.saveRelations
 
 #IMAGES
 POST          /upload                    controllers.Application.uploadImage
+GET           /images/:file              controllers.Application.getImage(file: String)
 
 #NOTIFICATIONS
 POST          /notifications             controllers.Application.notifySubscribers(notification: String, brandUUID: String, notificationUUID: String)

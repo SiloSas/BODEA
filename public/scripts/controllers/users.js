@@ -1,5 +1,7 @@
 angular.module('bodeaApp').controller('UsersCtrl', function ($scope, UsersFactory, $timeout, BrandFactory, $log,
                                                              StoresFactory, AreaFactory, $filter) {
+
+  $scope.stores = []
     UsersFactory.getUsers().then(function (users) {
         $scope.users = users;
     });

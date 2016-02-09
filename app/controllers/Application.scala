@@ -1,7 +1,8 @@
 package controllers
 
-import java.io.File
+import java.io.{ByteArrayOutputStream, File}
 import java.util.UUID
+import javax.imageio.ImageIO
 import com.typesafe.plugin._
 import actors.ModelActor._
 import actors.UserActor._
@@ -10,6 +11,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.plugin.MailerPlugin
 import json.JsonHelper._
+import play.Play
 import play.api.Logger
 import play.api.Play.current
 import play.api.data.Form
@@ -166,7 +168,7 @@ object Application extends Controller {
         Unauthorized("Unauthorized")
       case _ =>
         request.body.file("picture").map { image =>
-
+          println(image)
           image.contentType match {
             case Some(fileExtension) if fileExtension == "image/tiff" || fileExtension == "image/jpg" ||
               fileExtension == "image/jpeg" || fileExtension == "image/png" || fileExtension == "image/svg" ||
@@ -175,12 +177,28 @@ object Application extends Controller {
               val filename = UUID.randomUUID().toString + image.filename
               image.ref.moveTo(new File("public/pictures/" + filename), replace = true)
 
-              Ok(filename)
+              Ok("images/" + filename)
 
             case _ =>
               Unauthorized("Wrong content type")
           }
         }.getOrElse { BadRequest }
+    }
+  }
+
+  def getImage(fileName: String) = Action {
+    val imageFile = new File(Play.application().path().getPath + "/public/pictures/" + fileName)
+    val image = ImageIO.read(imageFile)
+    if (imageFile.length > 0) {
+
+      val resourceType = fileName.substring(fileName.length()-3)
+      val baos = new ByteArrayOutputStream()
+      ImageIO.write(image, resourceType, baos)
+
+      Ok(baos.toByteArray).as("image/" + resourceType)
+      //resource type such as image+png, image+jpg
+    } else {
+      NotFound(fileName)
     }
   }
 
@@ -209,7 +227,7 @@ object Application extends Controller {
         }
     }
   }
-  
+
   def updateUserPassword(login: String, newPassword: String) = Authenticated.async { request =>
     request.uuid match {
       case None =>
@@ -239,6 +257,7 @@ object Application extends Controller {
               case "brands" => askActorToSaveModel(tableName, objectString, uuid)
               case "stores" => askActorToSaveModel(tableName, objectString, uuid)
               case "users" => askActorToSaveModel(tableName, objectString, uuid)
+              case "images" => askActorToSaveModel(tableName, objectString, uuid)
               case _ => Future { NotFound }
             }
       }
@@ -289,7 +308,7 @@ object Application extends Controller {
 
   def getAllModelsFromTable(tableName: String) = Authenticated.async { request =>
     request.uuid match {
-      case None => 
+      case None =>
         Future { Unauthorized }
       case Some(uuid) =>
         val table = PostgresTable(tableName)

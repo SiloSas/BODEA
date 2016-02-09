@@ -106,7 +106,7 @@
                     </md-select>
                     <div class="column large-12 md-whiteframe-z1 padding10" ng-if="newOrder.image.url">
                         <i class="float-right fa fa-times pointer" ng-click="newOrder.image = {}"></i>
-                        <img ng-src="assets/pictures/{{newOrder.image.url}}" class="width100p">
+                        <img ng-src="{{newOrder.image.url}}" class="width100p">
                     </div>
                 </div>
             </md-list-item>
@@ -320,10 +320,10 @@
                     <md-list-item>
                         <div class="column large-12 padding0">
                             <a class="md-primary md-button margin10 md-default-theme" ng-click="showImage = !showImage">Voir {{order.image.name}}</a>
-                            <a class="md-primary md-button margin10 md-default-theme" href="assets/pictures/{{order.image.url}}" download="{{order.image.name}}">Telecharger {{order.image.name}}</a>
+                            <a class="md-primary md-button margin10 md-default-theme" href="{{order.image.url}}" download="{{order.image.name}}">Telecharger {{order.image.name}}</a>
                             <div class="column large-12 md-whiteframe-z1 padding10" ng-if="showImage">
                                 <i class="float-right fa fa-times pointer" ng-click="$parent.showImage = false"></i>
-                                <img ng-src="assets/pictures/{{order.image.url}}" class="width100p">
+                                <img ng-src="{{order.image.url}}" class="width100p">
                             </div>
                         </div>
                     </md-list-item>

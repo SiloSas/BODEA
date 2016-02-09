@@ -93,11 +93,14 @@ angular.module('bodeaApp').factory('ImagesFactory', function ($q, $http, GuidFac
             }).success(function (success) {
                 image.url = success;
                 delete(image.file);
-                $http.post('models?table=images&uuid=' + image.uuid + '&objectString=' + JSON.stringify(image)).
+              console.log(image);
+                $http.post('/models?table=images&uuid=' + image.uuid + '&objectString=' + JSON.stringify(image)).
                     success(function() {
                         factory.images.push(image);
                         MessagesFactory.displayMessage('Votre image est bien enregistré')
-                    });
+                    }).error(function(error) {
+                      console.log(error)
+                  });
             }).error(function (error) {
                 MessagesFactory.displayMessage(error)
             })

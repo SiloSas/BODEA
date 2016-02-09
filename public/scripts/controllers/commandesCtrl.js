@@ -54,6 +54,7 @@ angular.module('bodeaApp').config(function($mdThemingProvider) {
             $scope.images = images;
         });
 
+
         $scope.loadImg = function (id) {
             var imagesLength = $scope.images.length;
             for (var i = 0; i < imagesLength; i++) {

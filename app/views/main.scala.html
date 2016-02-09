@@ -13,7 +13,6 @@
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
       <link rel="stylesheet" href="assets/styles/main.css">
-      <link rel="stylesheet" href="assets/styles/font-awesome.css">
       <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.css">
       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
   </head>
@@ -38,21 +37,24 @@
                     <md-button ng-click="close()" class="md-primary" hide-gt-md>
                         Fermer le menu
                     </md-button>
-                    <md-button class="fa fa-cog md-fab md-mini md-primary" aria-label="settings" ng-href="#/Settings">
+                    <md-button class=" md-fab md-mini md-primary" aria-label="settings" ng-href="#/Settings">
+                        <i class="fa fa-cog"></i>
                         <md-tooltip>
                             Options
                         </md-tooltip>
                     </md-button>
-                    <md-button class="fa fa-envelope md-fab md-mini"
+                    <md-button class=" md-fab md-mini"
                                ng-class="{'md-primary': notifications.length == 0,
                                'md-warn': notifications.length > 0}"
                                aria-label="notifications" ng-href="#/">
+                      <i class="fa fa-envelope"></i>
                         {{notifications.length}}
                         <md-tooltip>
                             Notifications
                         </md-tooltip>
                     </md-button>
-                    <md-button class="fa fa-sign-out md-fab md-mini md-warn" aria-label="deconnection" ng-click="disconnect()">
+                    <md-button class=" md-fab md-mini md-warn" aria-label="deconnection" ng-click="disconnect()">
+                      <i class="fa fa-sign-out"></i>
                         <md-tooltip>
                             Déconnexion
                         </md-tooltip>
